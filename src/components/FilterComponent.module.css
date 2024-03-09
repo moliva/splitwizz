@@ -1,0 +1,19 @@
+
+.filter {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+
+  width: 100%;
+  max-width: 600px;
+}
+
+@media screen and (min-width: 800px) {
+  .filter {
+    width: 600px;
+  }
+}
+
+.filter-input {
+  width: 100%;
+}

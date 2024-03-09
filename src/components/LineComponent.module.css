@@ -1,0 +1,26 @@
+
+.blur {
+  color: transparent;
+  text-shadow: 0 0 8px #000;
+}
+
+.content-key {
+  display : flex;
+  align-items : center;
+  min-height : 30px;
+}
+
+.content-controls {
+  margin-left: 3px;
+  flex-shrink: 0;
+}
+
+.content-control {
+  padding-left: 3px;
+  cursor: pointer;
+  color: lightgray;
+}
+
+.blur-control:hover {
+  color: FloralWhite;
+}

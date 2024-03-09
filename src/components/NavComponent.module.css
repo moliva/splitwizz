@@ -1,0 +1,71 @@
+
+.nav {
+  position: relative;
+  width: 95%;
+  text-align:center;
+}
+
+@media screen and (min-width: 800px) {
+  .nav {
+    width: 70%;
+  }
+}
+
+.nav-icon {
+  font-size: 25px;
+}
+
+.tiny {
+  max-height: 2rem;
+}
+
+.profile-card {
+  width: 100%;
+  height: 33px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-app-controls {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-auth-controls {
+  flex-grow: 0;
+  flex-shrink: 0;
+
+  position: relative;
+
+  display: flex;
+  align-items: center;
+}
+
+@media screen and (min-width: 1110px) {
+  .nav-auth-controls {
+    position: fixed;
+    right: 15%;
+  }
+}
+
+.new-note:hover {
+  color: lightgreen;
+}
+
+.login:hover {
+  color: DarkKhaki;
+}
+
+.logout:hover {
+  color: tan;
+}
+
+.profile-picture {
+  border-radius: 15%;
+}

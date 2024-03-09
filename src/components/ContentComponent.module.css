@@ -1,0 +1,13 @@
+
+.content {
+  padding-left: 10px;
+}
+
+.content-initial {
+  padding-left: 21px;
+}
+
+.content-collapsed {
+  color: lightgray;
+  font-size: 13px;
+}
