@@ -1,31 +1,17 @@
-import { Identity, Note } from "./types";
+import { Identity, Group } from "./types";
 
 export const API_HOST = import.meta.env.VITE_API_URL
 
-export async function fetchTags(identity: Identity): Promise<string[]> {
-  const res = await authentifiedFetch(`${API_HOST}/tags`, identity!)
+export async function fetchGroups(identity: Identity): Promise<Group[]> {
+  const res = await authentifiedFetch(`${API_HOST}/groups`, identity!)
 
-  return await res.json() as string[]
+  return await res.json() as Group[]
 }
 
-export async function fetchNote(identity: Identity, note: Note): Promise<Note> {
-  const res = await authentifiedFetch(`${API_HOST}/notes/${note.id}`, identity!)
-
-  return await res.json() as Note
-}
-
-export async function fetchNotes(identity: Identity): Promise<Note[]> {
-  const res = await authentifiedFetch(`${API_HOST}/notes`, identity!)
-
-  const notes = await res.json() as Note[]
-
-  return notes
-}
-
-export async function putNote(note: Note, identity: Identity): Promise<void> {
-  const response = await authentifiedFetch(`${API_HOST}/notes/${note.id}`, identity, {
+export async function putGroup(group: Group, identity: Identity): Promise<void> {
+  const response = await authentifiedFetch(`${API_HOST}/groups/${group.id}`, identity, {
     method: 'PUT',
-    body: JSON.stringify(note),
+    body: JSON.stringify(group),
     headers: { "Content-Type": "application/json" }
   })
 
@@ -34,10 +20,10 @@ export async function putNote(note: Note, identity: Identity): Promise<void> {
   }
 }
 
-export async function postNote(note: Note, identity: Identity): Promise<void> {
-  const response = await authentifiedFetch(`${API_HOST}/notes`, identity, {
+export async function postGroup(group: Group, identity: Identity): Promise<void> {
+  const response = await authentifiedFetch(`${API_HOST}/groups`, identity, {
     method: 'POST',
-    body: JSON.stringify(note),
+    body: JSON.stringify(group),
     headers: { "Content-Type": "application/json" }
   })
 
@@ -46,8 +32,8 @@ export async function postNote(note: Note, identity: Identity): Promise<void> {
   }
 }
 
-export async function deleteNote(note: Note, identity: Identity) {
-  const response = await authentifiedFetch(`${API_HOST}/notes/${note.id}`, identity, { method: 'DELETE' })
+export async function deleteGroup(group: Group, identity: Identity) {
+  const response = await authentifiedFetch(`${API_HOST}/groups/${group.id}`, identity, { method: 'DELETE' })
   if (!response.ok) {
     throw response
   }

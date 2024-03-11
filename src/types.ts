@@ -1,20 +1,9 @@
 
-export type LineFormat = {
-  line?: string
-  checkbox?: boolean
-  check?: boolean
-  blur?: boolean
-  link?: string
-}
 
-export type Content = [LineFormat, Content][]
-
-export type Note = {
-  id: number
+export type Group = {
+  id: number | undefined
   name: string
-  color: string
-  content: Content
-  tags: string[]
+  created_at: string | undefined
 }
 
 export type Identity = {

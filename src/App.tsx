@@ -1,73 +1,43 @@
-import { createSignal, type Component, onMount, Switch, Match, Show, createEffect, onCleanup } from 'solid-js'
+import { createSignal, For, type Component, onMount, Switch, Match, Show, createEffect, onCleanup } from 'solid-js'
 import { useNavigate, useSearchParams } from "@solidjs/router"
 
-import { IdentityState, Note } from './types'
-import { deleteNote, fetchNote, fetchNotes, fetchTags, postNote, putNote } from './services'
+import { IdentityState, Group } from './types'
+import { deleteGroup, postGroup, putGroup, fetchGroups } from './services'
 
-import { EditNote } from './components/EditNoteComponent'
+import { EditGroup } from './components/EditGroupComponent'
 import { Nav } from './components/NavComponent'
-import { NotesBoard } from './components/NotesBoard'
-import { Tags } from './components/Tags'
 import { Login } from './components/Login'
 
 import styles from './App.module.css'
 
-const MAX_TAG_LENGTH = 700
-
 export const App: Component = () => {
   const [identity, setIdentity] = createSignal<IdentityState>(undefined)
 
-  const [notes, setNotes] = createSignal<Note[] | undefined>(undefined)
+  const [groups, setGroups] = createSignal<Group[] | undefined>(undefined)
   const [filter, setFilter] = createSignal("")
-  const [filteredNotes, setFilteredNotes] = createSignal<Note[]>([])
+  const [filteredGroups, setFilteredGroups] = createSignal<Group[]>([])
 
-  const [appRef, setAppRef] = createSignal<HTMLElement | undefined>()
-
-  const [topTagLength, setTopTagLength] = createSignal(MAX_TAG_LENGTH) // approx size per note
-  const [tags, setTags] = createSignal<string[] | undefined>(undefined)
-
-  const [showNoteModal, setShowNoteModal] = createSignal(false)
-  const [currentNote, setCurrentNote] = createSignal<Note | undefined>(undefined)
+  const [showGroupModal, setShowGroupModal] = createSignal(false)
+  const [currentGroup, setCurrentGroup] = createSignal<Group | undefined>(undefined)
 
   const navigate = useNavigate()
 
-  const refreshTags = async () => {
+  const refreshGroups = async () => {
     const currentIdentity = identity()
 
-    const tags = currentIdentity ? await fetchTags(currentIdentity) : undefined
-    setTags(tags)
-  }
-
-  const refreshNote = async (note: Note) => {
-    const currentIdentity = identity()
-
-    const updated = currentIdentity ? await fetchNote(currentIdentity, note) : undefined
-    if (!updated)
-      // could not fetch note
-      return
-
-    setNotes(notes()!.map(n => updated.id === n.id ? updated : n))
-  }
-
-  const refreshNotes = async () => {
-    const currentIdentity = identity()
-
-    const notes = currentIdentity ? await fetchNotes(currentIdentity) : undefined
-    setNotes(notes)
+    const groups = currentIdentity ? await fetchGroups(currentIdentity) : undefined
+    setGroups(groups)
   }
 
   const refreshContent = async () => {
-    return Promise.all([
-      refreshNotes(),
-      refreshTags(),
-    ])
+    return refreshGroups()
   }
 
   const handleAppKeydown = (e: KeyboardEvent) => {
     if (e.key === 'Escape' || e.key === 'Esc') {
-      if (showNoteModal()) {
+      if (showGroupModal()) {
         // if edit modal is currently on, discard it
-        setShowNoteModal(false)
+        setShowGroupModal(false)
       } else if (filter().length > 0) {
         // if filter is set, unset it
         setFilter("")
@@ -76,28 +46,11 @@ export const App: Component = () => {
     }
   }
 
-  const updateTopTagLength = () => {
-    const ref = appRef()
-
-    if (!ref)
-      // do nothing
-      return
-
-    const width = ref.getBoundingClientRect().width
-    const newTopTagLength = Math.min(MAX_TAG_LENGTH, width) // each note = (400 content + 20 horizontal padding + 5 gap) width
-    setTopTagLength(newTopTagLength)
-  }
 
   onMount(async () => {
     refreshContent()
 
     window.addEventListener('keydown', handleAppKeydown, true)
-    window.addEventListener('resize', updateTopTagLength)
-  })
-
-  onCleanup(() => {
-    window.removeEventListener('keydown', handleAppKeydown)
-    window.removeEventListener('resize', updateTopTagLength)
   })
 
   // handle auth
@@ -113,24 +66,8 @@ export const App: Component = () => {
     navigate(import.meta.env.BASE_URL)
   }
 
-  const showModal = (note: Note | undefined) => {
-    setCurrentNote(note)
-    setShowNoteModal(true)
-  }
-
-  const onModifiedNote = (note: Note) => {
-    const promise = putNote(note, identity()!)
-
-    promise
-      // don't refresh for now
-      // .then(() => refreshNote(note))
-      .catch(() => {
-        // TODO - show error - moliva - 2023/10/11
-      })
-  }
-
-  const createNote = (note: Note) => {
-    const promise = note.id ? putNote(note, identity()!) : postNote(note, identity()!)
+  const createGroup = (group: Group) => {
+    const promise = group.id ? putGroup(group, identity()!) : postGroup(group, identity()!)
 
     promise
       .then(refreshContent)
@@ -138,56 +75,64 @@ export const App: Component = () => {
         // TODO - show error - moliva - 2023/10/11
       })
 
-    setShowNoteModal(false)
+    setShowGroupModal(false)
   }
 
-  const onDeleteNote = (note: Note): void => {
-    deleteNote(note, identity()!)
+  const onDeleteGroup = (note: Group): void => {
+    deleteGroup(note, identity()!)
       .then(refreshContent)
       .catch(() => {
         // TODO - show error - moliva - 2023/10/11
       })
   }
 
-  const onTagClicked = (tag: string): void => {
-    const currentFilter = filter()
-
-    setFilter(currentFilter === tag ? "" : tag)
+  const showModal = (note: Group | undefined) => {
+    setCurrentGroup(note)
+    setShowGroupModal(true)
   }
 
   createEffect(() => {
     const lowered = filter().toLowerCase()
-    const filtered = (notes() ?? []).filter(note => note.name.toLowerCase().includes(lowered) || note.tags.some(tag => tag.includes(lowered)))
+    const filtered = (groups() ?? []).filter(group => group.name.toLowerCase().includes(lowered))
 
-    setFilteredNotes(filtered)
+    setFilteredGroups(filtered)
   })
 
   return (
-    <div ref={setAppRef} class={styles.App}>
+    <div class={styles.App}>
       <Switch fallback={<Login />}>
         <Match when={typeof identity() !== 'undefined'}>
           <header class={styles.header}>
             <Nav identity={identity()!} filter={filter} onFilterChange={setFilter} onNewNoteClicked={() => showModal(undefined)} />
-            <Switch>
-              <Match when={typeof tags() === 'object'}>
-                <Tags tags={tags} topTagLength={topTagLength} activeTag={filter} onTagClicked={onTagClicked} />
-              </Match>
-            </Switch>
           </header>
           <main class={styles.main}>
-            <Show when={showNoteModal()}>
-              <EditNote note={currentNote()} onDiscard={() => setShowNoteModal(false)} onConfirm={createNote} />
+            <Show when={showGroupModal()}>
+              <EditGroup group={currentGroup()} onDiscard={() => setShowGroupModal(false)} onConfirm={createGroup} />
             </Show>
             <section class={styles.content}>
               <Switch fallback={<p>Loading...</p>}>
-                <Match when={typeof notes() === 'object'}>
-                  <NotesBoard notes={filteredNotes} onDelete={onDeleteNote} onEdit={showModal} onModified={onModifiedNote} onTagClicked={onTagClicked} />
+                <Match when={typeof groups() === 'object'}>
+                  {//<NotesBoard notes={filteredGroups} onDelete={onDeleteGroup} onEdit={showModal} onModified={onModifiedGroup} onTagClicked={onTagClicked} />
+                  }
+                  <div style={{ display: 'flex', "flex-direction": "column" }}>
+                    <For each={filteredGroups()}>{(group) => {
+                      return <div style={
+                        {
+                          "border": "0.1px solid white",
+                          "border-radius": "10px",
+                          padding: "15px 10px",
+                          margin: "2px",
+                          width: "200px"
+                        }
+                      }><label>{group.name}</label></div>
+                    }}</For>
+                  </div>
                 </Match>
               </Switch>
             </section>
           </main>
         </Match>
       </Switch>
-    </div>
+    </div >
   )
 }
