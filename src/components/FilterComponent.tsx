@@ -3,7 +3,7 @@ import { Accessor, createSignal, onCleanup, onMount } from 'solid-js'
 import { faEraser } from '@fortawesome/free-solid-svg-icons'
 import Fa from 'solid-fa'
 
-import noteStyles from './NoteComponent.module.css'
+import groupStyles from './GroupComponent.module.css'
 import styles from './FilterComponent.module.css'
 
 export type FilterProps = {
@@ -32,6 +32,6 @@ export const Filter = (props: FilterProps) => {
 
   return <div class={styles.filter}>
     <input ref={setInputRef} class={styles['filter-input']} value={value()} placeholder="Filter..." onChange={(ev) => onChange(ev.target.value)} />
-    <button class={`${styles['filter-button']} ${noteStyles['delete-control']}`} onClick={() => onChange("")}><Fa icon={faEraser} /></button>
+    <button class={`${styles['filter-button']} ${groupStyles['delete-control']}`} onClick={() => onChange("")}><Fa icon={faEraser} /></button>
   </div>
 }
