@@ -1,8 +1,8 @@
 import { createSignal, For, onMount, Switch, Match, Show, createEffect, onCleanup, createResource, } from 'solid-js'
 import { useNavigate, useSearchParams } from "@solidjs/router"
 
-import { IdentityState, Group, Notification } from './types'
-import { fetchNotifications as doFetchNotifications, deleteGroup, postGroup, putGroup, fetchGroups } from './services'
+import { IdentityState, Group, Notification, NotificationAction } from './types'
+import { fetchNotifications as doFetchNotifications, deleteGroup, postGroup, putGroup, fetchGroups, updateMembership } from './services'
 import { useAppContext } from './context'
 
 import { GroupComponent } from './components/GroupComponent'
@@ -71,16 +71,6 @@ export default () => {
     }
   }
 
-  onMount(async () => {
-    refreshContent()
-
-    window.addEventListener('keydown', handleAppKeydown, true)
-  })
-
-  onCleanup(() => {
-    window.removeEventListener('keydown', handleAppKeydown)
-  })
-
   // handle auth
   const [searchParams] = useSearchParams()
   const token = searchParams.login_success
@@ -117,13 +107,34 @@ export default () => {
   //     mutate(newNotifications!)
   //   }
   // })
+  onMount(async () => {
+    refreshContent()
+      const newNotifications = await refetch()
+    mutate(newNotifications!)
 
-  const onDeleteGroup = (note: Group): void => {
-    deleteGroup(note, identity()!)
+    window.addEventListener('keydown', handleAppKeydown, true)
+  })
+
+  onCleanup(() => {
+    window.removeEventListener('keydown', handleAppKeydown)
+  })
+
+
+  const onDeleteGroup = (group: Group): void => {
+    deleteGroup(group, identity()!)
       .then(refreshContent)
       .catch(() => {
         // TODO - show error - moliva - 2023/10/11
       })
+  }
+
+  const onNotificationAction = (action: NotificationAction, notification: Notification): void => {
+    updateMembership(action, notification, identity()!)
+      .then(refreshContent)
+      .catch(() => {
+        // TODO - show error - moliva - 2023/10/11
+      })
+
   }
 
   const showModal = (note: Group | undefined) => {
@@ -147,7 +158,7 @@ export default () => {
           </header>
           <main class={styles.main}>
             <Show when={showNotifications()}>
-              <NotificationsPanel notifications={notifications()!} onClose={toggleNotifications} onAction={(a, n) => console.log(a, n)} />
+              <NotificationsPanel notifications={notifications()!} onClose={toggleNotifications} onAction={onNotificationAction} />
             </Show>
             <Show when={showGroupModal()}>
               <EditGroup group={currentGroup()} onDiscard={() => setShowGroupModal(false)} onConfirm={createGroup} />
@@ -170,8 +181,6 @@ export default () => {
   )
 }
 
-export type NotificationAction = 'accept' | 'decline'
-
 export type NotificationsProps = {
   notifications: Notification[]
 
@@ -191,8 +200,8 @@ export const NotificationsPanel = (props: NotificationsProps) => {
               color: 'green', 'font-style': 'italic'
             }}>{notification.group?.name}</span></label>
             <div class={styles['notification-card-controls']}>
-              <button class={`${styles['notification-button']} ${styles.primary}`} onClick={() => props.onAction('accept', notification)}>Accept</button>
-              <button class={`${styles['notification-button']} ${styles.cancel}`} onClick={() => props.onAction('decline', notification)}>Decline</button>
+              <button class={`${styles['notification-button']} ${styles.primary}`} onClick={() => props.onAction('joined', notification)}>Accept</button>
+              <button class={`${styles['notification-button']} ${styles.cancel}`} onClick={() => props.onAction('rejected', notification)}>Decline</button>
             </div>
           </div>
 

@@ -37,8 +37,7 @@ export const Nav = (props: NavProps) => {
             {props.notifications()?.length ?? 0 > 0 ?
               <span style={{ display: 'inline-block', position: 'relative' }}>
                 <Fa class={styles['nav-icon']} icon={faBell} />
-                <Fa class={`${styles['nav-icon']} ${styles['nav-overlap']}`} icon={faCircle}
-                />
+                <Fa class={`${styles['nav-icon']} ${styles['nav-overlap']}`} icon={faCircle} />
               </span>
               : <Fa class={styles['nav-icon']} icon={faBell} />}
           </button>

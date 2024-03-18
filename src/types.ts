@@ -1,4 +1,6 @@
 
+export type NotificationAction = 'joined' | 'rejected'
+
 export type Notification = {
   group?: Group
   updated_at: string,
