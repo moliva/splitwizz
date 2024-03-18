@@ -1,8 +1,7 @@
-
 .nav {
   position: relative;
   width: 95%;
-  text-align:center;
+  text-align: center;
 }
 
 @media screen and (min-width: 800px) {
@@ -54,6 +53,10 @@
   }
 }
 
+.profile-picture {
+  border-radius: 15%;
+}
+
 .new-note:hover {
   color: lightgreen;
 }
@@ -66,6 +69,33 @@
   color: tan;
 }
 
-.profile-picture {
-  border-radius: 15%;
+.notifications:hover {
+  color: #c2b96e;
+}
+
+.nav-auth-actions {
+  flex-grow: 0;
+  flex-shrink: 0;
+
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  padding: 7px 5px;
+}
+
+.nav-auth-actions>.nav-button {
+  padding: 7px 5px;
+}
+
+.nav-overlap {
+  position: absolute;
+  border: 2px solid #282c34;
+  border-radius: 100%;
+  right: -0.2em;
+  bottom: -0.2em;
+
+  font-size: .7em;
+  color: #ca0808;
 }

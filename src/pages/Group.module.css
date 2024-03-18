@@ -1,0 +1,32 @@
+.center {
+  display: flex;
+  justify-content: center;
+}
+
+.group {
+  width: 80%;
+
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.name {
+  color: white;
+}
+
+.main {
+  width: 80%;
+  display: flex;
+  justify-content: center;
+}
+
+.actions {
+  width: 70%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.invite {
+  background-color: #458080;
+}

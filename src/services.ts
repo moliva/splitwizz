@@ -1,11 +1,35 @@
-import { Identity, Group } from "./types";
+import { Identity, Group, DetailedGroup, Notification } from "./types";
 
 export const API_HOST = import.meta.env.VITE_API_URL
+
+export async function fetchNotifications(identity: Identity): Promise<Notification[]> {
+  const res = await authentifiedFetch(`${API_HOST}/notifications`, identity!)
+
+  return await res.json() as Notification[]
+}
+
+export async function fetchGroup(identity: Identity, id: number): Promise<DetailedGroup> {
+  const res = await authentifiedFetch(`${API_HOST}/groups/${id}`, identity!)
+
+  return await res.json() as DetailedGroup
+}
 
 export async function fetchGroups(identity: Identity): Promise<Group[]> {
   const res = await authentifiedFetch(`${API_HOST}/groups`, identity!)
 
   return await res.json() as Group[]
+}
+
+export async function inviteUsers(identity: Identity, group_id: number, emails: string[]): Promise<void> {
+  const response = await authentifiedFetch(`${API_HOST}/groups/${group_id}/memberships`, identity, {
+    method: 'POST',
+    body: JSON.stringify({ emails }),
+    headers: { "Content-Type": "application/json" }
+  })
+
+  if (!response.ok) {
+    throw response
+  }
 }
 
 export async function putGroup(group: Group, identity: Identity): Promise<void> {

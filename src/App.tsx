@@ -1,16 +1,20 @@
-import { createSignal, For, type Component, onMount, Switch, Match, Show, createEffect, onCleanup } from 'solid-js'
+import { createSignal, For, type Component, onMount, Switch, Match, Show, createEffect, onCleanup, } from 'solid-js'
 import { useNavigate, useSearchParams } from "@solidjs/router"
 
 import { IdentityState, Group } from './types'
 import { deleteGroup, postGroup, putGroup, fetchGroups } from './services'
+import { useAppContext } from './context'
 
+import { GroupComponent } from './components/GroupComponent'
 import { EditGroup } from './components/EditGroupComponent'
 import { Nav } from './components/NavComponent'
 import { Login } from './components/Login'
 
 import styles from './App.module.css'
 
-export const App: Component = () => {
+export default () => {
+  const [state, setState] = useAppContext()!
+
   const [identity, setIdentity] = createSignal<IdentityState>(undefined)
 
   const [groups, setGroups] = createSignal<Group[] | undefined>(undefined)
@@ -46,7 +50,6 @@ export const App: Component = () => {
     }
   }
 
-
   onMount(async () => {
     refreshContent()
 
@@ -62,7 +65,9 @@ export const App: Component = () => {
     const decoded = atob(idToken)
     const identity = JSON.parse(decoded)
 
-    setIdentity({ identity, token })
+    const newIdentityState = { identity, token }
+    setIdentity(newIdentityState)
+    setState({ ...state(), identity: newIdentityState })
     navigate(import.meta.env.BASE_URL)
   }
 
@@ -103,7 +108,7 @@ export const App: Component = () => {
       <Switch fallback={<Login />}>
         <Match when={typeof identity() !== 'undefined'}>
           <header class={styles.header}>
-            <Nav identity={identity()!} filter={filter} onFilterChange={setFilter} onNewNoteClicked={() => showModal(undefined)} />
+            <Nav identity={identity()!} filter={filter} onFilterChange={setFilter} onNewGroupClicked={() => showModal(undefined)} />
           </header>
           <main class={styles.main}>
             <Show when={showGroupModal()}>
@@ -112,20 +117,10 @@ export const App: Component = () => {
             <section class={styles.content}>
               <Switch fallback={<p>Loading...</p>}>
                 <Match when={typeof groups() === 'object'}>
-                  {//<NotesBoard notes={filteredGroups} onDelete={onDeleteGroup} onEdit={showModal} onModified={onModifiedGroup} onTagClicked={onTagClicked} />
-                  }
                   <div style={{ display: 'flex', "flex-direction": "column" }}>
-                    <For each={filteredGroups()}>{(group) => {
-                      return <div style={
-                        {
-                          "border": "0.1px solid white",
-                          "border-radius": "10px",
-                          padding: "15px 10px",
-                          margin: "2px",
-                          width: "200px"
-                        }
-                      }><label>{group.name}</label></div>
-                    }}</For>
+                    <For each={filteredGroups()}>{(group) =>
+                      <GroupComponent group={group} />
+                    }</For>
                   </div>
                 </Match>
               </Switch>
