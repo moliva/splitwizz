@@ -1,4 +1,3 @@
-
 .App {
   width: 99%;
   margin: auto;
@@ -74,9 +73,42 @@
   font-size: 16px;
 }
 
+.notification-button {
+  border: 0;
+  border-radius: 5px;
+  padding: 7px 10px;
 
-.tags {
+  background-color: transparent;
+  cursor: pointer;
+
+  color: white;
+  font-family: var(--font-family);
+  font-size: 10px;
+}
+
+.notification-cards {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.notification-card {
+  color: white;
+  background-color: #191a1f;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.notification-card-controls {
+  margin-left: 10px;
+  display: inline-flex;
+  gap: 3px;
+}
+
+.notification-button.primary {
+  background-color: #00ac00;
+}
+
+.notification-button.cancel {
+  background-color: #ca0808;
 }
