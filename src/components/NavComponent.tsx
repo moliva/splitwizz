@@ -1,4 +1,4 @@
-import { Accessor, Resource, Show, createResource, createSignal, onCleanup, onMount } from "solid-js"
+import { Accessor, Resource } from "solid-js"
 
 import { faBell, faCircle, faPlusSquare, faUnlockKeyhole } from "@fortawesome/free-solid-svg-icons"
 import Fa from "solid-fa"
@@ -12,24 +12,17 @@ import styles from './NavComponent.module.css'
 
 export type NavProps = {
   identity: Identity
-  filter: Accessor<string>
   notifications: Resource<Notification[]>
 
-  onFilterChange(filter: string): void
-  onNewGroupClicked(): void
   onNotificationsClicked(): void
 }
 
 export const Nav = (props: NavProps) => {
-  const { identity, filter, onFilterChange, onNewGroupClicked } = props
+  const { identity } = props
 
   return <nav class={styles.nav}>
     <div class={styles['profile-card']}>
       <div class={styles['nav-app-controls']}>
-        <Filter value={filter} onChange={onFilterChange} />
-        <button class={`${appStyles.button} ${appStyles.link} ${styles['new-note']}`} onClick={onNewGroupClicked}>
-          <Fa class={styles['nav-icon']} icon={faPlusSquare} />
-        </button>
       </div>
       <div class={styles['nav-auth-controls']}>
         <div class={styles['nav-auth-actions']}>

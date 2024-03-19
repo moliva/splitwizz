@@ -22,7 +22,7 @@ export const EditGroup = (props: EditGroupProps) => {
 
   return <div class={styles.modal}>
     <div class={styles["modal-content"]}>
-      <input ref={newGroupName} class={styles['modal-name']} placeholder="Note name" value={group?.name ?? ''}></input>
+      <input ref={newGroupName} class={styles['modal-name']} placeholder="Group name" value={group?.name ?? ''}></input>
       <div class={styles['modal-controls']}>
         <button class={`${appStyles.button} ${appStyles.primary}`} onClick={() => props.onConfirm(newGroup())}>{group ? 'Edit' : 'Create'}</button>
         <button class={`${appStyles.button} ${appStyles.secondary}`} onClick={props.onDiscard}>Discard</button>

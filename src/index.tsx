@@ -1,12 +1,11 @@
 /* @refresh reload */
 import { lazy } from 'solid-js'
-import { createStore } from 'solid-js/store'
 import { render } from 'solid-js/web'
-import { Router, Routes, Route } from "@solidjs/router"
 
 import { Provider } from './context'
 
 import './index.css'
+import { Router } from '@solidjs/router'
 
 const root = document.getElementById('root')
 
@@ -17,19 +16,11 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 }
 
 const App = lazy(() => import("./App"))
-const Group = lazy(() => import("./pages/Group"))
-
-const [state, setState] = createStore({ identity: undefined, groups: {} })
 
 render(() => (
   <Provider>
     <Router>
-      <Routes>
-        <Route path={import.meta.env.BASE_URL}>
-          <Route path="/" component={App} />
-          <Route path="/groups/:id" component={Group} />
-        </Route>
-      </Routes>
+      <App />
     </Router>
   </Provider>
 ), root!)

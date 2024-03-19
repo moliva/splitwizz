@@ -1,0 +1,10 @@
+.home-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.home-controls {
+  display: flex;
+  flex-direction: row;
+}

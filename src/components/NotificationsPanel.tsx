@@ -17,6 +17,7 @@ export const NotificationsPanel = (props: NotificationsProps) => {
 
   return <div class={editGroupstyles.modal}>
     <div class={editGroupstyles["modal-content"]}>
+      <h2>Notifications</h2>
       <div class={styles['notification-cards']}>
         <For each={notifications}>{(notification) =>
           <div class={styles['notification-card']}>
