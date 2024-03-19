@@ -16,8 +16,6 @@ import editGroupstyles from './components/EditGroupComponent.module.css'
 export default () => {
   const [state, setState] = useAppContext()!
 
-  const [identity, setIdentity] = createSignal<IdentityState>(undefined)
-
   const [groups, setGroups] = createSignal<Group[] | undefined>(undefined)
   const [filter, setFilter] = createSignal("")
   const [filteredGroups, setFilteredGroups] = createSignal<Group[]>([])
@@ -31,7 +29,6 @@ export default () => {
   const navigate = useNavigate()
 
   async function fetchNotifications() {
-    const [state, setState] = useAppContext()!
     const identity = state().identity
 
     if (!identity) {
@@ -43,9 +40,8 @@ export default () => {
     return result
   }
 
-
   const refreshGroups = async () => {
-    const currentIdentity = identity()
+    const currentIdentity = state().identity!
 
     const groups = currentIdentity ? await fetchGroups(currentIdentity) : undefined
     setGroups(groups)
@@ -75,19 +71,19 @@ export default () => {
   const [searchParams] = useSearchParams()
   const token = searchParams.login_success
 
-  if (!identity() && typeof token === "string") {
+  if (!state().identity && typeof token === "string") {
     const idToken = token.split(".")[1]
     const decoded = atob(idToken)
     const identity = JSON.parse(decoded)
 
     const newIdentityState = { identity, token }
-    setIdentity(newIdentityState)
+
     setState({ ...state(), identity: newIdentityState })
     navigate(import.meta.env.BASE_URL)
   }
 
   const createGroup = (group: Group) => {
-    const promise = group.id ? putGroup(group, identity()!) : postGroup(group, identity()!)
+    const promise = group.id ? putGroup(group, state()!.identity!) : postGroup(group, state()!.identity!)
 
     promise
       .then(refreshContent)
@@ -98,30 +94,29 @@ export default () => {
     setShowGroupModal(false)
   }
 
-  const [notifications, { mutate, refetch }] = createResource(fetchNotifications);
+  const [notifications, { mutate, refetch: refetchNotifications }] = createResource(fetchNotifications);
 
-  // createEffect(async () => {
-  //   if (identity()) {
-  //     console.log("yeeeeeees")
-  //     const newNotifications = await refetch()
-  //     mutate(newNotifications!)
-  //   }
-  // })
+  let notificationsTimer: number
+
   onMount(async () => {
     refreshContent()
-      const newNotifications = await refetch()
-    mutate(newNotifications!)
+    notificationsTimer = setInterval(() => {
+      refetchNotifications()
+    }, 3000)
 
     window.addEventListener('keydown', handleAppKeydown, true)
   })
 
   onCleanup(() => {
     window.removeEventListener('keydown', handleAppKeydown)
+    if (notificationsTimer) {
+      clearInterval(notificationsTimer)
+    }
   })
 
 
   const onDeleteGroup = (group: Group): void => {
-    deleteGroup(group, identity()!)
+    deleteGroup(group, state().identity!)
       .then(refreshContent)
       .catch(() => {
         // TODO - show error - moliva - 2023/10/11
@@ -129,12 +124,11 @@ export default () => {
   }
 
   const onNotificationAction = (action: NotificationAction, notification: Notification): void => {
-    updateMembership(action, notification, identity()!)
+    updateMembership(action, notification, state().identity!)
       .then(refreshContent)
       .catch(() => {
         // TODO - show error - moliva - 2023/10/11
       })
-
   }
 
   const showModal = (note: Group | undefined) => {
@@ -152,9 +146,9 @@ export default () => {
   return (
     <div class={styles.App}>
       <Switch fallback={<Login />}>
-        <Match when={typeof identity() !== 'undefined'}>
+        <Match when={typeof state().identity !== 'undefined'}>
           <header class={styles.header}>
-            <Nav identity={identity()!} filter={filter} onFilterChange={setFilter} onNewGroupClicked={() => showModal(undefined)} onNotificationsClicked={toggleNotifications} notifications={notifications} />
+            <Nav identity={state().identity!} filter={filter} onFilterChange={setFilter} onNewGroupClicked={() => showModal(undefined)} onNotificationsClicked={toggleNotifications} notifications={notifications} />
           </header>
           <main class={styles.main}>
             <Show when={showNotifications()}>
