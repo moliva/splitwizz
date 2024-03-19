@@ -1,4 +1,4 @@
-import { For } from 'solid-js'
+import { For, createSignal, Resource } from 'solid-js'
 
 import { Notification, NotificationAction } from '../types'
 
@@ -6,27 +6,45 @@ import styles from '../App.module.css'
 import editGroupstyles from './EditGroupComponent.module.css'
 
 export type NotificationsProps = {
-  notifications: Notification[]
+  notifications: Resource<Notification[]>
 
   onClose: () => void
-  onAction: (action: NotificationAction, notification: Notification) => void
+  onAction: (action: NotificationAction, notification: Notification) => Promise<void>
 }
 
 export const NotificationsPanel = (props: NotificationsProps) => {
   const { notifications } = props
 
+  const [wip, setWip] = createSignal(Object.fromEntries(notifications()!.map((n: Notification) => ([n.group!.id!, false]))))
+
+  const onAction = (action: NotificationAction, notification: Notification) => async () => {
+    setWip({ ...wip(), [notification.group!.id!]: true })
+
+    await props.onAction(action, notification)
+    setWip({ ...wip(), [notification.group!.id!]: false })
+  }
+
   return <div class={editGroupstyles.modal}>
     <div class={editGroupstyles["modal-content"]}>
       <h2>Notifications</h2>
       <div class={styles['notification-cards']}>
-        <For each={notifications}>{(notification) =>
+        <For each={notifications()}>{(notification) =>
           <div class={styles['notification-card']}>
             <label>You've been invited to group <span style={{
               color: 'green', 'font-style': 'italic'
             }}>{notification.group?.name}</span></label>
             <div class={styles['notification-card-controls']}>
-              <button class={`${styles['notification-button']} ${styles.primary}`} onClick={() => props.onAction('joined', notification)}>Accept</button>
-              <button class={`${styles['notification-button']} ${styles.cancel}`} onClick={() => props.onAction('rejected', notification)}>Decline</button>
+              {wip()[notification.group!.id!]
+                ? <span style={{ 'font-style': 'oblique' }}>loading...</span>
+                : <>
+                  <button class={`${styles['notification-button']} ${styles.primary}`} onClick={onAction('joined', notification)}>
+                    Accept
+                  </button>
+                  <button class={`${styles['notification-button']} ${styles.cancel}`} onClick={onAction('rejected', notification)}>
+                    Decline
+                  </button>
+                </>
+              }
             </div>
           </div>
 

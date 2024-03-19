@@ -1,11 +1,9 @@
-import { Accessor, Resource } from "solid-js"
+import { Resource } from "solid-js"
 
-import { faBell, faCircle, faPlusSquare, faUnlockKeyhole } from "@fortawesome/free-solid-svg-icons"
+import { faBell, faCircle, faUnlockKeyhole } from "@fortawesome/free-solid-svg-icons"
 import Fa from "solid-fa"
 
 import { Identity, Notification } from "../types"
-
-import { Filter } from "./FilterComponent"
 
 import appStyles from '../App.module.css'
 import styles from './NavComponent.module.css'

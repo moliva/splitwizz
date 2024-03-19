@@ -61,7 +61,7 @@ export default () => {
     navigate(import.meta.env.BASE_URL)
   }
 
-  const [notifications, { refetch: refetchNotifications }] = createResource(fetchNotifications);
+  const [notifications, { mutate: setNotifications, refetch: refetchNotifications }] = createResource(fetchNotifications);
 
   let notificationsTimer: number
 
@@ -81,30 +81,34 @@ export default () => {
     }
   })
 
-  const onNotificationAction = (action: NotificationAction, notification: Notification): void => {
-    updateMembership(action, notification, state().identity!)
-      .then(() => {
-        if (action === 'joined') {
-          const group = notification.group!
-          const currentState = state()
+  const onNotificationAction = async (action: NotificationAction, notification: Notification): Promise<void> => {
+    try {
+      await updateMembership(action, notification, state().identity!)
+      if (action === 'joined') {
+        const group = notification.group!
+        const currentState = state()
 
-          const newState = {
-            ...currentState,
-            groups: {
-              ...currentState.groups,
-              [group.id!]: {
-                // ...currentState.groups[group.id!], // write new instead of merge
-                ...group
-              }
+        const newState = {
+          ...currentState,
+          groups: {
+            ...currentState.groups,
+            [group.id!]: {
+              // ...currentState.groups[group.id!], // write new instead of merge
+              ...group
             }
           }
-
-          setState(newState)
         }
-      })
-      .catch(() => {
-        // TODO - show error - moliva - 2023/10/11
-      })
+
+        setState(newState)
+      }
+
+      const ns = [...notifications()!]
+      const index = ns.indexOf(notification)
+      ns.splice(index, 1)
+      setNotifications(ns)
+    } catch {
+      // TODO - show error - moliva - 2023/10/11
+    }
   }
 
   return (
@@ -116,7 +120,7 @@ export default () => {
           </header>
           <main class={styles.main}>
             <Show when={showNotifications()}>
-              <NotificationsPanel notifications={notifications()!} onClose={toggleNotifications} onAction={onNotificationAction} />
+              <NotificationsPanel notifications={notifications} onClose={toggleNotifications} onAction={onNotificationAction} />
             </Show>
             <section class={styles.content}>
               <Routes>
