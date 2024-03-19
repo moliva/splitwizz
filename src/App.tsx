@@ -61,7 +61,7 @@ export default () => {
     navigate(import.meta.env.BASE_URL)
   }
 
-  const [notifications, { mutate, refetch: refetchNotifications }] = createResource(fetchNotifications);
+  const [notifications, { refetch: refetchNotifications }] = createResource(fetchNotifications);
 
   let notificationsTimer: number
 

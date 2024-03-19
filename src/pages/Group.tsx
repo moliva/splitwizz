@@ -22,8 +22,6 @@ async function fetchGroupData(id: string): Promise<Group> {
     throw 'not authentified!'
   }
 
-  const g = '{"id":2,"name":"kakaraka","created_at":"2024-03-11T03:16:46.320955Z","creator":{"id":"373153e2-6c5c-4ae5-a628-261ba1d50876","name":"Miguel Oliva","email":"oliva.miguelh@gmail.com","picture":"https://lh3.googleusercontent.com/a/ACg8ocIv1JZPyP8hM8RSiHXQpqGXwrGgPbCzoVjwNUtmaVDeXrp_=s96-c"},"members":[{"user":{"id":"373153e2-6c5c-4ae5-a628-261ba1d50876","name":"Miguel Oliva","email":"oliva.miguelh@gmail.com","picture":"https://lh3.googleusercontent.com/a/ACg8ocIv1JZPyP8hM8RSiHXQpqGXwrGgPbCzoVjwNUtmaVDeXrp_=s96-c"},"status":"Joined","status_updated_at":"2024-03-11T03:16:46.331345Z"}]}'
-
   const result = await fetchGroup(identity!, Number(id))
   setState({ ...state(), groups: { ...state().groups, [id]: result } })
 
@@ -32,9 +30,9 @@ async function fetchGroupData(id: string): Promise<Group> {
 
 export default () => {
   const params = useParams()
-  const [group, { mutate, refetch }] = createResource(params.id, fetchGroupData);
+  const [group] = createResource(params.id, fetchGroupData);
 
-  const [state, setState] = useAppContext()!
+  const [state] = useAppContext()!
 
   const [showInviteModal, setShowInviteModal] = createSignal(false)
 

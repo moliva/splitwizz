@@ -1,4 +1,4 @@
-import { For, createSignal, onMount, Switch, Match, Show, onCleanup, } from 'solid-js'
+import { For, createSignal, onMount, Switch, Match, Show, onCleanup, createEffect, } from 'solid-js'
 
 import Fa from 'solid-fa'
 import { faPlusSquare } from '@fortawesome/free-solid-svg-icons'
@@ -23,6 +23,7 @@ export default (props: HomeProps) => {
   const [groups, setGroups] = createSignal<Group[] | undefined>(undefined)
 
   const [filter, setFilter] = createSignal<string>("")
+  const [filteredGroups, setFilteredGroups] = createSignal<Group[]>([])
 
   const [showGroupModal, setShowGroupModal] = createSignal(false)
   const [currentGroup, setCurrentGroup] = createSignal<Group | undefined>(undefined)
@@ -37,7 +38,7 @@ export default (props: HomeProps) => {
       ...state(),
       groups: {
         ...state().groups,
-        
+
       }
     })
   }
@@ -95,13 +96,16 @@ export default (props: HomeProps) => {
     setShowGroupModal(true)
   }
 
-  const onFilterChange = () => {
-
-  }
-
   const onNewGroupClicked = () => {
     showModal(undefined)
   }
+
+  createEffect(() => {
+    const lowered = filter().toLowerCase()
+    const filtered = (groups() ?? []).filter(group => group.name.toLowerCase().includes(lowered))
+
+    setFilteredGroups(filtered)
+  })
 
   return <>
     <Show when={showGroupModal()}>
@@ -111,13 +115,13 @@ export default (props: HomeProps) => {
       <Match when={typeof groups() === 'object'}>
         <div class={styles['home-content']}>
           <div class={styles['home-controls']}>
-            <Filter value={filter} onChange={onFilterChange} />
+            <Filter value={filter} onChange={setFilter} />
             <button class={`${appStyles.button} ${appStyles.link} ${appStyles['new-note']}`} onClick={onNewGroupClicked}>
               <Fa class={appStyles['nav-icon']} icon={faPlusSquare} />
             </button>
           </div>
           <div>
-            <For each={groups()}>{(group) =>
+            <For each={filteredGroups()}>{(group) =>
               <GroupComponent group={group} />
             }</For>
           </div>
