@@ -1,10 +1,10 @@
 import { lazy } from 'solid-js'
-import { Router, Routes, Route } from "@solidjs/router"
-import { createSignal, onMount, Switch, Match, Show, createEffect, onCleanup, createResource, } from 'solid-js'
+import { Routes, Route } from "@solidjs/router"
+import { createSignal, onMount, Switch, Match, Show, onCleanup, createResource, } from 'solid-js'
 import { useNavigate, useSearchParams } from "@solidjs/router"
 
-import { Group, Notification, NotificationAction } from './types'
-import { fetchNotifications as doFetchNotifications, deleteGroup, postGroup, putGroup, fetchGroups, updateMembership } from './services'
+import { Notification, NotificationAction } from './types'
+import { fetchNotifications as doFetchNotifications, updateMembership } from './services'
 import { useAppContext } from './context'
 
 import { Nav } from './components/NavComponent'
@@ -13,8 +13,7 @@ import { NotificationsPanel } from './components/NotificationsPanel'
 
 import styles from './App.module.css'
 
-const Home = lazy(() => import("./Home"))
-
+const Home = lazy(() => import("./pages/Home"))
 const GroupPage = lazy(() => import("./pages/Group"))
 
 export default () => {

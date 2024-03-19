@@ -3,16 +3,16 @@ import { For, createSignal, onMount, Switch, Match, Show, onCleanup, } from 'sol
 import Fa from 'solid-fa'
 import { faPlusSquare } from '@fortawesome/free-solid-svg-icons'
 
-import { Group } from './types'
-import { deleteGroup, postGroup, putGroup, fetchGroups } from './services'
-import { useAppContext } from './context'
+import { Group } from '../types'
+import { deleteGroup, postGroup, putGroup, fetchGroups } from '../services'
+import { useAppContext } from '../context'
 
-import { Filter } from './components/FilterComponent'
-import { EditGroup } from './components/EditGroupComponent'
-import { GroupComponent } from './components/GroupComponent'
+import { Filter } from '../components/FilterComponent'
+import { EditGroup } from '../components/EditGroupComponent'
+import { GroupComponent } from '../components/GroupComponent'
 
 import styles from './Home.module.css'
-import appStyles from './App.module.css'
+import appStyles from '../App.module.css'
 
 export type HomeProps = {
 
