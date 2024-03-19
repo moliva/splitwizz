@@ -20,7 +20,6 @@ export type HomeProps = {
 
 export default (props: HomeProps) => {
   const [state, setState] = useAppContext()!
-  const [groups, setGroups] = createSignal<Group[] | undefined>(undefined)
 
   const [filter, setFilter] = createSignal<string>("")
   const [filteredGroups, setFilteredGroups] = createSignal<Group[]>([])
@@ -32,15 +31,22 @@ export default (props: HomeProps) => {
     const currentIdentity = state().identity!
 
     const groups = currentIdentity ? await fetchGroups(currentIdentity) : undefined
-    // TODO - refresh state of groups - moliva - 2024/03/19
-    setGroups(groups)
-    setState({
+
+    const newState = {
       ...state(),
       groups: {
         ...state().groups,
-
       }
-    })
+    }
+
+    for (const g of groups ?? []) {
+      newState.groups[g!.id!] = {
+        ...newState.groups[g!.id!] ?? {},
+        ...g
+      }
+    }
+
+    setState(newState)
   }
 
   const refreshContent = async () => {
@@ -102,7 +108,7 @@ export default (props: HomeProps) => {
 
   createEffect(() => {
     const lowered = filter().toLowerCase()
-    const filtered = (groups() ?? []).filter(group => group.name.toLowerCase().includes(lowered))
+    const filtered = (Object.values(state().groups) ?? []).filter(group => group.name.toLowerCase().includes(lowered))
 
     setFilteredGroups(filtered)
   })
@@ -112,11 +118,11 @@ export default (props: HomeProps) => {
       <EditGroup group={currentGroup()} onDiscard={() => setShowGroupModal(false)} onConfirm={createGroup} />
     </Show>
     <Switch fallback={<p>Loading...</p>}>
-      <Match when={typeof groups() === 'object'}>
+      <Match when={typeof state().groups === 'object'}>
         <div class={styles['home-content']}>
           <div class={styles['home-controls']}>
             <Filter value={filter} onChange={setFilter} />
-            <button class={`${appStyles.button} ${appStyles.link} ${appStyles['new-note']}`} onClick={onNewGroupClicked}>
+            <button class={`${appStyles.button} ${appStyles.link} ${styles['new-group']}`} onClick={onNewGroupClicked}>
               <Fa class={appStyles['nav-icon']} icon={faPlusSquare} />
             </button>
           </div>

@@ -83,7 +83,25 @@ export default () => {
 
   const onNotificationAction = (action: NotificationAction, notification: Notification): void => {
     updateMembership(action, notification, state().identity!)
-      // .then(refreshContent)
+      .then(() => {
+        if (action === 'joined') {
+          const group = notification.group!
+          const currentState = state()
+
+          const newState = {
+            ...currentState,
+            groups: {
+              ...currentState.groups,
+              [group.id!]: {
+                // ...currentState.groups[group.id!], // write new instead of merge
+                ...group
+              }
+            }
+          }
+
+          setState(newState)
+        }
+      })
       .catch(() => {
         // TODO - show error - moliva - 2023/10/11
       })
@@ -101,7 +119,6 @@ export default () => {
               <NotificationsPanel notifications={notifications()!} onClose={toggleNotifications} onAction={onNotificationAction} />
             </Show>
             <section class={styles.content}>
-
               <Routes>
                 <Route path={import.meta.env.BASE_URL}>
                   <Route path="/" component={Home} />
