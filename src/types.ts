@@ -40,7 +40,7 @@ export type DetailedGroup = Group & {
 }
 
 export type Identity = {
-  identity: any
+  identity: { name: string, picture: string, email: string }
   token: string
 }
 

@@ -1,4 +1,5 @@
 import { For } from 'solid-js'
+import { MultiSelect } from '@digichanges/solid-multiselect'
 
 import { DetailedGroup } from '../types'
 import { useAppContext } from '../context'
@@ -27,27 +28,24 @@ export const ExpenseModal = (props: ExpenseProps) => {
 
   const dateString = new Date().toISOString()
   const date = dateString.substring(0, dateString.indexOf('.'))
+  const members = group.members.filter(m => m.status === 'joined')
+  const users = members.map(m => m.user)
+  const me = members.filter(m => m.user.email === state().identity?.identity.email).map(m => m.user)
 
   return <div class={editGroupStyles.modal}>
     <div class={editGroupStyles["modal-content"]}>
       <label class={editGroupStyles["modal-title"]}>New expense in <span class={appStyles['group-name']}>{group.name}</span></label>
       <input ref={descriptionRef} placeholder="Description"></input>
-      <select ref={payerRef}>
-        <For each={group.members.filter(m => m.status == 'joined').map(m => m.user)}>{(member) => (
-          <option value={member.id}>{member.email}</option>
-          // TODO - look for a way to add a select with images and multiselect (for the split part) - moliva - 2024/03/20
-          // <option value={member.id}>
-          //   <img
-          //     class={`${navStyles['profile-picture']} ${navStyles.tiny}`}
-          //     src={member.picture}
-          //     title={member.name}
-          //     crossOrigin="anonymous"
-          //     referrerPolicy="no-referrer"
-          //     alt="profile"
-          //   />
-          //   {member.email}</option>
-        )}</For>
-      </select>
+      <MultiSelect
+        options={users}
+        isObject
+        displayValue="email"
+        selectedValues={me}
+        selectionLimit={1}
+        style={{
+          optionContainer: { 'background-color': '#282c34' }
+        }}
+      />
       <div style={{ display: 'inline-flex' }}>
         <select ref={currencyRef}>
           <For each={state().currencies}>{(currency) => (
