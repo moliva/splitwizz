@@ -6,6 +6,7 @@ import { Group } from "../types"
 import { useAppContext } from "../context"
 
 import { InviteModal } from "../components/InviteModal"
+import { ExpenseModal } from "../components/ExpenseModal"
 
 import appStyles from '../App.module.css'
 import styles from './Group.module.css'
@@ -35,6 +36,8 @@ export default () => {
   const [state] = useAppContext()!
 
   const [showInviteModal, setShowInviteModal] = createSignal(false)
+  const [showExpenseModal, setShowExpenseModal] = createSignal(false)
+  const [currentExpense, setCurrentExpense] = createSignal<string | undefined>() // this will use a `Expense` type
 
   const onInviteConfirm = (email: string) => {
     setShowInviteModal(false)
@@ -48,10 +51,23 @@ export default () => {
     doInviteUsers(identity!, group()!.id!, [email])
   }
 
+  const onExpenseConfirm = () => {
+    closeExpenseModal()
+
+  }
+
+  const closeExpenseModal = () => {
+    setShowExpenseModal(false)
+    setCurrentExpense(undefined)
+  }
+
   return <div class={styles.center}>
 
     <Show when={showInviteModal()}>
       <InviteModal onConfirm={onInviteConfirm} onDiscard={() => setShowInviteModal(false)} />
+    </Show>
+    <Show when={showExpenseModal()}>
+      <ExpenseModal onConfirm={onExpenseConfirm} onDiscard={closeExpenseModal} />
     </Show>
     <div class={styles.group}>
       {group.loading && <div>Loading!</div>}
@@ -65,6 +81,7 @@ export default () => {
           </div>
           <div class={styles.actions}>
             <button class={`${appStyles.button} ${styles.invite}`} onClick={() => setShowInviteModal(true)}>Invite</button>
+            <button class={`${appStyles.button} ${styles.expense}`} onClick={() => setShowExpenseModal(true)}>Expense</button>
           </div>
         </>
       )}

@@ -26,6 +26,11 @@
   width: 70%;
   display: flex;
   justify-content: flex-end;
+  gap: 5px;
+}
+
+.expense {
+  background-color: #3c963c;
 }
 
 .invite {
