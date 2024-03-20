@@ -42,6 +42,8 @@ export const ExpenseModal = (props: ExpenseProps) => {
         displayValue="email"
         selectedValues={me}
         selectionLimit={1}
+        hidePlaceholder={true}
+        placeholder="Who's paying"
         style={{
           optionContainer: { 'background-color': '#282c34' }
         }}
