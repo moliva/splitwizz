@@ -1,0 +1,10 @@
+.select-user-option {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  line-height: 10px;
+}
+
+.tiny {
+  max-height: 30px;
+}
