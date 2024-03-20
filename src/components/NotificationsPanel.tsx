@@ -30,9 +30,7 @@ export const NotificationsPanel = (props: NotificationsProps) => {
       <div class={styles['notification-cards']}>
         <For each={notifications()}>{(notification) =>
           <div class={styles['notification-card']}>
-            <label>You've been invited to group <span style={{
-              color: 'green', 'font-style': 'italic'
-            }}>{notification.group?.name}</span></label>
+            <label>You've been invited to group <span class={styles['group-name']}>{notification.group?.name}</span></label>
             <div class={styles['notification-card-controls']}>
               {wip()[notification.group!.id!]
                 ? <span style={{ 'font-style': 'oblique' }}>loading...</span>

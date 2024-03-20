@@ -112,3 +112,8 @@
 .notification-button.cancel {
   background-color: #ca0808;
 }
+
+.group-name {
+  color: green;
+  font-style: italic
+}

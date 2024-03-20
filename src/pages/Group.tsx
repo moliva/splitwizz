@@ -2,7 +2,7 @@ import { useParams } from "@solidjs/router"
 import { Show, createResource, createSignal } from "solid-js"
 
 import { fetchGroup, inviteUsers as doInviteUsers } from "../services"
-import { Group } from "../types"
+import { DetailedGroup } from "../types"
 import { useAppContext } from "../context"
 
 import { InviteModal } from "../components/InviteModal"
@@ -11,12 +11,16 @@ import { ExpenseModal } from "../components/ExpenseModal"
 import appStyles from '../App.module.css'
 import styles from './Group.module.css'
 
-async function fetchGroupData(id: string): Promise<Group> {
+async function fetchGroupData(id: string): Promise<DetailedGroup> {
   const [state, setState] = useAppContext()!
+
   const group = state().groups[id]
-  if (group) {
+
+  // check if we currently have the group loaded with detailed fields as well or force fetch
+  if (group?.members) {
     return group
   }
+
   const identity = state().identity
 
   if (!identity) {
@@ -31,6 +35,7 @@ async function fetchGroupData(id: string): Promise<Group> {
 
 export default () => {
   const params = useParams()
+
   const [group] = createResource(params.id, fetchGroupData);
 
   const [state] = useAppContext()!
@@ -67,7 +72,7 @@ export default () => {
       <InviteModal onConfirm={onInviteConfirm} onDiscard={() => setShowInviteModal(false)} />
     </Show>
     <Show when={showExpenseModal()}>
-      <ExpenseModal onConfirm={onExpenseConfirm} onDiscard={closeExpenseModal} />
+      <ExpenseModal group={group()!} onConfirm={onExpenseConfirm} onDiscard={closeExpenseModal} />
     </Show>
     <div class={styles.group}>
       {group.loading && <div>Loading!</div>}

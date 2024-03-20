@@ -1,10 +1,10 @@
-import { lazy } from 'solid-js'
+import { createEffect, lazy } from 'solid-js'
 import { Routes, Route } from "@solidjs/router"
 import { createSignal, onMount, Switch, Match, Show, onCleanup, createResource, } from 'solid-js'
 import { useNavigate, useSearchParams } from "@solidjs/router"
 
 import { Notification, NotificationAction } from './types'
-import { fetchNotifications as doFetchNotifications, updateMembership } from './services'
+import { fetchCurrencies as doFetchCurrencies, fetchNotifications as doFetchNotifications, updateMembership } from './services'
 import { useAppContext } from './context'
 
 import { Nav } from './components/NavComponent'
@@ -17,7 +17,7 @@ const Home = lazy(() => import("./pages/Home"))
 const GroupPage = lazy(() => import("./pages/Group"))
 
 export default () => {
-  const [state, setState] = useAppContext()!
+  const [state, setState] = useAppContext()
 
   const [showNotifications, setShowNotifications] = createSignal(false)
   const toggleNotifications = () => setShowNotifications(!showNotifications())
@@ -61,6 +61,23 @@ export default () => {
     navigate(import.meta.env.BASE_URL)
   }
 
+  createEffect(async (alreadyFetched) => {
+    if (alreadyFetched) return
+
+    const identity = state().identity
+
+    if (identity) {
+
+      const currencies = await doFetchCurrencies(identity!)
+      setState({ ...state(), currencies })
+
+      return true
+    }
+
+    return false
+
+  }, false)
+
   const [notifications, { mutate: setNotifications, refetch: refetchNotifications }] = createResource(fetchNotifications);
 
   let notificationsTimer: number
@@ -69,7 +86,7 @@ export default () => {
 
     notificationsTimer = setInterval(() => {
       refetchNotifications()
-    }, 3000)
+    }, 60000)
 
     window.addEventListener('keydown', handleAppKeydown, true)
   })

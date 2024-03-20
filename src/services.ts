@@ -1,4 +1,4 @@
-import { Identity, Group, DetailedGroup, Notification, NotificationAction } from "./types";
+import { Identity, Group, Currency, DetailedGroup, Notification, NotificationAction } from "./types";
 
 export const API_HOST = import.meta.env.VITE_API_URL
 
@@ -8,6 +8,12 @@ export async function updateMembership(status: NotificationAction, notification:
     body: JSON.stringify({ status }),
     headers: { "Content-Type": "application/json" }
   })
+}
+
+export async function fetchCurrencies(identity: Identity): Promise<Currency[]> {
+  const res = await authentifiedFetch(`${API_HOST}/currencies`, identity!)
+
+  return await res.json() as Currency[]
 }
 
 export async function fetchNotifications(identity: Identity): Promise<Notification[]> {

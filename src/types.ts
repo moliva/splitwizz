@@ -1,5 +1,12 @@
 
+export type Currency = {
+  id: number
+  acronym: string
+  description: string
+}
+
 export type NotificationAction = 'joined' | 'rejected'
+export type MembershipStatus = 'joined' | 'rejected' | 'pending'
 
 export type Notification = {
   group?: Group
@@ -12,8 +19,24 @@ export type Group = {
   created_at: string | undefined
 }
 
+export type UserStatus = 'active' | 'inactive'
+
+export type User = {
+  id: string,
+  email: string,
+  status: UserStatus,
+  name: string,
+  picture: string,
+}
+
+export type Membership = {
+  user: User,
+  status: MembershipStatus,
+}
+
 export type DetailedGroup = Group & {
-  // other stuff
+  creator: User
+  members: Membership[]
 }
 
 export type Identity = {
