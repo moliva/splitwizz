@@ -58,7 +58,7 @@ export const ExpenseModal = (props: ExpenseProps) => {
       </div>
       <input ref={dateRef} placeholder="Date" type="datetime-local" value={date}></input>
       <input ref={splitStrategyRef} placeholder="Split by"></input>
-      <div class={editGroupStyles['modal- controls']}>
+      <div class={editGroupStyles['modal-controls']}>
         <button class={`${appStyles.button} ${appStyles.primary}`} onClick={onConfirm}>Invite</button>
         <button class={`${appStyles.button} ${appStyles.secondary}`} onClick={onDiscard}>Cancel</button>
       </div>
