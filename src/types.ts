@@ -5,6 +5,33 @@ export type Currency = {
   description: string
 }
 
+export type UserId = string
+
+export type EquallySplitStrategy = {
+  kind: 'equally'
+  payer: UserId,
+  split_between: UserId[],
+}
+
+export type SplitStrategy = EquallySplitStrategy
+
+export type Expense = {
+  id?: number
+  group_id?: number
+
+  description: string
+  currency_id: number
+  amount: number
+  date: string
+  split_strategy: SplitStrategy
+
+  created_id?: UserId
+  created_at?: string 
+
+  updated_id?: UserId
+  updated_at?: string
+}
+
 export type NotificationAction = 'joined' | 'rejected'
 export type MembershipStatus = 'joined' | 'rejected' | 'pending'
 

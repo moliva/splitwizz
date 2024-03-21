@@ -2,7 +2,7 @@ import { useParams } from "@solidjs/router"
 import { Show, createResource, createSignal } from "solid-js"
 
 import { fetchGroup, inviteUsers as doInviteUsers } from "../services"
-import { DetailedGroup } from "../types"
+import { DetailedGroup, Expense } from "../types"
 import { useAppContext } from "../context"
 
 import { InviteModal } from "../components/InviteModal"
@@ -56,8 +56,9 @@ export default () => {
     doInviteUsers(identity!, group()!.id!, [email])
   }
 
-  const onExpenseConfirm = () => {
-    closeExpenseModal()
+  const onExpenseConfirm = (expense: Expense) => {
+    // closeExpenseModal()
+    console.info(expense)
 
   }
 
