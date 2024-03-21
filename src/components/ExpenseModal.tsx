@@ -1,4 +1,4 @@
-import { For, createSignal } from 'solid-js'
+import { For, createEffect, createSignal } from 'solid-js'
 import { MultiSelect, Ref } from '@digichanges/solid-multiselect'
 
 import { User, DetailedGroup, Expense } from '../types'
@@ -22,9 +22,27 @@ export const ExpenseModal = (props: ExpenseModalProps) => {
   const [payerRef, setPayerRef] = createSignal<Ref | undefined>()
   const [splitBetweenRef, setSplitBetweenRef] = createSignal<Ref | undefined>()
 
+  const [isConfirmDisabled, setConfirmDisabled] = createSignal(true)
+
   const { onDiscard, group } = props
 
-  let descriptionRef, currencyRef, amountRef, dateRef
+  // TODO - fix types - moliva - 2024/03/21
+  let descriptionRef: any, currencyRef, amountRef: any, dateRef: any
+
+  const checkConfirm = () => {
+    // TODO - on change of multiselect not working when dleeting or adding elements - moliva - 2024/03/21
+    // on select and on remove do not work with the values field
+    console.info(payerRef()?.values())
+    console.info(dateRef?.value)
+    const newValue = (descriptionRef?.value?.length ?? 0) === 0 ||
+      (amountRef?.value ?? '') === '' ||
+      (dateRef?.value ?? '') === '' ||
+      payerRef()?.values()?.length === 0 ||
+      splitBetweenRef()?.values()?.length === 0
+
+    setConfirmDisabled(newValue)
+
+  }
 
   const onConfirm = () => {
     if (payerRef().values.len === 0) {
@@ -55,21 +73,25 @@ export const ExpenseModal = (props: ExpenseModalProps) => {
 
 
   return <div class={editGroupStyles.modal}>
-    <div class={editGroupStyles["modal-content"]}>
-      <label class={editGroupStyles["modal-title"]}>New expense in <span class={appStyles['group-name']}>{group.name}</span></label>
-      <input ref={descriptionRef} placeholder="Description"></input>
-      <div style={{ display: 'inline-flex', 'margin-bottom': '50px' }}>
-        <select ref={currencyRef}>
+    <div class={editGroupStyles["modal-content"]} style={{ "max-width": "400px" }}>
+      <label class={editGroupStyles["modal-title"]}>New expense in <span class={styles['group-name']}>{group.name}</span></label>
+      <div style={{ display: 'flex', "align-items": 'center' }}>
+        <input style={{ "flex-grow": 1 }} onChange={checkConfirm} ref={descriptionRef} placeholder="Description"></input>
+        <input ref={dateRef} placeholder="Date" onChange={checkConfirm} type="datetime-local" value={date}></input>
+      </div>
+      <div style={{ display: 'inline-flex', 'margin-bottom': '20px' }}>
+        <select class={styles['currency-select']} ref={currencyRef}>
           <For each={Object.values(state().currencies)}>{(currency) => (
             <option value={currency.id} title={currency.description}>{currency.acronym}</option>
           )}</For>
         </select>
-        <input ref={amountRef} placeholder="0.00" type="number"></input>
+        <input style={{ "flex-grow": 1 }} ref={amountRef} onChange={checkConfirm} placeholder="0.00" type="number"></input>
       </div>
-      <input ref={dateRef} placeholder="Date" type="datetime-local" value={date}></input>
-      <div style={{ display: "inline-flex", "align-items": "center", gap: "10px" }}>
-        <label style={{ "text-wrap": "nowrap" }}>Paid by</label>
+      <div style={{ display: "flex", "flex-direction": "column" }}>
+        <label style={{ "text-wrap": "nowrap", "font-size": "14px" }}>Paid by</label>
         <MultiSelect
+          onSelect={checkConfirm}
+          onRemove={checkConfirm}
           ref={setPayerRef}
           options={users}
           isObject
@@ -95,10 +117,10 @@ export const ExpenseModal = (props: ExpenseModalProps) => {
             option: { display: 'flex', 'align-items': 'center', 'height': '40px', margin: '0', padding: '0 10px' }
           }}
         />
-      </div>
-      <div style={{ display: "block" }}>
-        <label style={{ "text-wrap": "nowrap", "margin-bottom": '5px' }}>Split equally between</label>
+        <label style={{ "text-wrap": "nowrap", "margin-top": '10px', "font-size": "14px" }}>Split equally between</label>
         <MultiSelect
+          onSelect={checkConfirm}
+          onRemove={checkConfirm}
           ref={setSplitBetweenRef}
           options={users}
           isObject
@@ -125,7 +147,7 @@ export const ExpenseModal = (props: ExpenseModalProps) => {
         />
       </div>
       <div class={editGroupStyles['modal-controls']}>
-        <button class={`${appStyles.button} ${appStyles.primary}`} onClick={onConfirm}>Create</button>
+        <button class={`${appStyles.button} ${appStyles.primary}`} onClick={onConfirm} disabled={isConfirmDisabled()}>Create</button>
         <button class={`${appStyles.button} ${appStyles.secondary}`} onClick={onDiscard}>Discard</button>
       </div>
     </div>

@@ -8,3 +8,35 @@
 .tiny {
   max-height: 30px;
 }
+
+
+.group-name {
+  color: #00ac00;
+  font-style: italic
+}
+
+select.currency-select {
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  cursor: pointer;
+
+  margin-right: 5px;
+  font-weight: bold;
+  padding: 3px 5px;
+  background-color: transparent;
+  color: white;
+}
+
+input[type="datetime-local"]::-webkit-inner-spin-button,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  /* display: none;
+    -webkit-appearance: none; */
+  margin: 0;
+  cursor: pointer;
+  color-scheme: dark;
+  font-size: 20px;
+}
+
+input[type="datetime-local"]::-webkit-datetime-edit {
+  display: none;
+}
