@@ -1,4 +1,4 @@
-import { Identity, Group, Currency, DetailedGroup, Notification, NotificationAction } from "./types";
+import { Identity, Group, Currency, DetailedGroup, Notification, NotificationAction, Expense } from "./types";
 
 export const API_HOST = import.meta.env.VITE_API_URL
 
@@ -38,6 +38,30 @@ export async function inviteUsers(identity: Identity, group_id: number, emails: 
   const response = await authentifiedFetch(`${API_HOST}/groups/${group_id}/memberships`, identity, {
     method: 'POST',
     body: JSON.stringify({ emails }),
+    headers: { "Content-Type": "application/json" }
+  })
+
+  if (!response.ok) {
+    throw response
+  }
+}
+
+export async function putExpense(expense: Expense, groupId: number, identity: Identity): Promise<void> {
+  const response = await authentifiedFetch(`${API_HOST}/groups/${expense.group_id}/expenses/${expense.id}`, identity, {
+    method: 'PUT',
+    body: JSON.stringify(expense),
+    headers: { "Content-Type": "application/json" }
+  })
+
+  if (!response.ok) {
+    throw response
+  }
+}
+
+export async function postExpense(expense: Expense, groupId: number, identity: Identity): Promise<void> {
+  const response = await authentifiedFetch(`${API_HOST}/groups/${groupId}/expenses`, identity, {
+    method: 'POST',
+    body: JSON.stringify(expense),
     headers: { "Content-Type": "application/json" }
   })
 
