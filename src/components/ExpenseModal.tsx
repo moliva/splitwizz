@@ -79,61 +79,23 @@ export const ExpenseModal = (props: ExpenseModalProps) => {
       </div>
       <div style={{ display: "flex", "flex-direction": "column" }}>
         <label class={styles['user-select-label']}>Paid by</label>
-        <MultiSelect
-          onSelect={checkConfirm}
-          onRemove={checkConfirm}
-          ref={setPayerRef}
-          options={users}
-          isObject
-          displayValue="email"
-          renderValue={(member: User) => <div class={styles['select-user-option']}>
-            <img
-              class={`${navStyles['profile-picture']} ${styles.tiny}`}
-              src={member.picture}
-              title={member.email}
-              crossOrigin="anonymous"
-              referrerPolicy="no-referrer"
-              alt="profile"
-            />
-            <span>{member.name}</span>
-          </div>}
-          selectedValues={me}
-          selectionLimit={1}
-          hidePlaceholder={true}
+        <UserSelect
+          onChange={checkConfirm}
+          ref={payerRef}
+          users={users}
+          initialSelection={me}
           placeholder="Who's paying"
           closeOnSelect={true}
-          style={{
-            optionContainer: { 'background-color': '#282c34' },
-            option: { display: 'flex', 'align-items': 'center', 'height': '40px', margin: '0', padding: '0 10px' }
-          }}
+          selectionLimit={1}
         />
         <label class={styles['user-select-label']} style={{ "margin-top": '10px' }}>Split equally between</label>
-        <MultiSelect
-          onSelect={checkConfirm}
-          onRemove={checkConfirm}
+        <UserSelect
+          onChange={checkConfirm}
           ref={setSplitBetweenRef}
-          options={users}
-          isObject
-          displayValue="email"
-          renderValue={(member: User) => <div class={styles['select-user-option']}>
-            <img
-              class={`${navStyles['profile-picture']} ${styles.tiny}`}
-              src={member.picture}
-              title={member.email}
-              crossOrigin="anonymous"
-              referrerPolicy="no-referrer"
-              alt="profile"
-            />
-            <span>{member.name}</span>
-          </div>}
-          selectedValues={users}
-          hidePlaceholder={true}
+          users={users}
+          initialSelection={users}
           placeholder="Who are splitting the bill later"
           closeOnSelect={false}
-          style={{
-            optionContainer: { 'background-color': '#282c34' },
-            option: { display: 'flex', 'align-items': 'center', 'height': '40px', margin: '0', padding: '0 10px' }
-          }}
         />
       </div>
       <div class={editGroupStyles['modal-controls']}>
@@ -143,3 +105,45 @@ export const ExpenseModal = (props: ExpenseModalProps) => {
     </div>
   </div>
 }
+
+export type UserSelectProps = {
+  onChange: () => void
+  ref: any
+  users: User[]
+  initialSelection: User[]
+  placeholder: string
+  closeOnSelect: boolean
+  selectionLimit?: number
+}
+
+export const UserSelect = (props: UserSelectProps) =>
+  <MultiSelect
+    onSelect={props.onChange}
+    onRemove={props.onChange}
+    ref={props.ref}
+    emptyRecordMsg="No more users in the group"
+    options={props.users}
+    isObject
+    displayValue="email"
+    renderValue={(member: User) => <div class={styles['select-user-option']}>
+      <img
+        class={`${navStyles['profile-picture']} ${styles.tiny}`}
+        src={member.picture}
+        title={member.email}
+        crossOrigin="anonymous"
+        referrerPolicy="no-referrer"
+        alt="profile"
+      />
+      <span>{member.name}</span>
+    </div>}
+    selectedValues={props.initialSelection}
+    selectionLimit={props.selectionLimit}
+    hidePlaceholder={true}
+    placeholder={props.placeholder}
+    closeOnSelect={props.closeOnSelect}
+    style={{
+      optionContainer: { 'background-color': '#282c34' },
+      option: { display: 'flex', 'align-items': 'center', 'height': '40px', margin: '0', padding: '0 10px' }
+    }}
+  />
+
