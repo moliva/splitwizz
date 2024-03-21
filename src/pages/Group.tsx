@@ -1,7 +1,7 @@
 import { useParams } from "@solidjs/router"
-import { Show, createResource, createSignal } from "solid-js"
+import { For, Show, createEffect, createResource, createSignal, onMount } from "solid-js"
 
-import { putExpense, postExpense, fetchGroup, inviteUsers as doInviteUsers } from "../services"
+import { fetchExpenses, putExpense, postExpense, fetchGroup, inviteUsers as doInviteUsers } from "../services"
 import { DetailedGroup, Expense } from "../types"
 import { useAppContext } from "../context"
 
@@ -38,7 +38,7 @@ export default () => {
 
   const [group] = createResource(params.id, fetchGroupData);
 
-  const [state] = useAppContext()!
+  const [state, setState] = useAppContext()!
 
   const [showInviteModal, setShowInviteModal] = createSignal(false)
   const [showExpenseModal, setShowExpenseModal] = createSignal(false)
@@ -56,11 +56,43 @@ export default () => {
     doInviteUsers(identity!, group()!.id!, [email])
   }
 
+  const refreshContent = async () => {
+    const currentIdentity = state().identity!
+
+    const groupId = group()!.id!
+    const expenses = currentIdentity ? await fetchExpenses(currentIdentity, groupId) : undefined
+
+    const newState = {
+      ...state(),
+      groups: {
+        ...state().groups,
+        [groupId]: {
+          ...group()!,
+          expenses
+        }
+      }
+    }
+
+    setState(newState)
+
+  }
+
+  let alreadyFetch = false
+  createEffect(async () => {
+    if (!alreadyFetch) {
+      if (group()) {
+        await refreshContent()
+        alreadyFetch = true
+      }
+    }
+  })
+
   const onExpenseConfirm = (expense: Expense) => {
-    const promise = expense.id ? putExpense(expense, params.id, state()!.identity!) : postExpense(expense, params.id, state()!.identity!)
+    const groupId = group()!.id!
+    const promise = expense.id ? putExpense(expense, groupId, state()!.identity!) : postExpense(expense, groupId, state()!.identity!)
 
     promise
-      // .then(refreshContent)
+      .then(refreshContent)
       .catch(() => {
         // TODO - show error - moliva - 2023/10/11
       })
@@ -73,6 +105,28 @@ export default () => {
     setShowExpenseModal(false)
     setCurrentExpense(undefined)
   }
+
+  // group by
+  // date: string
+
+  // description: string
+  // currency_id: number
+  // amount: number
+
+  // you borrowed, you lent
+  // split_strategy: SplitStrategy
+
+  const [expenses, setExpenses] = createSignal<Record<string, Expense[]>>({})
+
+  createEffect(() => {
+    if (group() && (state().groups[group()!.id!] as any).expenses) {
+
+      const expenses = Object.groupBy((state().groups[group()!.id!] as any).expenses as Expense[], ({ date }) => date.substring(0, 10)) as Record<string, Expense[]>
+
+      setExpenses(expenses)
+    }
+
+  })
 
   return <div class={styles.center}>
 
@@ -88,9 +142,25 @@ export default () => {
       {group() && (
         <>
           <div class={styles.main}>
-            <h1 class={styles.name}>
-              {group()!.name}
-            </h1>
+            <h1 class={styles.name}>{group()!.name}</h1>
+            <div class={styles['expense-dates']}>
+              <For each={Object.entries(expenses())}>{([date, expenses]) => (
+                <>
+                  <div><label>{date}</label></div>
+                  <div class={styles.expenses}>
+                    <For each={expenses}>{expense => (
+                      <div class={styles['expense-card']}>
+                        <span>{expense.description}</span>
+                        <div>
+                          <span>{state().currencies[expense.currency_id].acronym}</span>
+                          <span> {expense.amount}</span>
+                        </div>
+                      </div>
+                    )}</For>
+                  </div>
+                </>
+              )}</For>
+            </div>
           </div>
           <div class={styles.actions}>
             <button class={`${appStyles.button} ${styles.invite}`} onClick={() => setShowInviteModal(true)}>Invite</button>

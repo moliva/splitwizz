@@ -70,6 +70,12 @@ export async function postExpense(expense: Expense, groupId: number, identity: I
   }
 }
 
+export async function fetchExpenses(identity: Identity, groupId: number): Promise<Expense[]> {
+  const res = await authentifiedFetch(`${API_HOST}/groups/${groupId}/expenses`, identity!)
+
+  return await res.json() as Expense[]
+}
+
 export async function putGroup(group: Group, identity: Identity): Promise<void> {
   const response = await authentifiedFetch(`${API_HOST}/groups/${group.id}`, identity, {
     method: 'PUT',
