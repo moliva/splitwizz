@@ -69,7 +69,7 @@ export default () => {
     if (identity) {
 
       const currencies = await doFetchCurrencies(identity!)
-      setState({ ...state(), currencies })
+      setState({ ...state(), currencies: Object.fromEntries(currencies.map(c=> [c.id, c])) })
 
       return true
     }

@@ -4,7 +4,7 @@ import { Currency, DetailedGroup, Identity } from "./types";
 export type AppState = {
   identity: Identity | undefined
   groups: Record<string, DetailedGroup>
-  currencies: Currency[]
+  currencies: Record<number, Currency>
 }
 
 const INITIAL_STATE: AppState = {

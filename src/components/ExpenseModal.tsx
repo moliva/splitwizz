@@ -60,7 +60,7 @@ export const ExpenseModal = (props: ExpenseModalProps) => {
       <input ref={descriptionRef} placeholder="Description"></input>
       <div style={{ display: 'inline-flex', 'margin-bottom': '50px' }}>
         <select ref={currencyRef}>
-          <For each={state().currencies}>{(currency) => (
+          <For each={Object.values(state().currencies)}>{(currency) => (
             <option value={currency.id} title={currency.description}>{currency.acronym}</option>
           )}</For>
         </select>
