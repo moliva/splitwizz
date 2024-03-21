@@ -9,10 +9,15 @@
   max-height: 30px;
 }
 
-
 .group-name {
   color: #00ac00;
   font-style: italic
+}
+
+.user-select-label {
+  text-wrap: nowrap;
+  font-size: 14px;
+  color: #9f9f9f;
 }
 
 select.currency-select {

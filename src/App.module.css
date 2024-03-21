@@ -53,13 +53,12 @@
 }
 
 .button:disabled {
-
-  background-color: #00ac00;
-  color: gray;
+  background-color: #b9b9b9;
+  color: #727272;
   cursor: not-allowed;
 }
 
-.button.primary {
+.button.primary:not([disabled]) {
   background-color: #00ac00;
 }
 

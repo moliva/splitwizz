@@ -30,10 +30,6 @@ export const ExpenseModal = (props: ExpenseModalProps) => {
   let descriptionRef: any, currencyRef, amountRef: any, dateRef: any
 
   const checkConfirm = () => {
-    // TODO - on change of multiselect not working when dleeting or adding elements - moliva - 2024/03/21
-    // on select and on remove do not work with the values field
-    console.info(payerRef()?.values())
-    console.info(dateRef?.value)
     const newValue = (descriptionRef?.value?.length ?? 0) === 0 ||
       (amountRef?.value ?? '') === '' ||
       (dateRef?.value ?? '') === '' ||
@@ -41,15 +37,9 @@ export const ExpenseModal = (props: ExpenseModalProps) => {
       splitBetweenRef()?.values()?.length === 0
 
     setConfirmDisabled(newValue)
-
   }
 
   const onConfirm = () => {
-    if (payerRef().values.len === 0) {
-      // TODO - this should be validated before confirming - moliva - 2024/03/21
-      return
-    }
-
     const expense = {
       description: descriptionRef!.value,
       currency_id: Number(currencyRef!.value),
@@ -75,7 +65,7 @@ export const ExpenseModal = (props: ExpenseModalProps) => {
   return <div class={editGroupStyles.modal}>
     <div class={editGroupStyles["modal-content"]} style={{ "max-width": "400px" }}>
       <label class={editGroupStyles["modal-title"]}>New expense in <span class={styles['group-name']}>{group.name}</span></label>
-      <div style={{ display: 'flex', "align-items": 'center' }}>
+      <div style={{ display: 'flex', "align-items": 'center', gap: "5px" }}>
         <input style={{ "flex-grow": 1 }} onChange={checkConfirm} ref={descriptionRef} placeholder="Description"></input>
         <input ref={dateRef} placeholder="Date" onChange={checkConfirm} type="datetime-local" value={date}></input>
       </div>
@@ -88,7 +78,7 @@ export const ExpenseModal = (props: ExpenseModalProps) => {
         <input style={{ "flex-grow": 1 }} ref={amountRef} onChange={checkConfirm} placeholder="0.00" type="number"></input>
       </div>
       <div style={{ display: "flex", "flex-direction": "column" }}>
-        <label style={{ "text-wrap": "nowrap", "font-size": "14px" }}>Paid by</label>
+        <label class={styles['user-select-label']}>Paid by</label>
         <MultiSelect
           onSelect={checkConfirm}
           onRemove={checkConfirm}
@@ -117,7 +107,7 @@ export const ExpenseModal = (props: ExpenseModalProps) => {
             option: { display: 'flex', 'align-items': 'center', 'height': '40px', margin: '0', padding: '0 10px' }
           }}
         />
-        <label style={{ "text-wrap": "nowrap", "margin-top": '10px', "font-size": "14px" }}>Split equally between</label>
+        <label class={styles['user-select-label']} style={{ "margin-top": '10px' }}>Split equally between</label>
         <MultiSelect
           onSelect={checkConfirm}
           onRemove={checkConfirm}
