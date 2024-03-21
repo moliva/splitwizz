@@ -2,6 +2,8 @@
   width: 100%;
   display: flex;
   justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }
 
 .group {
@@ -90,4 +92,36 @@
   align-items: end;
   font-size: 12px;
   font-weight: 500;
+}
+
+.tab-group {
+  width: 80%;
+  display: inline-flex;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+}
+
+.tab-item {
+  list-style-type: none;
+  cursor: pointer;
+  padding: 10px;
+  background-color: #787878;
+}
+
+.tab-item.selected {
+  background-color: #3c963c; 
+}
+
+.divider {
+  width: 80%;
+  border: 0;
+  border-top: 3px solid #bbb;
+  margin: 0;
+}
+
+.tab {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }

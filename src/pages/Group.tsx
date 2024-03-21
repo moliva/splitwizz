@@ -1,5 +1,5 @@
 import { useParams } from "@solidjs/router"
-import { For, Show, createEffect, createResource, createSignal } from "solid-js"
+import { For, Match, Show, Switch, createEffect, createResource, createSignal } from "solid-js"
 
 import { fetchExpenses, putExpense, postExpense, fetchGroup, inviteUsers as doInviteUsers } from "../services"
 import { DetailedGroup, Expense } from "../types"
@@ -106,16 +106,6 @@ export default () => {
     setCurrentExpense(undefined)
   }
 
-  // group by
-  // date: string
-
-  // description: string
-  // currency_id: number
-  // amount: number
-
-  // you borrowed, you lent
-  // split_strategy: SplitStrategy
-
   type RelativeStatus = 'lent' | 'borrowed' | 'none'
 
   type FormatExpense = Expense & {
@@ -159,6 +149,8 @@ export default () => {
     }
   }
 
+  const [tab, setTab] = createSignal(0)
+  const updateTab = (index: number) => () => setTab(index)
 
   createEffect(() => {
     if (group() && (state().groups[group()!.id!] as any).expenses) {
@@ -198,55 +190,73 @@ export default () => {
 
   })
 
-  return <div class={styles.center}>
-
-    <Show when={showInviteModal()}>
-      <InviteModal onConfirm={onInviteConfirm} onDiscard={() => setShowInviteModal(false)} />
-    </Show>
-    <Show when={showExpenseModal()}>
-      <ExpenseModal group={group()!} onConfirm={onExpenseConfirm} onDiscard={closeExpenseModal} />
-    </Show>
-    <div class={styles.group}>
-      {group.loading && <div>Loading!</div>}
-      {group.error && <div>Error!</div>}
-      {group() && (
-        <>
-          <div class={styles.main}>
-            <h1 class={styles.name}>{group()!.name}</h1>
-            <div class={styles['expense-dates']}>
-              <For each={Object.entries(expenses())}>{([month, expenses]) => (
+  return (
+    <div class={styles.center}>
+      <Show when={showInviteModal()}>
+        <InviteModal onConfirm={onInviteConfirm} onDiscard={() => setShowInviteModal(false)} />
+      </Show>
+      <Show when={showExpenseModal()}>
+        <ExpenseModal group={group()!} onConfirm={onExpenseConfirm} onDiscard={closeExpenseModal} />
+      </Show>
+      <ul class={styles['tab-group']}>
+        <li class={styles['tab-item']} classList={{ [styles.selected]: tab() === 0 }} onClick={updateTab(0)}>
+          Expenses
+        </li>
+        <li class={styles['tab-item']} classList={{ [styles.selected]: tab() === 1 }} onClick={updateTab(1)}>
+          Balances
+        </li>
+      </ul>
+      <hr class={styles['divider']} />
+      <div class={styles["tab"]}>
+        <Switch>
+          <Match when={tab() === 0}>
+            <div class={styles.group}>
+              {group.loading && <div>Loading!</div>}
+              {group.error && <div>Error!</div>}
+              {group() && (
                 <>
-                  <label class={styles['expense-date']}>{monthNumberToName(month.substring(5))} {month.substring(0, 4)}</label>
+                  <div class={styles.main}>
+                    <h1 class={styles.name}>{group()!.name}</h1>
+                    <div class={styles['expense-dates']}>
+                      <For each={Object.entries(expenses())}>{([month, expenses]) => (
+                        <>
+                          <label class={styles['expense-date']}>{monthNumberToName(month.substring(5))} {month.substring(0, 4)}</label>
 
-                  <div class={styles.expenses}>
-                    <For each={expenses}>{expense => (
-                      <div class={styles['expense-card']}>
-                        <div class={styles['expense-day']}>
-                          <span>{expense.day[1]}</span>
-                          <span>{expense.day[0]}</span>
-                        </div>
-                        <div class={styles['expense-description']}>
-                          <label>{expense.description}</label>
-                          <label class={styles['expense-payment']}>{expense.payment}</label>
-                        </div>
-                        <div class={styles['expense-relative']} style={{ color: expense.relative[0] === 'lent' ? '#3c963c' : '#ca0808' }}>
-                          <label>{expense.relative[1]}</label>
-                          <label class={styles['expense-payment1']}>{expense.relative[2]}</label>
-                        </div>
-                      </div>
-                    )}</For>
+                          <div class={styles.expenses}>
+                            <For each={expenses}>{expense => (
+                              <div class={styles['expense-card']}>
+                                <div class={styles['expense-day']}>
+                                  <span>{expense.day[1]}</span>
+                                  <span>{expense.day[0]}</span>
+                                </div>
+                                <div class={styles['expense-description']}>
+                                  <label>{expense.description}</label>
+                                  <label class={styles['expense-payment']}>{expense.payment}</label>
+                                </div>
+                                <div class={styles['expense-relative']} style={{ color: expense.relative[0] === 'lent' ? '#3c963c' : '#ca0808' }}>
+                                  <label>{expense.relative[1]}</label>
+                                  <label class={styles['expense-payment1']}>{expense.relative[2]}</label>
+                                </div>
+                              </div>
+                            )}</For>
+                          </div>
+                        </>
+                      )}</For>
+                    </div>
+                  </div>
+                  <div class={styles.actions}>
+                    <button class={`${appStyles.button} ${styles.invite}`} onClick={() => setShowInviteModal(true)}>Invite</button>
+                    <button class={`${appStyles.button} ${styles.expense}`} onClick={() => setShowExpenseModal(true)}>Expense</button>
                   </div>
                 </>
-              )}</For>
+              )}
             </div>
-          </div>
-          <div class={styles.actions}>
-            <button class={`${appStyles.button} ${styles.invite}`} onClick={() => setShowInviteModal(true)}>Invite</button>
-            <button class={`${appStyles.button} ${styles.expense}`} onClick={() => setShowExpenseModal(true)}>Expense</button>
-          </div>
-        </>
-      )
-      }
-    </div >
-  </div >
+          </Match>
+          <Match when={tab() === 1}>
+            Balances
+          </Match>
+        </Switch>
+      </div>
+    </div>
+  )
 }
