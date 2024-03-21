@@ -52,6 +52,13 @@
   text-decoration: none;
 }
 
+.button:disabled {
+
+  background-color: #00ac00;
+  color: gray;
+  cursor: not-allowed;
+}
+
 .button.primary {
   background-color: #00ac00;
 }
