@@ -44,6 +44,7 @@ export const Balances = (props: BalancesProps) => {
 
         // TODO - make a better description if there's more than one currency involved - moliva - 2024/03/22
         const [status, description, cost] = relativeStatus(totals[0])
+        const moreCurrencies = totals.length > 1 ? '*' : ''
 
         // TODO - allow this header to collapse the whole thing - moliva - 2024/03/22
         return <>
@@ -56,7 +57,7 @@ export const Balances = (props: BalancesProps) => {
               referrerPolicy="no-referrer"
               alt="profile"
             />
-            <label>{member.name} {description} <span style={{ color: status === 'lent' ? '#3c963c' : '#ca0808' }}>{cost}</span> in total</label>
+            <label>{member.name} {description} <span style={{ color: status === 'lent' ? '#3c963c' : '#ca0808' }}>{cost}{moreCurrencies}</span> in total</label>
           </div>
           <div class={styles['balance-owers']}>
             <For each={Object.entries(balance.owes)}>{([owerId, debt]) => {
