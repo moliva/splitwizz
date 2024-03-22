@@ -81,7 +81,7 @@ export const ExpenseModal = (props: ExpenseModalProps) => {
         <label class={styles['user-select-label']}>Paid by</label>
         <UserSelect
           onChange={checkConfirm}
-          ref={payerRef}
+          ref={setPayerRef}
           users={users}
           initialSelection={me}
           placeholder="Who's paying"
