@@ -45,18 +45,6 @@ export const NotificationsPanel = (props: NotificationsProps) => {
               }
             </div>
           </div>
-
-          // export type Notification = {
-          //   group?: Group
-          //   updated_at: string,
-          // }
-          //
-          // export type Group = {
-          //   id: number | undefined
-          //   name: string
-          //   created_at: string | undefined
-          // }
-
         }</For>
       </div>
       <div class={editGroupstyles['modal-controls']}>

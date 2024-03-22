@@ -16,6 +16,7 @@
 
 .name {
   color: white;
+  margin-top: 0;
 }
 
 .main {
@@ -113,11 +114,15 @@
   background-color: #3c963c; 
 }
 
+.tab-item.selected:hover, .tab-item:hover {
+  background-color: #00ac00; 
+}
+
 .divider {
   width: 80%;
   border: 0;
   border-top: 3px solid #bbb;
-  margin: 0;
+  margin: 0 0 20px;
 }
 
 .tab {

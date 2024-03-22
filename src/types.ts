@@ -15,6 +15,15 @@ export type EquallySplitStrategy = {
 
 export type SplitStrategy = EquallySplitStrategy
 
+export type RelativeStatus = 'lent' | 'borrowed' | 'none'
+
+export type FormatExpense = Expense & {
+  monthYear: string
+  day: [number, string] // day of month and day of week
+  payment: string,
+  relative: [RelativeStatus, string, string] // status, description, split currency + amount
+}
+
 export type Expense = {
   id?: number
   group_id?: number
@@ -26,7 +35,7 @@ export type Expense = {
   split_strategy: SplitStrategy
 
   created_id?: UserId
-  created_at?: string 
+  created_at?: string
 
   updated_id?: UserId
   updated_at?: string
@@ -44,6 +53,11 @@ export type Group = {
   id: number | undefined
   name: string
   created_at: string | undefined
+
+  default_currency_id: number
+  balance: {
+    simplified: boolean
+  }
 }
 
 export type UserStatus = 'active' | 'inactive'
@@ -64,6 +78,9 @@ export type Membership = {
 export type DetailedGroup = Group & {
   creator: User
   members: Membership[]
+
+  // refine group
+  expenses: Expense[]
 }
 
 export type Identity = {

@@ -126,7 +126,7 @@ export default (props: HomeProps) => {
               <Fa class={appStyles['nav-icon']} icon={faPlusSquare} />
             </button>
           </div>
-          <div>
+          <div class={styles.groups}>
             <For each={filteredGroups()}>{(group) =>
               <GroupComponent group={group} />
             }</For>

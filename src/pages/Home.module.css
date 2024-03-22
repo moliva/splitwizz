@@ -12,3 +12,8 @@
 .new-group:hover {
   color: lightgreen;
 }
+
+.groups {
+  display: flex;
+  flex-direction: column;
+}
