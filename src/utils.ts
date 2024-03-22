@@ -1,3 +1,5 @@
+import { AppState } from "./context"
+import { DetailedGroup, FormatExpense, User } from "./types"
 
 export function copyToClipboard(value: string): void {
   navigator.clipboard.writeText(value)
@@ -18,7 +20,6 @@ export const dayNumberToName = (d: number): string => {
   }
 }
 
-
 export const monthNumberToName = (m: string): string => {
   switch (m) {
     case '01': return 'January'
@@ -35,4 +36,39 @@ export const monthNumberToName = (m: string): string => {
     case '12': return 'December'
     default: throw `month number out of range ${m}`
   }
+}
+
+export function formatExpenses(state: AppState, group: DetailedGroup): Record<string, FormatExpense[]> {
+
+  const expenses = state.groups[group.id!].expenses.map(expense => {
+    const date = new Date(Date.parse(expense.date))
+    const me = group.members.find(m => m.user.email === state.identity?.identity.email)!.user
+
+    const userIdToUser = (id: string): User => group.members.find(m => m.user.id === id)?.user!
+
+    const userIdToDisplay = (id: string): string => {
+      const user = userIdToUser(id)!
+
+      return user === me ? "You" : user.name
+    }
+
+    // TODO - cache formatters per currency - moliva - 2024/03/22
+    const currency = state.currencies[expense.currency_id].acronym
+    const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency })
+
+    const status = expense.split_strategy.payer === me.id ? 'lent' : 'borrowed'
+    const description = status === 'lent' ? 'you lent' : 'you borrowed'
+    const cost = formatter.format(expense.amount / expense.split_strategy.split_between.length)
+    const relative = [status, description, cost]
+
+    return {
+      ...expense,
+      monthYear: expense.date.substring(0, 7),
+      day: [date.getDate(), dayNumberToName(date.getDay())],
+      payment: `${userIdToDisplay(expense.split_strategy.payer)} paid ${formatter.format(expense.amount)}`,
+      relative
+    }
+  })
+
+  return Object.groupBy(expenses, ({ monthYear }) => monthYear) as Record<string, FormatExpense[]>
 }

@@ -1,12 +1,13 @@
-import { For, createEffect, createSignal } from 'solid-js'
-import { MultiSelect, Ref } from '@digichanges/solid-multiselect'
+import { For, createSignal } from 'solid-js'
+import { Ref } from '@digichanges/solid-multiselect'
 
 import { User, DetailedGroup, Expense } from '../types'
 import { useAppContext } from '../context'
 
+import { UserSelect } from './UserSelect'
+
 import styles from './ExpenseModal.module.css'
 import appStyles from '../App.module.css'
-import navStyles from './NavComponent.module.css'
 import editGroupStyles from './EditGroupComponent.module.css'
 
 export type ExpenseModalProps = {
@@ -62,88 +63,48 @@ export const ExpenseModal = (props: ExpenseModalProps) => {
   const me = members.filter(m => m.user.email === state().identity?.identity.email).map(m => m.user)
 
 
-  return <div class={editGroupStyles.modal}>
-    <div class={editGroupStyles["modal-content"]} style={{ "max-width": "400px" }}>
-      <label class={editGroupStyles["modal-title"]}>New expense in <span class={styles['group-name']}>{group.name}</span></label>
-      <div style={{ display: 'flex', "align-items": 'center', gap: "5px" }}>
-        <input style={{ "flex-grow": 1 }} onChange={checkConfirm} ref={descriptionRef} placeholder="Description"></input>
-        <input ref={dateRef} placeholder="Date" onChange={checkConfirm} type="datetime-local" value={date}></input>
-      </div>
-      <div style={{ display: 'inline-flex', 'margin-bottom': '20px' }}>
-        <select class={styles['currency-select']} ref={currencyRef}>
-          <For each={Object.values(state().currencies)}>{(currency) => (
-            <option value={currency.id} title={currency.description}>{currency.acronym}</option>
-          )}</For>
-        </select>
-        <input style={{ "flex-grow": 1 }} ref={amountRef} onChange={checkConfirm} placeholder="0.00" type="number"></input>
-      </div>
-      <div style={{ display: "flex", "flex-direction": "column" }}>
-        <label class={styles['user-select-label']}>Paid by</label>
-        <UserSelect
-          onChange={checkConfirm}
-          ref={setPayerRef}
-          users={users}
-          initialSelection={me}
-          placeholder="Who's paying"
-          closeOnSelect={true}
-          selectionLimit={1}
-        />
-        <label class={styles['user-select-label']} style={{ "margin-top": '10px' }}>Split equally between</label>
-        <UserSelect
-          onChange={checkConfirm}
-          ref={setSplitBetweenRef}
-          users={users}
-          initialSelection={users}
-          placeholder="Who are splitting the bill later"
-          closeOnSelect={false}
-        />
-      </div>
-      <div class={editGroupStyles['modal-controls']}>
-        <button class={`${appStyles.button} ${appStyles.primary}`} onClick={onConfirm} disabled={isConfirmDisabled()}>Create</button>
-        <button class={`${appStyles.button} ${appStyles.secondary}`} onClick={onDiscard}>Discard</button>
+  return (
+    <div class={editGroupStyles.modal}>
+      <div class={editGroupStyles["modal-content"]} style={{ "max-width": "400px" }}>
+        <label class={editGroupStyles["modal-title"]}>New expense in <span class={styles['group-name']}>{group.name}</span></label>
+        <div style={{ display: 'flex', "align-items": 'center', gap: "5px" }}>
+          <input style={{ "flex-grow": 1 }} onChange={checkConfirm} ref={descriptionRef} placeholder="Description"></input>
+          <input ref={dateRef} placeholder="Date" onChange={checkConfirm} type="datetime-local" value={date}></input>
+        </div>
+        <div style={{ display: 'inline-flex', 'margin-bottom': '20px' }}>
+          <select class={styles['currency-select']} ref={currencyRef}>
+            <For each={Object.values(state().currencies)}>{(currency) => (
+              <option value={currency.id} title={currency.description}>{currency.acronym}</option>
+            )}</For>
+          </select>
+          <input style={{ "flex-grow": 1 }} ref={amountRef} onChange={checkConfirm} placeholder="0.00" type="number"></input>
+        </div>
+        <div style={{ display: "flex", "flex-direction": "column" }}>
+          <label class={styles['user-select-label']}>Paid by</label>
+          <UserSelect
+            onChange={checkConfirm}
+            ref={setPayerRef}
+            users={users}
+            initialSelection={me}
+            placeholder="Who's paying"
+            closeOnSelect={true}
+            selectionLimit={1}
+          />
+          <label class={styles['user-select-label']} style={{ "margin-top": '10px' }}>Split equally between</label>
+          <UserSelect
+            onChange={checkConfirm}
+            ref={setSplitBetweenRef}
+            users={users}
+            initialSelection={users}
+            placeholder="Who are splitting the bill later"
+            closeOnSelect={false}
+          />
+        </div>
+        <div class={editGroupStyles['modal-controls']}>
+          <button class={`${appStyles.button} ${appStyles.primary}`} onClick={onConfirm} disabled={isConfirmDisabled()}>Create</button>
+          <button class={`${appStyles.button} ${appStyles.secondary}`} onClick={onDiscard}>Discard</button>
+        </div>
       </div>
     </div>
-  </div>
+  )
 }
-
-export type UserSelectProps = {
-  onChange: () => void
-  ref: any
-  users: User[]
-  initialSelection: User[]
-  placeholder: string
-  closeOnSelect: boolean
-  selectionLimit?: number
-}
-
-export const UserSelect = (props: UserSelectProps) =>
-  <MultiSelect
-    onSelect={props.onChange}
-    onRemove={props.onChange}
-    ref={props.ref}
-    emptyRecordMsg="No more users in the group"
-    options={props.users}
-    isObject
-    displayValue="email"
-    renderValue={(member: User) => <div class={styles['select-user-option']}>
-      <img
-        class={`${navStyles['profile-picture']} ${styles.tiny}`}
-        src={member.picture}
-        title={member.email}
-        crossOrigin="anonymous"
-        referrerPolicy="no-referrer"
-        alt="profile"
-      />
-      <span>{member.name}</span>
-    </div>}
-    selectedValues={props.initialSelection}
-    selectionLimit={props.selectionLimit}
-    hidePlaceholder={true}
-    placeholder={props.placeholder}
-    closeOnSelect={props.closeOnSelect}
-    style={{
-      optionContainer: { 'background-color': '#282c34' },
-      option: { display: 'flex', 'align-items': 'center', 'height': '40px', margin: '0', padding: '0 10px' }
-    }}
-  />
-

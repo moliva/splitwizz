@@ -1,9 +1,12 @@
-.center {
-  width: 100%;
+.main {
+  width: 80%;
+
   display: flex;
   justify-content: center;
-  flex-direction: column;
   align-items: center;
+  flex-direction: column;
+
+  margin-bottom: 50px;
 }
 
 .group {
@@ -19,24 +22,19 @@
   margin-top: 0;
 }
 
-.main {
-  width: 80%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  margin-bottom: 20px;
-}
-
 .actions {
   width: 70%;
+  position: fixed;
+  bottom: 15px;
+
   display: flex;
   justify-content: flex-end;
   gap: 5px;
 }
 
 .expense {
-  background-color: #3c963c;
+  /* background-color: #3c963c; */
+  background-color: #89963c;
 }
 
 .invite {
@@ -123,10 +121,4 @@
   border: 0;
   border-top: 3px solid #bbb;
   margin: 0 0 20px;
-}
-
-.tab {
-  width: 100%;
-  display: flex;
-  justify-content: center;
 }
