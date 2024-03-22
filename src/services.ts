@@ -1,4 +1,4 @@
-import { Identity, Group, Currency, DetailedGroup, Notification, NotificationAction, Expense } from "./types";
+import { Identity, Group, Currency, DetailedGroup, Notification, NotificationAction, Expense, Balance } from "./types";
 
 export const API_HOST = import.meta.env.VITE_API_URL
 
@@ -73,7 +73,13 @@ export async function postExpense(expense: Expense, groupId: number, identity: I
 export async function fetchExpenses(identity: Identity, groupId: number): Promise<Expense[]> {
   const res = await authentifiedFetch(`${API_HOST}/groups/${groupId}/expenses`, identity!)
 
-  return await res.json() as Expense[]
+  return await res.json()
+}
+
+export async function fetchBalances(identity: Identity, groupId: number): Promise<Balance[]> {
+  const res = await authentifiedFetch(`${API_HOST}/groups/${groupId}/balances`, identity!)
+
+  return await res.json()
 }
 
 export async function putGroup(group: Group, identity: Identity): Promise<void> {

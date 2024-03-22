@@ -1,14 +1,15 @@
 import { Match, Switch, createEffect, createResource, createSignal } from "solid-js"
 import { useParams } from "@solidjs/router"
 
-import { fetchExpenses, fetchGroup, } from "../services"
-import { DetailedGroup } from "../types"
+import { fetchBalances, fetchExpenses, fetchGroup, } from "../services"
+import { Balance, DetailedGroup } from "../types"
 import { useAppContext } from "../context"
 
 import { Expenses } from "../components/Expenses"
 
 import styles from './Group.module.css'
 import { formatExpenses } from "../utils"
+import { Balances } from "../components/Balances"
 
 async function fetchGroupData(id: string): Promise<DetailedGroup> {
   const [state, setState] = useAppContext()!
@@ -37,7 +38,9 @@ export default () => {
   const [state, setState] = useAppContext()!
 
   const [group] = createResource(params.id, fetchGroupData);
+
   const [expenses, setExpenses] = createSignal({})
+  const [balances, setBalances] = createSignal<Balance[]>([])
 
   const [tab, setTab] = createSignal(0)
   const updateTab = (index: number) => () => setTab(index)
@@ -47,6 +50,7 @@ export default () => {
 
     const groupId = group()!.id!
     const expenses = currentIdentity ? await fetchExpenses(currentIdentity, groupId) : undefined
+    const balances = currentIdentity ? await fetchBalances(currentIdentity, groupId) : undefined
 
     const newState = {
       ...state(),
@@ -54,13 +58,13 @@ export default () => {
         ...state().groups,
         [groupId]: {
           ...group()!,
-          expenses
+          expenses,
+          balances
         }
       }
     }
 
     setState(newState)
-
   }
 
   let alreadyFetch = false
@@ -78,6 +82,7 @@ export default () => {
       const expenses = formatExpenses(state(), group()!)
 
       setExpenses(expenses)
+      setBalances(state().groups[group()!.id!].balances)
     }
   })
 
@@ -102,7 +107,7 @@ export default () => {
               <Expenses expenses={expenses} group={group} onExpenseCreated={refreshContent} />
             </Match>
             <Match when={tab() === 1}>
-              Balances
+              <Balances balances={balances} group={group} />
             </Match>
           </Switch>
         </>

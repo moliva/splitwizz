@@ -75,12 +75,26 @@ export type Membership = {
   status: MembershipStatus,
 }
 
+export type Balance = {
+  user_id: UserId
+  total: {
+    // Record<currency_id, amount>
+    [currency_id: number]: number
+  }
+  owes: {
+    user_id: UserId
+    currency_id: number
+    amount: number
+  }[]
+}
+
 export type DetailedGroup = Group & {
   creator: User
   members: Membership[]
 
   // refine group
   expenses: Expense[]
+  balances: Balance[]
 }
 
 export type Identity = {
