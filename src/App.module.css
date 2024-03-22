@@ -52,6 +52,10 @@
   text-decoration: none;
 }
 
+.button:hover {
+  filter: brightness(120%);
+}
+
 .button:disabled {
   background-color: #b9b9b9;
   color: #727272;

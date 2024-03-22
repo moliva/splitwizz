@@ -112,8 +112,8 @@
   background-color: #3c963c; 
 }
 
-.tab-item.selected:hover, .tab-item:hover {
-  background-color: #00ac00; 
+.tab-item:hover {
+  filter: brightness(120%);
 }
 
 .divider {
