@@ -1,6 +1,6 @@
 
 export type Currency = {
-  id: number
+  id: CurrencyId
   acronym: string
   description: string
 }
@@ -16,12 +16,13 @@ export type EquallySplitStrategy = {
 export type SplitStrategy = EquallySplitStrategy
 
 export type RelativeStatus = 'lent' | 'borrowed' | 'none'
+export type RelativeTuple = [RelativeStatus, string, string] // status, description, split currency + amount
 
 export type FormatExpense = Expense & {
   monthYear: string
   day: [number, string] // day of month and day of week
   payment: string,
-  relative: [RelativeStatus, string, string] // status, description, split currency + amount
+  relative: RelativeTuple
 }
 
 export type Expense = {
@@ -29,7 +30,7 @@ export type Expense = {
   group_id?: number
 
   description: string
-  currency_id: number
+  currency_id: CurrencyId
   amount: number
   date: string
   split_strategy: SplitStrategy
@@ -54,7 +55,7 @@ export type Group = {
   name: string
   created_at: string | undefined
 
-  default_currency_id: number
+  default_currency_id: CurrencyId
   balance: {
     simplified: boolean
   }
@@ -75,17 +76,21 @@ export type Membership = {
   status: MembershipStatus,
 }
 
+export type CurrencyId = number
+
 export type Balance = {
   user_id: UserId
   total: {
     // Record<currency_id, amount>
-    [currency_id: number]: number
+    [currency_id: CurrencyId]: number
   }
   owes: {
-    user_id: UserId
-    currency_id: number
-    amount: number
-  }[]
+    // Record<UserId, Record<currency_id, amount>>
+    [user_id: UserId]: {
+      // Record<currency_id, amount>
+      [currency_id: CurrencyId]: number
+    }
+  }
 }
 
 export type DetailedGroup = Group & {

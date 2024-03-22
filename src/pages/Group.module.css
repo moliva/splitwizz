@@ -32,6 +32,56 @@
   gap: 5px;
 }
 
+/* ***************************************************************************************************** */
+/* *************** Balances *************** */
+/* ***************************************************************************************************** */
+
+.balances {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.balance-header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 40px;
+}
+
+.balance-header img {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+.balance-owers {
+  padding-left: 10px;
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.balance-ower {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+}
+
+.balance-ower img {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+/* ***************************************************************************************************** */
+/* *************** Expenses *************** */
+/* ***************************************************************************************************** */
+
 .expense {
   /* background-color: #3c963c; */
   background-color: #89963c;
