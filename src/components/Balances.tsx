@@ -49,7 +49,6 @@ export const Balances = (props: BalancesProps) => {
       amount = -amount
     }
 
-    console.log(`register payment from ${owes.name} to ${getsBack.name} for ${currencyId}${amount}`)
     const expense: Expense = {
       description: "Payment",
       currency_id: currencyId,
@@ -63,6 +62,8 @@ export const Balances = (props: BalancesProps) => {
     }
 
     await postExpense(expense, group()!.id!, state().identity!)
+
+    // TODO - bubble up and refresh content! - moliva - 2024/03/23
   }
 
   return (
@@ -92,7 +93,7 @@ export const Balances = (props: BalancesProps) => {
             <For each={Object.entries(balance.owes)}>{([owerId, debt]) => {
               const ower = users()[owerId]
 
-              return <For each={Object.entries(debt)}>{(debt) => {
+              return <For each={Object.entries(debt).filter(([, amount]) => amount !== 0)}>{(debt) => {
                 const [status, description, cost] = relativeStatus(debt)
 
                 return (
