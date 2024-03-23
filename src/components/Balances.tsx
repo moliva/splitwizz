@@ -11,10 +11,12 @@ import navStyles from './NavComponent.module.css'
 export type BalancesProps = {
   balances: Accessor<Balance[]>
   group: Resource<DetailedGroup>
+
+  onPayment(expense: Expense): void
 }
 
 export const Balances = (props: BalancesProps) => {
-  const { balances, group } = props
+  const { balances, group, onPayment } = props
   const [state] = useAppContext()!
 
   const [users, setUsers] = createSignal<Record<UserId, User>>(usersMap(group()!))
@@ -62,8 +64,7 @@ export const Balances = (props: BalancesProps) => {
     }
 
     await postExpense(expense, group()!.id!, state().identity!)
-
-    // TODO - bubble up and refresh content! - moliva - 2024/03/23
+    onPayment(expense)
   }
 
   return (

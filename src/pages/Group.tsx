@@ -107,7 +107,7 @@ export default () => {
               <Expenses expenses={expenses} group={group} onExpenseCreated={refreshContent} />
             </Match>
             <Match when={tab() === 1}>
-              <Balances balances={balances} group={group} />
+              <Balances balances={balances} group={group} onPayment={refreshContent}/>
             </Match>
           </Switch>
         </>
