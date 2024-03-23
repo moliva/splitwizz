@@ -66,7 +66,7 @@ export const Expenses = (props: ExpensesProps) => {
         <ExpenseModal group={group()!} onConfirm={onExpenseConfirm} onDiscard={closeExpenseModal} />
       </Show>
       <div class={styles['expense-dates']}>
-        <For each={Object.entries(expenses())}>{([month, expenses]) => (
+        <For each={Object.entries(expenses())}>{([month, expenses]: [string, FormatExpense[]]) => (
           <>
             <label class={styles['expense-date']}>{monthNumberToName(month.substring(5))} {month.substring(0, 4)}</label>
 
@@ -77,20 +77,29 @@ export const Expenses = (props: ExpensesProps) => {
                     <span>{expense.day[1]}</span>
                     <span>{expense.day[0]}</span>
                   </div>
-                  <div class={styles['expense-description']}>
-                    <label>{expense.description}</label>
-                    <label class={styles['expense-payment']}>{expense.payment}</label>
-                  </div>
-                  <div class={styles['expense-relative']} style={{ color: expense.relative[0] === 'lent' ? '#3c963c' : '#ca0808' }}>
-                    <label>{expense.relative[1]}</label>
-                    <label>{expense.relative[2]}</label>
-                  </div>
+                  {expense.relative ? (
+                    <>
+                      <div class={styles['expense-description']}>
+                        <label>{expense.description}</label>
+                        <label class={styles['expense-payment']}>{expense.payment}</label>
+                      </div>
+                      <div class={styles['expense-relative']} style={{ color: expense.relative[0] === 'lent' ? '#3c963c' : '#ca0808' }}>
+                        <label>{expense.relative[1]}</label>
+                        <label>{expense.relative[2]}</label>
+                      </div>
+                    </>
+                  ) : (
+                    <div class={styles['expense-description']}>
+                      <label class={styles['expense-payment']} style={{ color: 'white' }}>{expense.payment}</label>
+                    </div>
+                  )}
                 </div>
               )}</For>
             </div>
           </>
-        )}</For>
-      </div>
+        )
+        }</For>
+      </div >
       <div class={styles.actions}>
         <button class={`${appStyles.button} ${styles.invite}`} onClick={() => setShowInviteModal(true)}>Invite</button>
         <button class={`${appStyles.button} ${styles.expense}`} onClick={() => setShowExpenseModal(true)}>Expense</button>

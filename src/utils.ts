@@ -56,16 +56,28 @@ export function formatExpenses(state: AppState, group: DetailedGroup): Record<st
     const currency = state.currencies[expense.currency_id].acronym
     const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency })
 
-    const status = expense.split_strategy.payer === me.id ? 'lent' : 'borrowed'
-    const description = status === 'lent' ? 'you lent' : 'you borrowed'
-    const cost = formatter.format(expense.amount / expense.split_strategy.split_between.length)
-    const relative = [status, description, cost]
+    // Boris paid Constanza $ 10000
+    let relative, payment
+    switch (expense.split_strategy.kind) {
+      case 'equally': {
+        const status = expense.split_strategy.payer === me.id ? 'lent' : 'borrowed'
+        const description = status === 'lent' ? 'you lent' : 'you borrowed'
+        const cost = formatter.format(expense.amount / expense.split_strategy.split_between.length)
+        relative = [status, description, cost]
+
+        payment = `${userIdToDisplay(expense.split_strategy.payer)} paid ${formatter.format(expense.amount)}`
+        break;
+      }
+      case 'payment': {
+        payment = `${userIdToDisplay(expense.split_strategy.payer)} paid ${userIdToDisplay(expense.split_strategy.recipient)} ${formatter.format(expense.amount)}`
+      }
+    }
 
     return {
       ...expense,
       monthYear: expense.date.substring(0, 7),
       day: [date.getDate(), dayNumberToName(date.getDay())],
-      payment: `${userIdToDisplay(expense.split_strategy.payer)} paid ${formatter.format(expense.amount)}`,
+      payment,
       relative
     }
   })
