@@ -2,6 +2,7 @@ import { Accessor, For, Resource, Show, createEffect, createSignal } from "solid
 
 import { Balance, CurrencyId, DetailedGroup, Expense, FormatExpense, RelativeTuple, User, UserId, } from "../types"
 import { useAppContext } from "../context"
+import { postExpense } from "../services"
 
 import appStyles from '../App.module.css'
 import styles from '../pages/Group.module.css'
@@ -34,6 +35,34 @@ export const Balances = (props: BalancesProps) => {
     const description = status === 'lent' ? 'gets back' : 'owes'
 
     return [status, description, cost]
+  }
+
+  const settleUp = async (user1: User, user2: User, currencyId: CurrencyId, amount: number): Promise<void> => {
+    let owes, getsBack
+
+    if (amount > 0) {
+      owes = user1
+      getsBack = user2
+    } else {
+      owes = user2
+      getsBack = user1
+      amount = -amount
+    }
+
+    console.log(`register payment from ${owes.name} to ${getsBack.name} for ${currencyId}${amount}`)
+    const expense: Expense = {
+      description: "Payment",
+      currency_id: currencyId,
+      amount,
+      date: new Date().toISOString(),
+      split_strategy: {
+        kind: "payment",
+        payer: owes.id,
+        recipient: getsBack.id
+      }
+    }
+
+    await postExpense(expense, group()!.id!, state().identity!)
   }
 
   return (
@@ -77,6 +106,7 @@ export const Balances = (props: BalancesProps) => {
                       alt="profile"
                     />
                     <label>{member.name} {description} <span style={{ color: status === 'lent' ? '#3c963c' : '#ca0808' }}>{cost}</span> {status === 'lent' ? 'from' : 'to'} {ower.name}</label>
+                    <button class={`${appStyles.button} ${styles['settle-up']} `} onClick={() => settleUp(member, ower, Number(debt[0]), debt[1])}>Settle up</button>
                   </div>
                 )
               }}</For>

@@ -9,11 +9,17 @@ export type UserId = string
 
 export type EquallySplitStrategy = {
   kind: 'equally'
-  payer: UserId,
-  split_between: UserId[],
+  payer: UserId
+  split_between: UserId[]
 }
 
-export type SplitStrategy = EquallySplitStrategy
+export type PaymentSplitStrategy = {
+  kind: 'payment'
+  payer: UserId
+  recipient: UserId
+}
+
+export type SplitStrategy = EquallySplitStrategy | PaymentSplitStrategy
 
 export type RelativeStatus = 'lent' | 'borrowed' | 'none'
 export type RelativeTuple = [RelativeStatus, string, string] // status, description, split currency + amount
@@ -22,7 +28,7 @@ export type FormatExpense = Expense & {
   monthYear: string
   day: [number, string] // day of month and day of week
   payment: string,
-  relative: RelativeTuple
+  relative?: RelativeTuple
 }
 
 export type Expense = {

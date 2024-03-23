@@ -46,7 +46,8 @@
 .balance-header {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 10px;
+
   height: 40px;
 }
 
@@ -68,7 +69,8 @@
 .balance-ower {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 10px;
+
   height: 30px;
 }
 
@@ -76,6 +78,14 @@
   max-width: 100%;
   max-height: 100%;
   display: block;
+}
+
+.settle-up {
+  font-size: 14px;
+  border: 0.1px solid #3c963c;
+  color: #3c963c;
+  font-weight: 400;
+  padding: 5px 7px;
 }
 
 /* ***************************************************************************************************** */
@@ -164,7 +174,7 @@
 }
 
 .tab-item.selected {
-  background-color: #3c963c; 
+  background-color: #3c963c;
 }
 
 .tab-item:hover {
