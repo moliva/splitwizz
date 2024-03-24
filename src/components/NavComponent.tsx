@@ -5,6 +5,8 @@ import Fa from "solid-fa"
 
 import { Identity, Notification } from "../types"
 
+import { ProfilePicture } from "./ProfilePicture"
+
 import appStyles from '../App.module.css'
 import styles from './NavComponent.module.css'
 
