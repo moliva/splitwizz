@@ -78,45 +78,52 @@ export const Balances = (props: BalancesProps) => {
     onPayment(expense)
   }
 
+  const isSettledUp = balances().reduce((settled, b) => settled && Object.values(b.total).every(a => a === 0), true)
+
   return (
     <div class={styles.balances}>
-      <For each={balances()}>{(balance) => {
-        const member = users()[balance.user_id]
-        const totals = Object.entries(balance.total)
+      {isSettledUp
+        ? <div class={styles['settled-up-container']}><label class={styles['settled-up']}>All settled! 🪄</label></div>
+        : <For each={balances()}>{(balance) => {
+          const member = users()[balance.user_id]
+          const totals = Object.entries(balance.total)
 
-        // TODO - make a better description if there's more than one currency involved - moliva - 2024/03/22
-        const [status, description, cost] = relativeStatus(totals[0])
-        const moreCurrencies = totals.length > 1 ? '*' : ''
+          // TODO - make a better description if there's more than one currency involved - moliva - 2024/03/22
+          const total = totals.find(([, a]) => a !== 0)!
+          const [status, description, cost] = relativeStatus(total)
 
-        // TODO - allow this header to collapse the whole thing - moliva - 2024/03/22
-        return <>
-          <div class={styles['balance-header']}>
-            <ProfilePicture title={member.email} picture={member.picture} />
-            <label>{member.name} {description} <span style={{ color: status === 'lent' ? '#3c963c' : '#ca0808' }}>{cost}{moreCurrencies}</span> in total</label>
-          </div>
-          <div class={styles['balance-owers']}>
-            <For each={Object.entries(balance.owes)}>{([owerId, debt]) => {
-              const ower = users()[owerId]
+          const moreCurrencies = totals.length > 1 ? '*' : ''
 
-              return <For each={Object.entries(debt).filter(([, amount]) => amount !== 0)}>{(debt) => {
-                const [status, description, cost] = relativeStatus(debt)
+          // TODO - allow this header to collapse the whole thing - moliva - 2024/03/22
+          return <>
+            <div class={styles['balance-header']}>
+              <ProfilePicture title={member.email} picture={member.picture} />
+              <label>{member.name} {description} <span style={{ color: status === 'lent' ? '#3c963c' : '#ca0808' }}>{cost}{moreCurrencies}</span> in total</label>
+            </div>
+            <div class={styles['balance-owers']}>
+              <For each={Object.entries(balance.owes)}>{([owerId, debt]) => {
+                const ower = users()[owerId]
 
-                return (
-                  <div class={styles['balance-ower']}>
-                    <ProfilePicture title={ower.email} picture={ower.picture} />
-                    <label>{member.name} {description} <span style={{ color: status === 'lent' ? '#3c963c' : '#ca0808' }}>{cost}</span> {status === 'lent' ? 'from' : 'to'} {ower.name}</label>
+                return <For each={Object.entries(debt).filter(([, amount]) => amount !== 0)}>{(debt) => {
+                  const [status, description, cost] = relativeStatus(debt)
 
-                    {wip()[member.id + "_" + ower.id + "_" + debt[0]]
-                      ? <span style={{ 'font-style': 'oblique' }}>loading...</span>
-                      : <button class={`${appStyles.button} ${styles['settle-up']} `} onClick={() => settleUp(member, ower, Number(debt[0]), debt[1])}>Settle up</button>
-                    }
-                  </div>
-                )
+                  return (
+                    <div class={styles['balance-ower']}>
+                      <ProfilePicture title={ower.email} picture={ower.picture} />
+                      <label>{member.name} {description} <span style={{ color: status === 'lent' ? '#3c963c' : '#ca0808' }}>{cost}</span> {status === 'lent' ? 'from' : 'to'} {ower.name}</label>
+
+                      {wip()[member.id + "_" + ower.id + "_" + debt[0]]
+                        ? <span style={{ 'font-style': 'oblique' }}>loading...</span>
+                        : <button class={`${appStyles.button} ${styles['settle-up']} `} onClick={() => settleUp(member, ower, Number(debt[0]), debt[1])}>Settle up</button>
+                      }
+                    </div>
+                  )
+                }}</For>
               }}</For>
-            }}</For>
-          </div>
-        </>
-      }}</For>
+            </div>
+          </>
+        }}</For>
+      }
     </div>
   )
 }
