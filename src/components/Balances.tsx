@@ -8,7 +8,6 @@ import { ProfilePicture } from "./ProfilePicture"
 
 import appStyles from '../App.module.css'
 import styles from '../pages/Group.module.css'
-import { sleep } from "../utils"
 
 export type BalancesProps = {
   balances: Accessor<Balance[]>
