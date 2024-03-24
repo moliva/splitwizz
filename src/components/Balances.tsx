@@ -75,12 +75,6 @@ export const Balances = (props: BalancesProps) => {
 
     await postExpense(expense, group()!.id!, state().identity!)
 
-    setWip({
-      ...wip(),
-      [getsBack.id + "_" + owes.id + "_" + currencyId]: false,
-      [owes.id + "_" + getsBack.id + "_" + currencyId]: false
-    })
-
     onPayment(expense)
   }
 
