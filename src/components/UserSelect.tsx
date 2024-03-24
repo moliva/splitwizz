@@ -1,9 +1,10 @@
-import { MultiSelect } from '@digichanges/solid-multiselect'
+import { MultiSelect } from '@moliva/solid-multiselect'
 
 import { User } from '../types'
 
+import { ProfilePicture } from './ProfilePicture'
+
 import styles from './ExpenseModal.module.css'
-import navStyles from './NavComponent.module.css'
 
 export type UserSelectProps = {
   onChange: () => void
@@ -17,22 +18,15 @@ export type UserSelectProps = {
 
 export const UserSelect = (props: UserSelectProps) =>
   <MultiSelect
+    ref={props.ref}
     onSelect={props.onChange}
     onRemove={props.onChange}
-    ref={props.ref}
     emptyRecordMsg="No more users in the group"
     options={props.users}
     isObject
     displayValue="email"
     renderValue={(member: User) => <div class={styles['select-user-option']}>
-      <img
-        class={`${navStyles['profile-picture']} ${styles.tiny}`}
-        src={member.picture}
-        title={member.email}
-        crossOrigin="anonymous"
-        referrerPolicy="no-referrer"
-        alt="profile"
-      />
+      <ProfilePicture title={member.email} picture={member.picture} />
       <span>{member.name}</span>
     </div>}
     selectedValues={props.initialSelection}

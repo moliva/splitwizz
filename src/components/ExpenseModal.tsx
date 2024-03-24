@@ -1,5 +1,5 @@
 import { For, createSignal } from 'solid-js'
-import { Ref } from '@digichanges/solid-multiselect'
+import { Ref } from '@moliva/solid-multiselect'
 
 import { User, DetailedGroup, Expense } from '../types'
 import { useAppContext } from '../context'
@@ -20,8 +20,8 @@ export type ExpenseModalProps = {
 export const ExpenseModal = (props: ExpenseModalProps) => {
   const [state] = useAppContext()
 
-  const [payerRef, setPayerRef] = createSignal<Ref | undefined>()
-  const [splitBetweenRef, setSplitBetweenRef] = createSignal<Ref | undefined>()
+  const [payerRef, setPayerRef] = createSignal<Ref<User> | undefined>()
+  const [splitBetweenRef, setSplitBetweenRef] = createSignal<Ref<User> | undefined>()
 
   const [isConfirmDisabled, setConfirmDisabled] = createSignal(true)
 

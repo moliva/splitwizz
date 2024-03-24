@@ -37,14 +37,7 @@ export const Nav = (props: NavProps) => {
             <Fa class={styles['nav-icon']} icon={faUnlockKeyhole} />
           </a>
         </div>
-        <img
-          class={`${styles['profile-picture']} ${styles.tiny}`}
-          src={identity.identity.picture}
-          title={identity.identity.name}
-          crossOrigin="anonymous"
-          referrerPolicy="no-referrer"
-          alt="profile"
-        />
+        <ProfilePicture title={identity.identity.name} picture={identity.identity.picture} />
       </div>
     </div>
   </nav>

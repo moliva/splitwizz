@@ -4,9 +4,10 @@ import { Balance, CurrencyId, DetailedGroup, Expense, FormatExpense, RelativeTup
 import { useAppContext } from "../context"
 import { postExpense } from "../services"
 
+import { ProfilePicture } from "./ProfilePicture"
+
 import appStyles from '../App.module.css'
 import styles from '../pages/Group.module.css'
-import navStyles from './NavComponent.module.css'
 
 export type BalancesProps = {
   balances: Accessor<Balance[]>
@@ -48,6 +49,7 @@ export const Balances = (props: BalancesProps) => {
     } else {
       owes = user2
       getsBack = user1
+
       amount = -amount
     }
 
@@ -80,14 +82,7 @@ export const Balances = (props: BalancesProps) => {
         // TODO - allow this header to collapse the whole thing - moliva - 2024/03/22
         return <>
           <div class={styles['balance-header']}>
-            <img
-              class={`${navStyles['profile-picture']} ${styles.tiny}`}
-              src={member.picture}
-              title={member.email}
-              crossOrigin="anonymous"
-              referrerPolicy="no-referrer"
-              alt="profile"
-            />
+            <ProfilePicture title={member.email} picture={member.picture} />
             <label>{member.name} {description} <span style={{ color: status === 'lent' ? '#3c963c' : '#ca0808' }}>{cost}{moreCurrencies}</span> in total</label>
           </div>
           <div class={styles['balance-owers']}>
@@ -99,14 +94,7 @@ export const Balances = (props: BalancesProps) => {
 
                 return (
                   <div class={styles['balance-ower']}>
-                    <img
-                      class={`${navStyles['profile-picture']} ${styles.tiny}`}
-                      src={ower.picture}
-                      title={ower.email}
-                      crossOrigin="anonymous"
-                      referrerPolicy="no-referrer"
-                      alt="profile"
-                    />
+                    <ProfilePicture title={ower.email} picture={ower.picture} />
                     <label>{member.name} {description} <span style={{ color: status === 'lent' ? '#3c963c' : '#ca0808' }}>{cost}</span> {status === 'lent' ? 'from' : 'to'} {ower.name}</label>
                     <button class={`${appStyles.button} ${styles['settle-up']} `} onClick={() => settleUp(member, ower, Number(debt[0]), debt[1])}>Settle up</button>
                   </div>
@@ -119,7 +107,6 @@ export const Balances = (props: BalancesProps) => {
     </div>
   )
 }
-
 
 function usersMap(group: DetailedGroup): Record<UserId, User> {
   const entries = group.members.map(m => ([m.user.id, m.user] as const))
