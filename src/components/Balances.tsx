@@ -1,6 +1,6 @@
-import { Accessor, For, Resource, Show, createEffect, createSignal } from "solid-js"
+import { Accessor, For, Resource, createEffect, createSignal } from "solid-js"
 
-import { Balance, CurrencyId, DetailedGroup, Expense, FormatExpense, RelativeTuple, User, UserId, } from "../types"
+import { Balance, CurrencyId, DetailedGroup, Expense, RelativeTuple, User, UserId, } from "../types"
 import { useAppContext } from "../context"
 import { postExpense } from "../services"
 
@@ -8,6 +8,7 @@ import { ProfilePicture } from "./ProfilePicture"
 
 import appStyles from '../App.module.css'
 import styles from '../pages/Group.module.css'
+import { sleep } from "../utils"
 
 export type BalancesProps = {
   balances: Accessor<Balance[]>
@@ -19,6 +20,8 @@ export type BalancesProps = {
 export const Balances = (props: BalancesProps) => {
   const { balances, group, onPayment } = props
   const [state] = useAppContext()!
+
+  const [wip, setWip] = createSignal(Object.fromEntries(balances().flatMap((b) => Object.entries(b.owes).flatMap(([owerId, c]) => Object.entries(c).map(([currencyId]) => [b.user_id + '_' + owerId + "_" + currencyId, false])))))
 
   const [users, setUsers] = createSignal<Record<UserId, User>>(usersMap(group()!))
 
@@ -53,6 +56,12 @@ export const Balances = (props: BalancesProps) => {
       amount = -amount
     }
 
+    setWip({
+      ...wip(),
+      [getsBack.id + "_" + owes.id + "_" + currencyId]: true,
+      [owes.id + "_" + getsBack.id + "_" + currencyId]: true
+    })
+
     const expense: Expense = {
       description: "Payment",
       currency_id: currencyId,
@@ -66,6 +75,13 @@ export const Balances = (props: BalancesProps) => {
     }
 
     await postExpense(expense, group()!.id!, state().identity!)
+
+    setWip({
+      ...wip(),
+      [getsBack.id + "_" + owes.id + "_" + currencyId]: false,
+      [owes.id + "_" + getsBack.id + "_" + currencyId]: false
+    })
+
     onPayment(expense)
   }
 
@@ -96,7 +112,11 @@ export const Balances = (props: BalancesProps) => {
                   <div class={styles['balance-ower']}>
                     <ProfilePicture title={ower.email} picture={ower.picture} />
                     <label>{member.name} {description} <span style={{ color: status === 'lent' ? '#3c963c' : '#ca0808' }}>{cost}</span> {status === 'lent' ? 'from' : 'to'} {ower.name}</label>
-                    <button class={`${appStyles.button} ${styles['settle-up']} `} onClick={() => settleUp(member, ower, Number(debt[0]), debt[1])}>Settle up</button>
+
+                    {wip()[member.id + "_" + ower.id + "_" + debt[0]]
+                      ? <span style={{ 'font-style': 'oblique' }}>loading...</span>
+                      : <button class={`${appStyles.button} ${styles['settle-up']} `} onClick={() => settleUp(member, ower, Number(debt[0]), debt[1])}>Settle up</button>
+                    }
                   </div>
                 )
               }}</For>
