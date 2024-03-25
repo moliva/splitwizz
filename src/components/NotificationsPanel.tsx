@@ -1,9 +1,11 @@
 import { For, createSignal, Resource } from 'solid-js'
 
-import { Notification, NotificationAction } from '../types'
+import { CurrencyId, Notification, NotificationAction } from '../types'
+import { useAppContext } from '../context'
 
 import styles from '../App.module.css'
 import editGroupstyles from './EditGroupComponent.module.css'
+import { A } from '@solidjs/router'
 
 export type NotificationsProps = {
   notifications: Resource<Notification[]>
@@ -14,14 +16,21 @@ export type NotificationsProps = {
 
 export const NotificationsPanel = (props: NotificationsProps) => {
   const { notifications } = props
+  const [state] = useAppContext()
 
-  const [wip, setWip] = createSignal(Object.fromEntries(notifications()!.map((n: Notification) => ([n.group!.id!, false]))))
+  const [wip, setWip] = createSignal(Object.fromEntries(notifications()!.map((n: Notification) => ([n.id, false]))))
 
   const onAction = (action: NotificationAction, notification: Notification) => async () => {
-    setWip({ ...wip(), [notification.group!.id!]: true })
+    setWip({ ...wip(), [notification.id!]: true })
 
     await props.onAction(action, notification)
-    setWip({ ...wip(), [notification.group!.id!]: false })
+    setWip({ ...wip(), [notification.id!]: false })
+  }
+
+  function formatPrice(currencyId: CurrencyId, amount: number): string {
+    const currency = state().currencies[currencyId].acronym
+    const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency })
+    return formatter.format(amount)
   }
 
   return <div class={editGroupstyles.modal}>
@@ -30,20 +39,28 @@ export const NotificationsPanel = (props: NotificationsProps) => {
       <div class={styles['notification-cards']}>
         <For each={notifications()}>{(notification) =>
           <div class={styles['notification-card']}>
-            <label>You've been invited to group <span class={styles['group-name']}>{notification.group?.name}</span></label>
-            <div class={styles['notification-card-controls']}>
-              {wip()[notification.group!.id!]
-                ? <span style={{ 'font-style': 'oblique' }}>loading...</span>
-                : <>
-                  <button class={`${styles['notification-button']} ${styles.primary}`} onClick={onAction('joined', notification)}>
-                    Accept
-                  </button>
-                  <button class={`${styles['notification-button']} ${styles.cancel}`} onClick={onAction('rejected', notification)}>
-                    Decline
-                  </button>
-                </>
-              }
-            </div>
+            {notification.data.kind === 'invite' ? (
+              <>
+                <label>You've been invited to group <span class={styles['group-name']}>{notification.data.group.name}</span></label>
+                <div class={styles['notification-card-controls']}>
+                  {wip()[notification.id!]
+                    ? <span style={{ 'font-style': 'oblique' }}>loading...</span>
+                    : <>
+                      <button class={`${styles['notification-button']} ${styles.primary}`} onClick={onAction('joined', notification)}>
+                        Accept
+                      </button>
+                      <button class={`${styles['notification-button']} ${styles.cancel}`} onClick={onAction('rejected', notification)}>
+                        Decline
+                      </button>
+                    </>
+                  }
+                </div>
+              </>
+            ) : (
+              <>
+                <label>{notification.data.created_by.name} registered a payment of <span style={{ color: 'green' }}>{formatPrice(notification.data.currency_id, notification.data.amount)}</span> {notification.data.payer.email === state().identity!.identity.email ? 'from' : 'to'} you in group <A href={`${import.meta.env.BASE_URL}groups/${notification.data.group.id}`} class={styles['group-name']}>{notification.data.group.name}</A></label>
+              </>
+            )}
           </div>
         }</For>
       </div>

@@ -1,9 +1,25 @@
-import { Identity, Group, Currency, DetailedGroup, Notification, NotificationAction, Expense, Balance } from "./types";
+import { Identity, NotificationsUpdate, Group, Currency, DetailedGroup, Notification, NotificationAction, Expense, Balance, NotificationUpdate } from "./types";
 
 export const API_HOST = import.meta.env.VITE_API_URL
 
-export async function updateMembership(status: NotificationAction, notification: Notification, identity: Identity): Promise<void> {
-  await authentifiedFetch(`${API_HOST}/groups/${notification.group!.id}/memberships`, identity, {
+export async function updateNotifications(update: NotificationsUpdate, identity: Identity): Promise<void> {
+  await authentifiedFetch(`${API_HOST}/notifications`, identity, {
+    method: 'PUT',
+    body: JSON.stringify(update),
+    headers: { "Content-Type": "application/json" }
+  })
+}
+
+export async function updateNotification(notification: Notification, update: NotificationUpdate, identity: Identity): Promise<void> {
+  await authentifiedFetch(`${API_HOST}/notifications/${notification.id}`, identity, {
+    method: 'PUT',
+    body: JSON.stringify(update),
+    headers: { "Content-Type": "application/json" }
+  })
+}
+
+export async function updateMembership(status: NotificationAction, group: Group, identity: Identity): Promise<void> {
+  await authentifiedFetch(`${API_HOST}/groups/${group.id}/memberships`, identity, {
     method: 'PUT',
     body: JSON.stringify({ status }),
     headers: { "Content-Type": "application/json" }

@@ -27,7 +27,7 @@ export const Nav = (props: NavProps) => {
       <div class={styles['nav-auth-controls']}>
         <div class={styles['nav-auth-actions']}>
           <button class={`${appStyles.button} ${appStyles.link} ${styles.notifications} ${styles['nav-button']}`} onClick={props.onNotificationsClicked}>
-            {props.notifications()?.length ?? 0 > 0 ?
+            {props.notifications()?.filter(n => n.status === 'new').length ?? 0 > 0 ?
               <span style={{ display: 'inline-block', position: 'relative' }}>
                 <Fa class={styles['nav-icon']} icon={faBell} />
                 <Fa class={`${styles['nav-icon']} ${styles['nav-overlap']}`} icon={faCircle} />

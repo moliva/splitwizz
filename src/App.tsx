@@ -4,7 +4,7 @@ import { createSignal, onMount, Switch, Match, Show, onCleanup, createResource, 
 import { useNavigate, useSearchParams } from "@solidjs/router"
 
 import { Notification, NotificationAction } from './types'
-import { fetchCurrencies as doFetchCurrencies, fetchNotifications as doFetchNotifications, updateMembership } from './services'
+import { fetchCurrencies as doFetchCurrencies, fetchNotifications as doFetchNotifications, updateMembership, updateNotification, updateNotifications } from './services'
 import { useAppContext } from './context'
 
 import { Nav } from './components/NavComponent'
@@ -19,9 +19,6 @@ const GroupPage = lazy(() => import("./pages/Group"))
 export default () => {
   const [state, setState] = useAppContext()
 
-  const [showNotifications, setShowNotifications] = createSignal(false)
-  const toggleNotifications = () => setShowNotifications(!showNotifications())
-
   const navigate = useNavigate()
 
   async function fetchNotifications() {
@@ -34,16 +31,6 @@ export default () => {
     const result = await doFetchNotifications(identity!)
 
     return result
-  }
-
-  const handleAppKeydown = (e: KeyboardEvent) => {
-    if (e.key === 'Escape' || e.key === 'Esc') {
-      if (showNotifications()) {
-        // if notifications modal is currently on, discard it
-        setShowNotifications(false)
-      }
-      return false
-    }
   }
 
   // handle auth
@@ -69,7 +56,7 @@ export default () => {
     if (identity) {
 
       const currencies = await doFetchCurrencies(identity!)
-      setState({ ...state(), currencies: Object.fromEntries(currencies.map(c=> [c.id, c])) })
+      setState({ ...state(), currencies: Object.fromEntries(currencies.map(c => [c.id, c])) })
 
       return true
     }
@@ -80,13 +67,35 @@ export default () => {
 
   const [notifications, { mutate: setNotifications, refetch: refetchNotifications }] = createResource(fetchNotifications);
 
+  const [showNotifications, setShowNotifications] = createSignal(false)
+  const toggleNotifications = async () => {
+    if (!showNotifications()) {
+      await updateNotifications({ ids: (notifications() ?? []).map(n => n.id), status: 'read' }, state().identity!)
+      const newNotifications = (notifications() ?? []).map(n => ({ ...n, status: 'read' as const }))
+      setNotifications(newNotifications)
+    }
+
+    setShowNotifications(!showNotifications())
+
+  }
+
+  const handleAppKeydown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape' || e.key === 'Esc') {
+      if (showNotifications()) {
+        // if notifications modal is currently on, discard it
+        setShowNotifications(false)
+      }
+      return false
+    }
+  }
+
   let notificationsTimer: number
 
   onMount(() => {
 
     notificationsTimer = setInterval(() => {
       refetchNotifications()
-    }, 60000)
+    }, 10000)
 
     window.addEventListener('keydown', handleAppKeydown, true)
   })
@@ -100,9 +109,11 @@ export default () => {
 
   const onNotificationAction = async (action: NotificationAction, notification: Notification): Promise<void> => {
     try {
-      await updateMembership(action, notification, state().identity!)
+      await updateMembership(action, notification.data.group, state().identity!)
+      await updateNotification(notification, { status: 'archived' }, state().identity!)
+
       if (action === 'joined') {
-        const group = notification.group!
+        const group = notification.data.group
         const currentState = state()
 
         const newState = {

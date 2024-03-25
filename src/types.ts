@@ -48,12 +48,46 @@ export type Expense = {
   updated_at?: string
 }
 
+export type NotificationStatus = 'new' | 'read' | 'archived'
+
+export type NotificationsUpdate = NotificationUpdate & { ids: number[] }
+
+export type NotificationUpdate = {
+  status: NotificationStatus
+}
+
 export type NotificationAction = 'joined' | 'rejected'
 export type MembershipStatus = 'joined' | 'rejected' | 'pending'
 
+export type Invite = {
+  kind: 'invite'
+
+  group: Group
+  created_by: User
+}
+export type Payment = {
+  kind: 'payment'
+
+  group: Group
+  currency_id: CurrencyId
+  amount: number
+  date: string
+  payer: User
+  recipient: User
+  created_by: User
+}
+
+export type NotificationKind = Invite | Payment
+
 export type Notification = {
-  group?: Group
-  updated_at: string,
+  id: number,
+  user_id: UserId
+  data: NotificationKind
+
+  status: NotificationStatus
+  status_updated_at: string
+
+  created_at: string
 }
 
 export type Group = {
