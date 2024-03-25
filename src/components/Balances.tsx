@@ -78,11 +78,11 @@ export const Balances = (props: BalancesProps) => {
     onPayment(expense)
   }
 
-  const isSettledUp = balances().reduce((settled, b) => settled && Object.values(b.total).every(a => a === 0), true)
+  const isSettledUp = (balances: Balance[]) => balances.reduce((settled, b) => settled && Object.values(b.total).every(a => a === 0), true)
 
   return (
     <div class={styles.balances}>
-      {isSettledUp
+      {isSettledUp(balances())
         ? <div class={styles['settled-up-container']}><label class={styles['settled-up']}>All settled! 🪄</label></div>
         : <For each={balances()}>{(balance) => {
           const member = users()[balance.user_id]
