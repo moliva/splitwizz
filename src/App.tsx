@@ -139,6 +139,19 @@ export default () => {
     }
   }
 
+  const onArchiveNotifications = async (notifications_: Notification[]): Promise<void> => {
+    try {
+      const ids = notifications_.map(n => n.id)
+
+      await updateNotifications({ ids, status: 'archived' }, state().identity!)
+
+      const ns = notifications()!.filter(n => !notifications_.includes(n))
+      setNotifications(ns)
+    } catch {
+      // TODO - show error - moliva - 2023/10/11
+    }
+  }
+
   return (
     <div class={styles.App}>
       <Switch fallback={<Login />}>
@@ -148,7 +161,7 @@ export default () => {
           </header>
           <main class={styles.main}>
             <Show when={showNotifications()}>
-              <NotificationsPanel notifications={notifications} onClose={toggleNotifications} onAction={onNotificationAction} />
+              <NotificationsPanel notifications={notifications} onClose={toggleNotifications} onAction={onNotificationAction} onArchive={onArchiveNotifications} />
             </Show>
             <section class={styles.content}>
               <Routes>

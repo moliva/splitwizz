@@ -12,6 +12,7 @@ export type NotificationsProps = {
 
   onClose: () => void
   onAction: (action: NotificationAction, notification: Notification) => Promise<void>
+  onArchive: (notifications: Notification[]) => Promise<void>
 }
 
 export const NotificationsPanel = (props: NotificationsProps) => {
@@ -25,6 +26,15 @@ export const NotificationsPanel = (props: NotificationsProps) => {
 
     await props.onAction(action, notification)
     setWip({ ...wip(), [notification.id!]: false })
+  }
+
+  const archiveNotifications = async (notifications: Notification[]) => {
+    await props.onArchive(notifications)
+  }
+
+  const onArchiveAll = () => {
+    props.onClose()
+    props.onArchive(notifications()!)
   }
 
   function formatPrice(currencyId: CurrencyId, amount: number): string {
@@ -61,10 +71,12 @@ export const NotificationsPanel = (props: NotificationsProps) => {
                 <label>{notification.data.created_by.name} registered a payment of <span style={{ color: 'green' }}>{formatPrice(notification.data.currency_id, notification.data.amount)}</span> {notification.data.payer.email === state().identity!.identity.email ? 'from' : 'to'} you in group <A href={`${import.meta.env.BASE_URL}groups/${notification.data.group.id}`} class={styles['group-name']}>{notification.data.group.name}</A></label>
               </>
             )}
+            <span title='Archive notification' class={styles['archive-notification']} onClick={() => archiveNotifications([notification])}>⨯</span>
           </div>
         }</For>
       </div>
       <div class={editGroupstyles['modal-controls']}>
+        <button class={`${styles.button} ${styles.delete}`} onClick={onArchiveAll}>Archive all</button>
         <button class={`${styles.button} ${styles.secondary}`} onClick={props.onClose}>Close</button>
       </div>
     </div>

@@ -16,11 +16,18 @@ export type BalancesProps = {
   onPayment(expense: Expense): void
 }
 
+const balanceItemId = (userId: string, owerId: string, currencyId: string | number): string => userId + '_' + owerId + "_" + currencyId
+
 export const Balances = (props: BalancesProps) => {
   const { balances, group, onPayment } = props
   const [state] = useAppContext()!
 
-  const [wip, setWip] = createSignal(Object.fromEntries(balances().flatMap((b) => Object.entries(b.owes).flatMap(([owerId, c]) => Object.entries(c).map(([currencyId]) => [b.user_id + '_' + owerId + "_" + currencyId, false])))))
+  // create a wip key for each blance user id -> ower id -> currency id
+  const initialWip = Object.fromEntries(balances().flatMap((b) =>
+    Object.entries(b.owes).flatMap(([owerId, c]) =>
+      Object.entries(c).map(([currencyId]) =>
+        [balanceItemId(b.user_id, owerId, currencyId), false]))))
+  const [wip, setWip] = createSignal(initialWip)
 
   const [users, setUsers] = createSignal<Record<UserId, User>>(usersMap(group()!))
 
@@ -57,8 +64,8 @@ export const Balances = (props: BalancesProps) => {
 
     setWip({
       ...wip(),
-      [getsBack.id + "_" + owes.id + "_" + currencyId]: true,
-      [owes.id + "_" + getsBack.id + "_" + currencyId]: true
+      [balanceItemId(getsBack.id, owes.id, currencyId)]: true,
+      [balanceItemId(owes.id, getsBack.id, currencyId)]: true
     })
 
     const expense: Expense = {
@@ -112,7 +119,7 @@ export const Balances = (props: BalancesProps) => {
                       <ProfilePicture title={ower.email} picture={ower.picture} />
                       <label>{member.name} {description} <span style={{ color: status === 'lent' ? '#3c963c' : '#ca0808' }}>{cost}</span> {status === 'lent' ? 'from' : 'to'} {ower.name}</label>
 
-                      {wip()[member.id + "_" + ower.id + "_" + debt[0]]
+                      {wip()[balanceItemId(member.id, ower.id, debt[0])]
                         ? <span style={{ 'font-style': 'oblique' }}>loading...</span>
                         : <button class={`${appStyles.button} ${styles['settle-up']} `} onClick={() => settleUp(member, ower, Number(debt[0]), debt[1])}>Settle up</button>
                       }
