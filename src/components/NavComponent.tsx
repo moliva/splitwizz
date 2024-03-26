@@ -1,6 +1,7 @@
 import { Resource } from "solid-js"
+import { A, useLocation, useNavigate } from "@solidjs/router"
 
-import { faBell, faCircle, faUnlockKeyhole } from "@fortawesome/free-solid-svg-icons"
+import { faBell, faCircle, faUnlockKeyhole, faAngleLeft } from "@fortawesome/free-solid-svg-icons"
 import Fa from "solid-fa"
 
 import { Identity, Notification } from "../types"
@@ -20,7 +21,23 @@ export type NavProps = {
 export const Nav = (props: NavProps) => {
   const { identity } = props
 
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  const goBack = () => {
+    if (location.pathname === import.meta.env.BASE_URL) {
+      navigate(-1)
+    } else {
+      navigate(import.meta.env.BASE_URL)
+    }
+  }
+
   return <nav class={styles.nav}>
+    <div class={styles['nav-left-controls']}>
+      <button class={`${styles['nav-button']} ${appStyles.button} ${appStyles.link} ${styles.back}`} onClick={goBack} >
+        <Fa class={styles['nav-icon']} icon={faAngleLeft} />
+      </button>
+    </div>
     <div class={styles['profile-card']}>
       <div class={styles['nav-app-controls']}>
       </div>
@@ -35,9 +52,9 @@ export const Nav = (props: NavProps) => {
               </span>
               : <Fa class={styles['nav-icon']} icon={faBell} />}
           </button>
-          <a class={`${styles['nav-button']} ${appStyles.button} ${appStyles.link} ${styles.logout}`} href={import.meta.env.BASE_URL} >
+          <A class={`${styles['nav-button']} ${appStyles.button} ${appStyles.link} ${styles.logout}`} href={import.meta.env.BASE_URL} >
             <Fa class={styles['nav-icon']} icon={faUnlockKeyhole} />
-          </a>
+          </A>
         </div>
         <ProfilePicture title={identity.identity.name} picture={identity.identity.picture} />
       </div>

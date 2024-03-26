@@ -1,5 +1,8 @@
 import { Accessor, For, Resource, createEffect, createSignal } from "solid-js"
 
+import Fa from "solid-fa"
+import { faWandMagicSparkles } from "@fortawesome/free-solid-svg-icons"
+
 import { Balance, CurrencyId, DetailedGroup, Expense, RelativeTuple, User, UserId, } from "../types"
 import { useAppContext } from "../context"
 import { postExpense } from "../services"
@@ -121,7 +124,9 @@ export const Balances = (props: BalancesProps) => {
 
                       {wip()[balanceItemId(member.id, ower.id, debt[0])]
                         ? <span style={{ 'font-style': 'oblique' }}>loading...</span>
-                        : <button class={`${appStyles.button} ${styles['settle-up']} `} onClick={() => settleUp(member, ower, Number(debt[0]), debt[1])}>Settle up</button>
+                        : <button title="Settle up" class={`${appStyles.button} ${styles['settle-up']} `} onClick={() => settleUp(member, ower, Number(debt[0]), debt[1])}>
+                          <Fa class={styles['nav-icon']} icon={faWandMagicSparkles} />
+                        </button>
                       }
                     </div>
                   )

@@ -1,5 +1,8 @@
 import { Accessor, For, Resource, Show, createSignal } from "solid-js"
 
+import Fa from "solid-fa"
+import { faUserPlus, faFileInvoiceDollar, faPlus } from "@fortawesome/free-solid-svg-icons"
+
 import { putExpense, postExpense, inviteUsers as doInviteUsers } from "../services"
 import { DetailedGroup, Expense, FormatExpense, } from "../types"
 import { useAppContext } from "../context"
@@ -101,8 +104,14 @@ export const Expenses = (props: ExpensesProps) => {
         }</For>
       </div >
       <div class={styles.actions}>
-        <button class={`${appStyles.button} ${styles.invite}`} onClick={() => setShowInviteModal(true)}>Invite</button>
-        <button class={`${appStyles.button} ${styles.expense}`} onClick={() => setShowExpenseModal(true)}>Expense</button>
+        <button title="Invite" class={`${appStyles.button} ${styles.invite}`} onClick={() => setShowInviteModal(true)}>
+
+          <Fa class={styles['nav-icon']} icon={faUserPlus} />
+        </button>
+        <button title="New expense" class={`${appStyles.button} ${styles.expense}`} style={{ "padding-right": "17px" }} onClick={() => setShowExpenseModal(true)}>
+          <Fa class={styles['nav-icon']} icon={faFileInvoiceDollar} />
+          <Fa class={`${styles['nav-icon']} ${styles['nav-icon-overlap']} `} icon={faPlus} />
+        </button>
       </div>
     </>
   )

@@ -2,6 +2,7 @@
   position: relative;
   width: 95%;
   text-align: center;
+  display: flex;
 }
 
 @media screen and (min-width: 800px) {
@@ -36,6 +37,14 @@
   justify-content: center;
 }
 
+.nav-left-controls {
+  flex-grow: 0;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+}
+
 .nav-auth-controls {
   flex-grow: 0;
   flex-shrink: 0;
@@ -55,6 +64,10 @@
 
 .profile-picture {
   border-radius: 15%;
+}
+
+.back:hover {
+  color: #b9b9b9;
 }
 
 .login:hover {
