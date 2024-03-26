@@ -37,10 +37,16 @@
 }
 
 .content {
-  width: 80%;
+  width: 90%;
 
   display: flex;
   justify-content: center;
+}
+
+@media screen and (min-width: 800px) {
+  .content {
+    width: 80%;
+  }
 }
 
 /* ***************************************************************************************************** */

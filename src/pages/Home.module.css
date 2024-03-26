@@ -2,11 +2,26 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  width: 100%;
+}
+
+@media screen and (min-width: 800px) {
+  .home-content {
+    width: 80%;
+  }
 }
 
 .home-controls {
   display: flex;
   flex-direction: row;
+  width: 100%;
+}
+
+@media screen and (min-width: 800px) {
+  .home-controls {
+    max-width: 600px;
+  }
 }
 
 .groups {
