@@ -1,7 +1,7 @@
 import { Accessor, For, Resource, Show, createSignal } from "solid-js"
 
 import Fa from "solid-fa"
-import { faUserPlus, faFileInvoiceDollar, faPlus } from "@fortawesome/free-solid-svg-icons"
+import { faUserPlus, faFileInvoiceDollar, faPlus, faMoneyBill1 } from "@fortawesome/free-solid-svg-icons"
 
 import { putExpense, postExpense, inviteUsers as doInviteUsers } from "../services"
 import { DetailedGroup, Expense, FormatExpense, } from "../types"
@@ -80,6 +80,11 @@ export const Expenses = (props: ExpensesProps) => {
                     <span>{expense.day[1]}</span>
                     <span>{expense.day[0]}</span>
                   </div>
+                  {expense.relative ? (
+                    <Fa class={`${styles['expense-icon']} ${styles['expense-line']}`} icon={faFileInvoiceDollar} />
+                  ) : (
+                    <Fa class={`${styles['expense-icon']} ${styles['payment']}`} icon={faMoneyBill1} />
+                  )}
                   {expense.relative ? (
                     <>
                       <div class={styles['expense-description']}>

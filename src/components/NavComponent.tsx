@@ -34,7 +34,7 @@ export const Nav = (props: NavProps) => {
 
   return <nav class={styles.nav}>
     <div class={styles['nav-left-controls']}>
-      <button class={`${styles['nav-button']} ${appStyles.button} ${appStyles.link} ${styles.back}`} onClick={goBack} >
+      <button title="Go back" class={`${styles['nav-button']} ${appStyles.button} ${appStyles.link} ${styles.back}`} onClick={goBack} >
         <Fa class={styles['nav-icon']} icon={faAngleLeft} />
       </button>
     </div>
@@ -43,7 +43,7 @@ export const Nav = (props: NavProps) => {
       </div>
       <div class={styles['nav-auth-controls']}>
         <div class={styles['nav-auth-actions']}>
-          <button class={`${appStyles.button} ${appStyles.link} ${styles.notifications} ${styles['nav-button']}`} onClick={props.onNotificationsClicked}>
+          <button title="Notifications" class={`${appStyles.button} ${appStyles.link} ${styles.notifications} ${styles['nav-button']}`} onClick={props.onNotificationsClicked}>
             {props.notifications()?.filter(n => n.status === 'new').length ?? 0 > 0 ?
               <span style={{ display: 'inline-block', position: 'relative' }}>
                 <Fa class={styles['nav-icon']} icon={faBell} />
@@ -52,7 +52,7 @@ export const Nav = (props: NavProps) => {
               </span>
               : <Fa class={styles['nav-icon']} icon={faBell} />}
           </button>
-          <A class={`${styles['nav-button']} ${appStyles.button} ${appStyles.link} ${styles.logout}`} href={import.meta.env.BASE_URL} >
+          <A title="Log out" class={`${styles['nav-button']} ${appStyles.button} ${appStyles.link} ${styles.logout}`} href={import.meta.env.BASE_URL} >
             <Fa class={styles['nav-icon']} icon={faUnlockKeyhole} />
           </A>
         </div>

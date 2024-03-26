@@ -122,7 +122,7 @@ export default (props: HomeProps) => {
         <div class={styles['home-content']}>
           <div class={styles['home-controls']}>
             <Filter value={filter} onChange={setFilter} />
-            <button class={`${appStyles.button} ${appStyles.link} ${styles['new-group']}`} onClick={onNewGroupClicked}>
+            <button title="New group" class={`${appStyles.button} ${appStyles.link} ${styles['new-group']}`} onClick={onNewGroupClicked}>
               <Fa class={appStyles['nav-icon']} icon={faPlusSquare} />
             </button>
           </div>

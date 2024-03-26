@@ -32,6 +32,6 @@ export const Filter = (props: FilterProps) => {
 
   return <div class={styles.filter}>
     <input ref={setInputRef} class={styles['filter-input']} value={value()} placeholder="Filter..." onChange={(ev) => onChange(ev.target.value)} />
-    <button class={`${styles['filter-button']} ${groupStyles['delete-control']}`} onClick={() => onChange("")}><Fa icon={faEraser} /></button>
+    <button title="Erase filter" class={`${styles['filter-button']} ${groupStyles['delete-control']}`} onClick={() => onChange("")}><Fa icon={faEraser} /></button>
   </div>
 }
