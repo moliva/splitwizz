@@ -77,7 +77,6 @@ export const NotificationsPanel = (props: NotificationsProps) => {
                 <span title='Archive notification' class={styles['archive-notification']} onClick={() => archiveNotifications([notification])}>⨯</span>
               </div>
             }</For>
-
           </Match>
         </Switch>
       </div>

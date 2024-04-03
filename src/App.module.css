@@ -60,7 +60,7 @@
 
 .group-name {
   color: green;
-  font-style: italic
+  font-style: italic;
 }
 
 /* ***************************************************************************************************** */
@@ -153,5 +153,5 @@
   cursor: pointer;
   font-size: 20px;
   color: #b0b0b0;
-  padding-bottom: 6.5px
+  padding-bottom: 6.5px;
 }
