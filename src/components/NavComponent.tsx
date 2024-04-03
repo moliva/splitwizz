@@ -52,9 +52,9 @@ export const Nav = (props: NavProps) => {
               </span>
               : <Fa class={styles['nav-icon']} icon={faBell} />}
           </button>
-          <A title="Log out" class={`${styles['nav-button']} ${appStyles.button} ${appStyles.link} ${styles.logout}`} href={import.meta.env.BASE_URL} >
+          <a title="Log out" class={`${styles['nav-button']} ${appStyles.button} ${appStyles.link} ${styles.logout}`} href={import.meta.env.BASE_URL} >
             <Fa class={styles['nav-icon']} icon={faUnlockKeyhole} />
-          </A>
+          </a>
         </div>
         <ProfilePicture title={identity.identity.name} picture={identity.identity.picture} />
       </div>
