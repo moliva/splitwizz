@@ -26,6 +26,6 @@
     "deep-copy-ts": "^0.5.4",
     "solid-fa": "^0.2.0",
     "solid-js": "^1.8.16",
-    "@moliva/solid-multiselect": "file:../../solid-multiselect"
+    "@moliva/solid-multiselect": "git+https://git@github.com/moliva/solid-multiselect.git#1585366f2084be23b7bef785a3075885ab05b32a"
   }
 }
