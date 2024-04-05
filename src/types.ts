@@ -1,4 +1,3 @@
-
 export type Currency = {
   id: CurrencyId
   acronym: string
@@ -27,7 +26,7 @@ export type RelativeTuple = [RelativeStatus, string, string] // status, descript
 export type FormatExpense = Expense & {
   monthYear: string
   day: [number, string] // day of month and day of week
-  payment: string,
+  payment: string
   relative?: RelativeTuple
 }
 
@@ -80,7 +79,7 @@ export type Payment = {
 export type NotificationKind = Invite | Payment
 
 export type Notification = {
-  id: number,
+  id: number
   user_id: UserId
   data: NotificationKind
 
@@ -104,16 +103,16 @@ export type Group = {
 export type UserStatus = 'active' | 'inactive'
 
 export type User = {
-  id: string,
-  email: string,
-  status: UserStatus,
-  name: string,
-  picture: string,
+  id: string
+  email: string
+  status: UserStatus
+  name: string
+  picture: string
 }
 
 export type Membership = {
-  user: User,
-  status: MembershipStatus,
+  user: User
+  status: MembershipStatus
 }
 
 export type CurrencyId = number
@@ -143,7 +142,7 @@ export type DetailedGroup = Group & {
 }
 
 export type Identity = {
-  identity: { name: string, picture: string, email: string }
+  identity: { name: string; picture: string; email: string }
   token: string
 }
 

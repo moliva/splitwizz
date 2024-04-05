@@ -1,4 +1,4 @@
-import { For, createSignal, onMount, Switch, Match, Show, onCleanup, createEffect, } from 'solid-js'
+import { For, createSignal, onMount, Switch, Match, Show, onCleanup, createEffect } from 'solid-js'
 
 import Fa from 'solid-fa'
 import { faPlusSquare } from '@fortawesome/free-solid-svg-icons'
@@ -12,16 +12,15 @@ import { EditGroup } from '../components/EditGroupComponent'
 import { GroupComponent } from '../components/GroupComponent'
 
 import styles from './Home.module.css'
+import navStyles from '../components/NavComponent.module.css'
 import appStyles from '../App.module.css'
 
-export type HomeProps = {
-
-}
+export type HomeProps = {}
 
 export default (props: HomeProps) => {
   const [state, setState] = useAppContext()!
 
-  const [filter, setFilter] = createSignal<string>("")
+  const [filter, setFilter] = createSignal<string>('')
   const [filteredGroups, setFilteredGroups] = createSignal<Group[]>([])
 
   const [showGroupModal, setShowGroupModal] = createSignal(false)
@@ -35,13 +34,13 @@ export default (props: HomeProps) => {
     const newState = {
       ...state(),
       groups: {
-        ...state().groups,
+        ...state().groups
       }
     }
 
     for (const g of groups ?? []) {
       newState.groups[g!.id!] = {
-        ...newState.groups[g!.id!] ?? {},
+        ...(newState.groups[g!.id!] ?? {}),
         ...g
       }
     }
@@ -60,8 +59,7 @@ export default (props: HomeProps) => {
         setShowGroupModal(false)
       } else if (filter().length > 0) {
         // if filter is set, unset it
-        setFilter("")
-
+        setFilter('')
       }
       return false
     }
@@ -70,11 +68,9 @@ export default (props: HomeProps) => {
   const createGroup = (group: Group) => {
     const promise = group.id ? putGroup(group, state()!.identity!) : postGroup(group, state()!.identity!)
 
-    promise
-      .then(refreshContent)
-      .catch(() => {
-        // TODO - show error - moliva - 2023/10/11
-      })
+    promise.then(refreshContent).catch(() => {
+      // TODO - show error - moliva - 2023/10/11
+    })
 
     setShowGroupModal(false)
   }
@@ -108,31 +104,34 @@ export default (props: HomeProps) => {
 
   createEffect(() => {
     const lowered = filter().toLowerCase()
-    const filtered = (Object.values(state().groups) ?? []).filter(group => group.name.toLowerCase().includes(lowered))
+    const filtered = (Object.values(state().groups) ?? []).filter((group) => group.name.toLowerCase().includes(lowered))
 
     setFilteredGroups(filtered)
   })
 
-  return <>
-    <Show when={showGroupModal()}>
-      <EditGroup group={currentGroup()} onDiscard={() => setShowGroupModal(false)} onConfirm={createGroup} />
-    </Show>
-    <Switch fallback={<p>Loading...</p>}>
-      <Match when={typeof state().groups === 'object'}>
-        <div class={styles['home-content']}>
-          <div class={styles['home-controls']}>
-            <Filter value={filter} onChange={setFilter} />
-            <button title="New group" class={`${appStyles.button} ${appStyles.link} ${styles['new-group']}`} onClick={onNewGroupClicked}>
-              <Fa class={appStyles['nav-icon']} icon={faPlusSquare} />
-            </button>
+  return (
+    <>
+      <Show when={showGroupModal()}>
+        <EditGroup group={currentGroup()} onDiscard={() => setShowGroupModal(false)} onConfirm={createGroup} />
+      </Show>
+      <Switch fallback={<p>Loading...</p>}>
+        <Match when={typeof state().groups === 'object'}>
+          <div class={styles['home-content']}>
+            <div class={styles['home-controls']}>
+              <Filter value={filter} onChange={setFilter} />
+              <button
+                title='New group'
+                class={`${appStyles.button} ${appStyles.link} ${styles['new-group']}`}
+                onClick={onNewGroupClicked}>
+                <Fa class={navStyles['nav-icon']} icon={faPlusSquare} />
+              </button>
+            </div>
+            <div class={styles.groups}>
+              <For each={filteredGroups()}>{(group) => <GroupComponent group={group} />}</For>
+            </div>
           </div>
-          <div class={styles.groups}>
-            <For each={filteredGroups()}>{(group) =>
-              <GroupComponent group={group} />
-            }</For>
-          </div>
-        </div>
-      </Match>
-    </Switch>
-  </>
+        </Match>
+      </Switch>
+    </>
+  )
 }
