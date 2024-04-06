@@ -95,7 +95,7 @@ export type Group = {
   created_at: string | undefined
 
   default_currency_id: CurrencyId
-  balance: {
+  balance_config: {
     simplified: boolean
   }
 }

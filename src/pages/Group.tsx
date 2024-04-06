@@ -1,13 +1,17 @@
 import { For, Match, Show, Switch, createEffect, createResource, createSignal } from 'solid-js'
 import { useParams } from '@solidjs/router'
 
-import { fetchBalances, fetchExpenses, fetchGroup } from '../services'
-import { Balance, DetailedGroup } from '../types'
+import { faSliders } from '@fortawesome/free-solid-svg-icons'
+import Fa from 'solid-fa'
+
+import { fetchBalances, fetchExpenses, fetchGroup, postGroup, putGroup } from '../services'
+import { Balance, DetailedGroup, Group } from '../types'
 import { useAppContext } from '../context'
 import { formatExpenses } from '../utils'
 
 import { Balances } from '../components/Balances'
 import { Expenses } from '../components/Expenses'
+import { EditGroup } from '../components/EditGroupComponent'
 
 import styles from './Group.module.css'
 
@@ -37,7 +41,9 @@ export default () => {
   const params = useParams()
   const [state, setState] = useAppContext()!
 
-  const [group] = createResource(params.id, fetchGroupData)
+  const [showGroupModal, setShowGroupModal] = createSignal(false)
+
+  const [group, { mutate }] = createResource(params.id, fetchGroupData)
 
   const [expenses, setExpenses] = createSignal({})
   const [balances, setBalances] = createSignal<Balance[]>([])
@@ -95,6 +101,20 @@ export default () => {
     }
   })
 
+  const updateGroup = (updated: Group) => {
+    const promise = updated.id ? putGroup(updated, state()!.identity!) : postGroup(updated, state()!.identity!)
+
+    promise
+      .then(() => {
+        mutate({ ...group()!, ...updated })
+      })
+      .catch(() => {
+        // TODO - show error - moliva - 2023/10/11
+      })
+
+    setShowGroupModal(false)
+  }
+
   return (
     <div class={styles.main}>
       <Show when={error() !== undefined}>
@@ -109,11 +129,21 @@ export default () => {
           <For each={error()!.split('\n')}>{errorLine => <label>{errorLine}</label>}</For>
         </div>
       </Show>
+      <Show when={showGroupModal()}>
+        <EditGroup group={group()!} onDiscard={() => setShowGroupModal(false)} onConfirm={updateGroup} />
+      </Show>
       {group.loading && <div>Loading!</div>}
       {group.error && <div>Error!</div>}
       {group() && (
         <>
-          <h1 class={styles.name}>{group()!.name}</h1>
+          <div style={{ display: 'inline-flex', 'margin-bottom': '10px', gap: '8px' }}>
+            <label style={{ 'font-weight': '700', 'font-size': 'x-large' }} class={styles.name}>
+              {group()!.name}
+            </label>
+            <button onClick={() => setShowGroupModal(true)}>
+              <Fa class={styles['settings-icon']} icon={faSliders} />
+            </button>
+          </div>
           <ul class={styles['tab-group']}>
             <li class={styles['tab-item']} classList={{ [styles.selected]: tab() === 0 }} onClick={updateTab(0)}>
               Expenses
@@ -125,7 +155,12 @@ export default () => {
           <hr class={styles['divider']} />
           <Switch>
             <Match when={tab() === 0}>
-              <Expenses expenses={expenses} group={group} onExpenseCreated={refreshContent} onExpenseDeleted={refreshContent} />
+              <Expenses
+                expenses={expenses}
+                group={group}
+                onExpenseCreated={refreshContent}
+                onExpenseDeleted={refreshContent}
+              />
             </Match>
             <Match when={tab() === 1}>
               <Balances balances={balances} group={group} onPayment={refreshContent} />

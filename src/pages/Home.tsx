@@ -14,6 +14,7 @@ import { GroupComponent } from '../components/GroupComponent'
 import styles from './Home.module.css'
 import navStyles from '../components/NavComponent.module.css'
 import appStyles from '../App.module.css'
+import groupStyles from '../pages/Group.module.css'
 
 export type HomeProps = {}
 
@@ -24,7 +25,7 @@ export default (props: HomeProps) => {
   const [filteredGroups, setFilteredGroups] = createSignal<Group[]>([])
 
   const [showGroupModal, setShowGroupModal] = createSignal(false)
-  const [currentGroup, setCurrentGroup] = createSignal<Group | undefined>(undefined)
+  const [currentGroup, setCurrentGroup] = createSignal<Group | undefined>()
 
   const refreshGroups = async () => {
     const currentIdentity = state().identity!
@@ -104,7 +105,7 @@ export default (props: HomeProps) => {
 
   createEffect(() => {
     const lowered = filter().toLowerCase()
-    const filtered = (Object.values(state().groups) ?? []).filter((group) => group.name.toLowerCase().includes(lowered))
+    const filtered = (Object.values(state().groups) ?? []).filter(group => group.name.toLowerCase().includes(lowered))
 
     setFilteredGroups(filtered)
   })
@@ -119,16 +120,18 @@ export default (props: HomeProps) => {
           <div class={styles['home-content']}>
             <div class={styles['home-controls']}>
               <Filter value={filter} onChange={setFilter} />
-              <button
-                title='New group'
-                class={`${appStyles.button} ${appStyles.link} ${styles['new-group']}`}
-                onClick={onNewGroupClicked}>
-                <Fa class={navStyles['nav-icon']} icon={faPlusSquare} />
-              </button>
             </div>
             <div class={styles.groups}>
-              <For each={filteredGroups()}>{(group) => <GroupComponent group={group} />}</For>
+              <For each={filteredGroups()}>{group => <GroupComponent group={group} onEdit={showModal} />}</For>
             </div>
+          </div>
+          <div class={groupStyles.actions}>
+            <button
+              title='New group'
+              class={`${appStyles.button} ${appStyles.link} ${styles['new-group']}`}
+              onClick={onNewGroupClicked}>
+              <Fa class={navStyles['nav-icon']} icon={faPlusSquare} />
+            </button>
           </div>
         </Match>
       </Switch>
