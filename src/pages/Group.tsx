@@ -140,10 +140,10 @@ export default () => {
               {group()!.name}
             </label>
             <button onClick={() => setShowGroupModal(true)}>
-              <Fa class={styles['settings-icon']} icon={faSliders} />
+              <Fa class={`${styles['group-icon']} ${styles['group-settings-icon']}`} icon={faSliders} />
             </button>
             <button onClick={() => setShowUsersModal(true)}>
-              <Fa class={styles['settings-icon']} icon={faUsers} />
+              <Fa class={`${styles['group-icon']} ${styles['group-users-icon']}`} icon={faUsers} />
             </button>
           </div>
           <ul class={styles['tab-group']}>

@@ -197,9 +197,17 @@
   font-size: 20px;
 }
 
-.settings-icon {
+.group-icon {
   font-size: 12px;
   color: #999;
+}
+
+.group-settings-icon:hover {
+  color: #ddd;
+}
+
+.group-users-icon:hover {
+  color: #85c0c0;
 }
 
 /* ***************************************************************************************************** */
