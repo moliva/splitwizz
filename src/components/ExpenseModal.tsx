@@ -1,4 +1,5 @@
 import { For, createSignal } from 'solid-js'
+
 import { Ref } from '@moliva/solid-multiselect'
 
 import { User, DetailedGroup, Expense } from '../types'
@@ -119,6 +120,7 @@ export const ExpenseModal = (props: ExpenseModalProps) => {
             closeOnSelect={false}
           />
         </div>
+        <hr class={editGroupStyles.divider} />
         <div class={editGroupStyles['modal-controls']}>
           <button class={`${appStyles.button} ${appStyles.primary}`} onClick={onConfirm} disabled={isConfirmDisabled()}>
             Create

@@ -1,7 +1,7 @@
 import { Match, Show, Switch, createEffect, createResource, createSignal } from 'solid-js'
 import { useParams } from '@solidjs/router'
 
-import { faSliders } from '@fortawesome/free-solid-svg-icons'
+import { faSliders, faUsers } from '@fortawesome/free-solid-svg-icons'
 import Fa from 'solid-fa'
 
 import { fetchBalances, fetchExpenses, fetchGroup, postGroup, putGroup } from '../services'
@@ -12,6 +12,7 @@ import { formatExpenses } from '../utils'
 import { Balances } from '../components/Balances'
 import { Expenses } from '../components/Expenses'
 import { EditGroup } from '../components/EditGroupComponent'
+import { UsersModal } from '../components/UsersModal'
 
 import styles from './Group.module.css'
 
@@ -42,6 +43,7 @@ export default () => {
   const [state, setState] = useAppContext()
 
   const [showGroupModal, setShowGroupModal] = createSignal(false)
+  const [showUsersModal, setShowUsersModal] = createSignal(false)
 
   const [group, { mutate }] = createResource(params.id, fetchGroupData)
 
@@ -126,6 +128,9 @@ export default () => {
       <Show when={showGroupModal()}>
         <EditGroup group={group()!} onDiscard={() => setShowGroupModal(false)} onConfirm={updateGroup} />
       </Show>
+      <Show when={showUsersModal()}>
+        <UsersModal group={group()!} onClose={() => setShowUsersModal(false)} />
+      </Show>
       {group.loading && <div>Loading!</div>}
       {group.error && <div>Error!</div>}
       {group() && (
@@ -136,6 +141,9 @@ export default () => {
             </label>
             <button onClick={() => setShowGroupModal(true)}>
               <Fa class={styles['settings-icon']} icon={faSliders} />
+            </button>
+            <button onClick={() => setShowUsersModal(true)}>
+              <Fa class={styles['settings-icon']} icon={faUsers} />
             </button>
           </div>
           <ul class={styles['tab-group']}>
