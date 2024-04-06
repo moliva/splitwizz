@@ -1,4 +1,15 @@
-import { createSignal, onMount, Switch, Match, Show, onCleanup, createResource, createEffect, lazy } from 'solid-js'
+import {
+  For,
+  createSignal,
+  onMount,
+  Switch,
+  Match,
+  Show,
+  onCleanup,
+  createResource,
+  createEffect,
+  lazy
+} from 'solid-js'
 import { useNavigate, useSearchParams, Routes, Route } from '@solidjs/router'
 
 import { Notification, NotificationAction } from './types'
@@ -24,6 +35,13 @@ export default () => {
   const [state, setState] = useAppContext()
 
   const navigate = useNavigate()
+
+  const setError = (error?: any) => {
+    setState({
+      ...state(),
+      error
+    })
+  }
 
   async function fetchNotifications() {
     const identity = state().identity
@@ -155,6 +173,31 @@ export default () => {
 
   return (
     <div class={styles.App}>
+      <Show when={state().error !== undefined}>
+        <div
+          style={{
+            display: 'flex',
+            position: 'fixed',
+            bottom: '30px',
+            width: '100%',
+            'justify-content': 'center'
+          }}>
+          <div
+            style={{
+              padding: '10px 25px',
+              'background-color': '#ca0808',
+              color: 'white',
+              display: 'flex',
+              'flex-direction': 'column',
+              'border-radius': '3px'
+            }}>
+            <For each={state().error!.split('\n')}>{errorLine => <label>{errorLine}</label>}</For>
+            <button style={{ 'margin-top': '10px', color: '#6f0a0a', 'font-weight': '650' }} onClick={() => setError()}>
+              Clear
+            </button>
+          </div>
+        </div>
+      </Show>
       <Switch fallback={<Login />}>
         <Match when={typeof state().identity !== 'undefined'}>
           <header class={styles.header}>

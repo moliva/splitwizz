@@ -1,4 +1,4 @@
-import { For, Match, Show, Switch, createEffect, createResource, createSignal } from 'solid-js'
+import { Match, Show, Switch, createEffect, createResource, createSignal } from 'solid-js'
 import { useParams } from '@solidjs/router'
 
 import { faSliders } from '@fortawesome/free-solid-svg-icons'
@@ -39,7 +39,7 @@ async function fetchGroupData(id: string): Promise<DetailedGroup> {
 
 export default () => {
   const params = useParams()
-  const [state, setState] = useAppContext()!
+  const [state, setState] = useAppContext()
 
   const [showGroupModal, setShowGroupModal] = createSignal(false)
 
@@ -50,7 +50,13 @@ export default () => {
 
   const [tab, setTab] = createSignal(0)
   const updateTab = (index: number) => () => setTab(index)
-  const [error, setError] = createSignal<string | undefined>()
+
+  const setError = (error?: any) => {
+    setState({
+      ...state(),
+      error
+    })
+  }
 
   const refreshContent = async () => {
     try {
@@ -59,6 +65,8 @@ export default () => {
       const groupId = group()!.id!
       const expenses = currentIdentity ? await fetchExpenses(currentIdentity, groupId) : undefined
       const balances = currentIdentity ? await fetchBalances(currentIdentity, groupId) : undefined
+
+      throw 'saraza baby'
 
       const newState = {
         ...state(),
@@ -117,18 +125,6 @@ export default () => {
 
   return (
     <div class={styles.main}>
-      <Show when={error() !== undefined}>
-        <div
-          style={{
-            padding: '3px',
-            'background-color': '#ca0808',
-            color: 'white',
-            display: 'flex',
-            'flex-direction': 'column'
-          }}>
-          <For each={error()!.split('\n')}>{errorLine => <label>{errorLine}</label>}</For>
-        </div>
-      </Show>
       <Show when={showGroupModal()}>
         <EditGroup group={group()!} onDiscard={() => setShowGroupModal(false)} onConfirm={updateGroup} />
       </Show>
