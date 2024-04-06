@@ -43,23 +43,6 @@ export default () => {
     })
   }
 
-  async function fetchNotifications() {
-    try {
-      const identity = state().identity
-
-      if (!identity) {
-        throw 'not authentified!'
-      }
-
-      const result = await doFetchNotifications(identity!)
-
-      return result
-    } catch (e) {
-      setError(e)
-      return []
-    }
-  }
-
   // handle auth
   const [searchParams] = useSearchParams()
   const token = searchParams.login_success
@@ -89,6 +72,24 @@ export default () => {
 
     return false
   }, false)
+
+  async function fetchNotifications() {
+    try {
+      const identity = state().identity
+
+      if (!identity) {
+        // return premaruterly if not logged in yet
+        return []
+      }
+
+      const result = await doFetchNotifications(identity!)
+
+      return result
+    } catch (e) {
+      setError(e)
+      return []
+    }
+  }
 
   const [notifications, { mutate: setNotifications, refetch: refetchNotifications }] =
     createResource(fetchNotifications)
