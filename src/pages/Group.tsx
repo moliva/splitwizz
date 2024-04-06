@@ -66,8 +66,6 @@ export default () => {
       const expenses = currentIdentity ? await fetchExpenses(currentIdentity, groupId) : undefined
       const balances = currentIdentity ? await fetchBalances(currentIdentity, groupId) : undefined
 
-      throw 'saraza baby'
-
       const newState = {
         ...state(),
         groups: {

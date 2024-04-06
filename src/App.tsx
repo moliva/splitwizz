@@ -44,15 +44,20 @@ export default () => {
   }
 
   async function fetchNotifications() {
-    const identity = state().identity
+    try {
+      const identity = state().identity
 
-    if (!identity) {
-      throw 'not authentified!'
+      if (!identity) {
+        throw 'not authentified!'
+      }
+
+      const result = await doFetchNotifications(identity!)
+
+      return result
+    } catch (e) {
+      setError(e)
+      return []
     }
-
-    const result = await doFetchNotifications(identity!)
-
-    return result
   }
 
   // handle auth
