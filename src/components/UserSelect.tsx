@@ -26,12 +26,16 @@ export const UserSelect = (props: UserSelectProps) => (
     options={props.users}
     isObject
     displayValue='email'
-    renderValue={(member: User) => (
-      <div class={styles['select-user-option']}>
-        <ProfilePicture title={member.email} picture={member.picture} />
-        <span>{member.name}</span>
-      </div>
-    )}
+    renderValue={(member: User) =>
+      member.picture ? (
+        <div class={styles['select-user-option']}>
+          <ProfilePicture title={member.email} picture={member.picture} />
+          <span>{member.name}</span>
+        </div>
+      ) : (
+        <label>{member.email}</label>
+      )
+    }
     selectedValues={props.initialSelection}
     selectionLimit={props.selectionLimit}
     hidePlaceholder={true}
