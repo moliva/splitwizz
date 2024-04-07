@@ -198,7 +198,7 @@
 }
 
 .group-icon {
-  font-size: 12px;
+  font-size: 14px;
   color: #999;
 }
 
@@ -208,6 +208,10 @@
 
 .group-users-icon:hover {
   color: #85c0c0;
+}
+
+.group-refresh-icon:hover {
+  color: #10ff10;
 }
 
 /* ***************************************************************************************************** */

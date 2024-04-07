@@ -107,6 +107,7 @@ export const Expenses = (props: ExpensesProps) => {
                             <div style={{ display: 'inline-flex', gap: '7px' }}>
                               <label>{expense.description}</label>
                               <button
+                                title='Delete expense'
                                 style={{ 'font-size': '9px', color: '#555' }}
                                 onClick={() => removeExpense(expense)}>
                                 <Fa class={groupStyles['delete-control']} icon={faTrash} />
@@ -128,6 +129,7 @@ export const Expenses = (props: ExpensesProps) => {
                               {expense.payment}
                             </label>
                             <button
+                              title='Delete expense'
                               style={{ 'font-size': '9px', color: '#555' }}
                               onClick={() => removeExpense(expense)}>
                               <Fa class={groupStyles['delete-control']} icon={faTrash} />

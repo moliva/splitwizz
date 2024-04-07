@@ -1,7 +1,7 @@
 import { Match, Show, Switch, createEffect, createResource, createSignal } from 'solid-js'
 import { useParams } from '@solidjs/router'
 
-import { faSliders, faUsers } from '@fortawesome/free-solid-svg-icons'
+import { faRotateRight, faSliders, faUsers } from '@fortawesome/free-solid-svg-icons'
 import Fa from 'solid-fa'
 
 import { fetchBalances, fetchExpenses, fetchGroup, postGroup, putGroup } from '../services'
@@ -16,42 +16,9 @@ import { UsersModal } from '../components/UsersModal'
 
 import styles from './Group.module.css'
 
-async function fetchGroupData(id: string): Promise<DetailedGroup> {
-  const [state, setState] = useAppContext()!
-
-  const group = state().groups[id]
-
-  // check if we currently have the group loaded with detailed fields as well or force fetch
-  if (group?.members) {
-    return group
-  }
-
-  const identity = state().identity
-
-  if (!identity) {
-    throw 'not authentified!'
-  }
-
-  const result = await fetchGroup(identity!, Number(id))
-  setState({ ...state(), groups: { ...state().groups, [id]: result } })
-
-  return result
-}
-
 export default () => {
   const params = useParams()
   const [state, setState] = useAppContext()
-
-  const [showGroupModal, setShowGroupModal] = createSignal(false)
-  const [showUsersModal, setShowUsersModal] = createSignal(false)
-
-  const [group, { mutate }] = createResource(params.id, fetchGroupData)
-
-  const [expenses, setExpenses] = createSignal({})
-  const [balances, setBalances] = createSignal<Balance[]>([])
-
-  const [tab, setTab] = createSignal(0)
-  const updateTab = (index: number) => () => setTab(index)
 
   const setError = (error?: any) => {
     setState({
@@ -60,13 +27,63 @@ export default () => {
     })
   }
 
+  const fetchGroupData = async (id: string, opts: { refetching: boolean }): Promise<DetailedGroup> => {
+    try {
+      const group = state().groups[id]
+
+      // check if we currently have the group loaded with detailed fields as well or force fetch
+      if (!opts.refetching && group?.members) {
+        return group
+      }
+
+      const identity = state().identity
+
+      if (!identity) {
+        throw 'not authentified!'
+      }
+
+      const result = await fetchGroup(identity!, Number(id))
+      setState({
+        ...state(),
+        groups: {
+          ...state().groups,
+          [id]: {
+            ...(state().groups[id] ?? {}),
+            ...result
+          }
+        }
+      })
+
+      return result
+    } catch (e) {
+      setError('Error while fetching detailed group\n\n' + JSON.stringify(e))
+      const group = state().groups[id]
+      return group as DetailedGroup
+    }
+  }
+
+  const [showGroupModal, setShowGroupModal] = createSignal(false)
+  const [showUsersModal, setShowUsersModal] = createSignal(false)
+
+  const [group, { mutate, refetch: refetchGroup }] = createResource(params.id, fetchGroupData)
+
+  const [expenses, setExpenses] = createSignal({})
+  const [balances, setBalances] = createSignal<Balance[]>([])
+
+  const [tab, setTab] = createSignal(0)
+  const updateTab = (index: number) => () => setTab(index)
+
   const refreshContent = async () => {
     try {
       const currentIdentity = state().identity!
 
       const groupId = group()!.id!
-      const expenses = currentIdentity ? await fetchExpenses(currentIdentity, groupId) : undefined
-      const balances = currentIdentity ? await fetchBalances(currentIdentity, groupId) : undefined
+
+      const expensesPromise = currentIdentity ? fetchExpenses(currentIdentity, groupId) : undefined
+      const balancesPromise = currentIdentity ? fetchBalances(currentIdentity, groupId) : undefined
+      const all = Promise.all([expensesPromise, balancesPromise])
+
+      const [expenses, balances] = await all
 
       const newState = {
         ...state(),
@@ -83,6 +100,7 @@ export default () => {
       setState(newState)
     } catch (e) {
       setError('Error while refreshing content\n\n' + JSON.stringify(e))
+      throw e
     }
   }
 
@@ -90,11 +108,21 @@ export default () => {
   createEffect(async () => {
     if (!alreadyFetch) {
       if (group()) {
-        await refreshContent()
         alreadyFetch = true
+        try {
+          await refreshContent()
+        } catch (e) {
+          // put back to false due to error thrown
+          alreadyFetch = false
+        }
       }
     }
   })
+
+  const refreshAll = async () => {
+    refetchGroup()
+    refreshContent()
+  }
 
   createEffect(() => {
     try {
@@ -139,11 +167,14 @@ export default () => {
             <label style={{ 'font-weight': '700', 'font-size': 'x-large' }} class={styles.name}>
               {group()!.name}
             </label>
-            <button onClick={() => setShowGroupModal(true)}>
+            <button title='Group settings' onClick={() => setShowGroupModal(true)}>
               <Fa class={`${styles['group-icon']} ${styles['group-settings-icon']}`} icon={faSliders} />
             </button>
-            <button onClick={() => setShowUsersModal(true)}>
+            <button title='Users' onClick={() => setShowUsersModal(true)}>
               <Fa class={`${styles['group-icon']} ${styles['group-users-icon']}`} icon={faUsers} />
+            </button>
+            <button title='Refresh group' onClick={() => refreshAll()}>
+              <Fa class={`${styles['group-icon']} ${styles['group-refresh-icon']}`} icon={faRotateRight} />
             </button>
           </div>
           <ul class={styles['tab-group']}>
