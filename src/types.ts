@@ -100,6 +100,15 @@ export type Group = {
   }
 }
 
+export type DetailedGroup = Group & {
+  creator: User
+  members: Membership[]
+
+  // refine group
+  expenses: Expense[]
+  balances: Balance[]
+}
+
 export type UserStatus = 'active' | 'inactive'
 
 export type User = {
@@ -130,15 +139,6 @@ export type Balance = {
       [currency_id: CurrencyId]: number
     }
   }
-}
-
-export type DetailedGroup = Group & {
-  creator: User
-  members: Membership[]
-
-  // refine group
-  expenses: Expense[]
-  balances: Balance[]
 }
 
 export type Identity = {

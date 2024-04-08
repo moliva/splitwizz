@@ -1,4 +1,5 @@
 import { JSXElement, createContext, createSignal, useContext } from 'solid-js'
+
 import { Currency, DetailedGroup, Identity } from './types'
 
 export type AppState = {
@@ -14,7 +15,29 @@ const INITIAL_STATE: AppState = {
   currencies: []
 }
 
-const appState = createSignal(INITIAL_STATE)
+const [state, setState] = createSignal(INITIAL_STATE)
+
+const setGroup = (group: Partial<DetailedGroup>) => {
+  setState({
+    ...state(),
+    groups: {
+      ...state().groups,
+      [group.id!]: {
+        ...(state().groups[group.id!] ?? {}),
+        ...group
+      }
+    }
+  })
+}
+
+const setError = (error?: any) => {
+  setState({
+    ...state(),
+    error
+  })
+}
+
+const appState = [state, { setState, setError, setGroup }] as const
 
 const AppContext = createContext<typeof appState>()
 

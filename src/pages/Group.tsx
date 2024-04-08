@@ -18,14 +18,7 @@ import styles from './Group.module.css'
 
 export default () => {
   const params = useParams()
-  const [state, setState] = useAppContext()
-
-  const setError = (error?: any) => {
-    setState({
-      ...state(),
-      error
-    })
-  }
+  const [state, { setError, setGroup }] = useAppContext()
 
   const fetchGroupData = async (id: string, opts: { refetching: boolean }): Promise<DetailedGroup> => {
     try {
@@ -43,16 +36,7 @@ export default () => {
       }
 
       const result = await fetchGroup(identity!, Number(id))
-      setState({
-        ...state(),
-        groups: {
-          ...state().groups,
-          [id]: {
-            ...(state().groups[id] ?? {}),
-            ...result
-          }
-        }
-      })
+      setGroup(result)
 
       return result
     } catch (e) {
@@ -81,23 +65,14 @@ export default () => {
 
       const expensesPromise = currentIdentity ? fetchExpenses(currentIdentity, groupId) : undefined
       const balancesPromise = currentIdentity ? fetchBalances(currentIdentity, groupId) : undefined
-      const all = Promise.all([expensesPromise, balancesPromise])
 
-      const [expenses, balances] = await all
+      const [expenses, balances] = await Promise.all([expensesPromise, balancesPromise])
 
-      const newState = {
-        ...state(),
-        groups: {
-          ...state().groups,
-          [groupId]: {
-            ...group()!,
-            expenses,
-            balances
-          }
-        }
-      }
-
-      setState(newState)
+      setGroup({
+        ...group()!,
+        expenses,
+        balances
+      })
     } catch (e) {
       setError('Error while refreshing content\n\n' + JSON.stringify(e))
       throw e
@@ -144,8 +119,8 @@ export default () => {
       .then(() => {
         mutate({ ...group()!, ...updated })
       })
-      .catch(() => {
-        // TODO - show error - moliva - 2023/10/11
+      .catch(e => {
+        setError('Error while updating group\n\n' + JSON.stringify(e))
       })
 
     setShowGroupModal(false)

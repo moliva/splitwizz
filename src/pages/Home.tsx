@@ -19,7 +19,7 @@ import groupStyles from '../pages/Group.module.css'
 export type HomeProps = {}
 
 export default (props: HomeProps) => {
-  const [state, setState] = useAppContext()!
+  const [state, { setGroup }] = useAppContext()!
 
   const [filter, setFilter] = createSignal<string>('')
   const [filteredGroups, setFilteredGroups] = createSignal<Group[]>([])
@@ -32,21 +32,9 @@ export default (props: HomeProps) => {
 
     const groups = currentIdentity ? await fetchGroups(currentIdentity) : undefined
 
-    const newState = {
-      ...state(),
-      groups: {
-        ...state().groups
-      }
-    }
-
     for (const g of groups ?? []) {
-      newState.groups[g!.id!] = {
-        ...(newState.groups[g!.id!] ?? {}),
-        ...g
-      }
+      setGroup(g)
     }
-
-    setState(newState)
   }
 
   const refreshContent = async () => {

@@ -32,16 +32,9 @@ const Home = lazy(() => import('./pages/Home'))
 const GroupPage = lazy(() => import('./pages/Group'))
 
 export default () => {
-  const [state, setState] = useAppContext()
+  const [state, { setState, setGroup, setError }] = useAppContext()
 
   const navigate = useNavigate()
-
-  const setError = (error?: any) => {
-    setState({
-      ...state(),
-      error
-    })
-  }
 
   // handle auth
   const [searchParams] = useSearchParams()
@@ -139,20 +132,7 @@ export default () => {
 
       if (action === 'joined') {
         const group = notification.data.group
-        const currentState = state()
-
-        const newState = {
-          ...currentState,
-          groups: {
-            ...currentState.groups,
-            [group.id!]: {
-              // ...currentState.groups[group.id!], // write new instead of merge
-              ...group
-            }
-          }
-        }
-
-        setState(newState)
+        setGroup(group)
       }
 
       const ns = [...notifications()!]
@@ -180,25 +160,10 @@ export default () => {
   return (
     <div class={styles.App}>
       <Show when={state().error !== undefined}>
-        <div
-          style={{
-            display: 'flex',
-            position: 'fixed',
-            bottom: '30px',
-            width: '100%',
-            'justify-content': 'center'
-          }}>
-          <div
-            style={{
-              padding: '10px 25px',
-              'background-color': '#ca0808',
-              color: 'white',
-              display: 'flex',
-              'flex-direction': 'column',
-              'border-radius': '3px'
-            }}>
+        <div class={styles['error-float']}>
+          <div class={styles['error-toast']}>
             <For each={state().error!.split('\n')}>{errorLine => <label>{errorLine}</label>}</For>
-            <button style={{ 'margin-top': '10px', color: '#6f0a0a', 'font-weight': '650' }} onClick={() => setError()}>
+            <button class={styles['error-clear']} onClick={() => setError()}>
               Clear
             </button>
           </div>

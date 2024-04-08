@@ -25,7 +25,7 @@ export type ExpensesProps = {
 
 export const Expenses = (props: ExpensesProps) => {
   const { expenses, group, onExpenseCreated } = props
-  const [state, setState] = useAppContext()!
+  const [state] = useAppContext()!
 
   const [showInviteModal, setShowInviteModal] = createSignal(false)
   const [showExpenseModal, setShowExpenseModal] = createSignal(false)
@@ -97,12 +97,11 @@ export const Expenses = (props: ExpensesProps) => {
                         <span>{expense.day[0]}</span>
                       </div>
                       {expense.relative ? (
-                        <Fa class={`${styles['expense-icon']} ${styles['expense-line']}`} icon={faFileInvoiceDollar} />
-                      ) : (
-                        <Fa class={`${styles['expense-icon']} ${styles['payment']}`} icon={faMoneyBill1} />
-                      )}
-                      {expense.relative ? (
                         <>
+                          <Fa
+                            class={`${styles['expense-icon']} ${styles['expense-line']}`}
+                            icon={faFileInvoiceDollar}
+                          />
                           <div class={styles['expense-description']}>
                             <div style={{ display: 'inline-flex', gap: '7px' }}>
                               <label>{expense.description}</label>
@@ -123,19 +122,22 @@ export const Expenses = (props: ExpensesProps) => {
                           </div>
                         </>
                       ) : (
-                        <div class={styles['expense-description']}>
-                          <div style={{ display: 'inline-flex', gap: '7px' }}>
-                            <label class={styles['expense-payment']} style={{ color: 'white' }}>
-                              {expense.payment}
-                            </label>
-                            <button
-                              title='Delete expense'
-                              style={{ 'font-size': '9px', color: '#555' }}
-                              onClick={() => removeExpense(expense)}>
-                              <Fa class={groupStyles['delete-control']} icon={faTrash} />
-                            </button>
+                        <>
+                          <Fa class={`${styles['expense-icon']} ${styles['payment']}`} icon={faMoneyBill1} />
+                          <div class={styles['expense-description']}>
+                            <div style={{ display: 'inline-flex', gap: '7px' }}>
+                              <label class={styles['expense-payment']} style={{ color: 'white' }}>
+                                {expense.payment}
+                              </label>
+                              <button
+                                title='Delete expense'
+                                style={{ 'font-size': '9px', color: '#555' }}
+                                onClick={() => removeExpense(expense)}>
+                                <Fa class={groupStyles['delete-control']} icon={faTrash} />
+                              </button>
+                            </div>
                           </div>
-                        </div>
+                        </>
                       )}
                     </div>
                   )}

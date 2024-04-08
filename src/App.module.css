@@ -67,6 +67,19 @@
 /* *************** Buttons *************** */
 /* ***************************************************************************************************** */
 
+.button {
+  border: 0;
+  border-radius: 5px;
+  padding: 7px 10px;
+
+  background-color: transparent;
+  cursor: pointer;
+
+  color: white;
+  font-family: var(--font-family);
+  font-size: 16px;
+}
+
 .button:hover {
   filter: brightness(120%);
 }
@@ -87,19 +100,6 @@
 
 .button.delete {
   background-color: #9b2d2d;
-}
-
-.button {
-  border: 0;
-  border-radius: 5px;
-  padding: 7px 10px;
-
-  background-color: transparent;
-  cursor: pointer;
-
-  color: white;
-  font-family: var(--font-family);
-  font-size: 16px;
 }
 
 /* ***************************************************************************************************** */
@@ -154,4 +154,31 @@
   font-size: 20px;
   color: #b0b0b0;
   padding-bottom: 6.5px;
+}
+
+/* ***************************************************************************************************** */
+/* *************** Error *************** */
+/* ***************************************************************************************************** */
+
+.error-float {
+  display: flex;
+  position: fixed;
+  bottom: 30px;
+  width: 100%;
+  justify-content: center;
+}
+
+.error-toast {
+  padding: 10px 25px;
+  background-color: #ca0808;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  border-radius: 3px;
+}
+
+.error-clear {
+  margin-top: 10px;
+  color: #6f0a0a;
+  font-weight: 650;
 }
