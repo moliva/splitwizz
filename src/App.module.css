@@ -1,5 +1,5 @@
 .App {
-  width: 99%;
+  width: 100%;
   margin: auto;
 }
 
@@ -37,7 +37,7 @@
 }
 
 .content {
-  width: 90%;
+  width: 96%;
 
   display: flex;
   justify-content: center;
