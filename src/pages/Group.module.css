@@ -115,7 +115,7 @@
   width: 90%;
 
   border: 0;
-  height: 0.4px;
+  height: 1px;
   background: linear-gradient(to right, rgba(85, 85, 85, 0.2), #555, rgba(85, 85, 85, 0.2));
 
   margin: 0;
@@ -176,6 +176,7 @@
 .expense-payment {
   font-size: 12px;
   color: #b2b2b2;
+  text-wrap: nowrap;
 }
 
 .expense-relative {

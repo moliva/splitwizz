@@ -69,7 +69,7 @@ export function formatExpenses(state: AppState, group: DetailedGroup): Record<st
     const userIdToDisplay = (id: string): string => {
       const user = userIdToUser(id)!
 
-      return user === me ? 'You' : user.name
+      return user === me ? 'You' : userName(user)
     }
 
     // TODO - cache formatters per currency - moliva - 2024/03/22
@@ -127,4 +127,10 @@ function groupBy<T>(array: T[], keySelector: (each: T) => PropertyKey): Partial<
 
     return grouped
   }
+}
+
+export function userName(user: User) : string {
+  const indexBlank = user.name.indexOf(" ")
+
+  return user.name.slice(0,indexBlank == -1 ? 0 : indexBlank)
 }

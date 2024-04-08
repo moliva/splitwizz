@@ -11,6 +11,7 @@ import { ProfilePicture } from './ProfilePicture'
 
 import appStyles from '../App.module.css'
 import styles from '../pages/Group.module.css'
+import { userName } from '../utils'
 
 export type BalancesProps = {
   balances: Accessor<Balance[]>
@@ -28,7 +29,7 @@ export const Balances = (props: BalancesProps) => {
 
   // create a wip key for each blance user id -> ower id -> currency id
   const initialWip = Object.fromEntries(
-    balances().flatMap((b) =>
+    balances().flatMap(b =>
       Object.entries(b.owes).flatMap(([owerId, c]) =>
         Object.entries(c).map(([currencyId]) => [balanceItemId(b.user_id, owerId, currencyId), false])
       )
@@ -93,7 +94,7 @@ export const Balances = (props: BalancesProps) => {
   }
 
   const isSettledUp = (balances: Balance[]) =>
-    balances.reduce((settled, b) => settled && Object.values(b.total).every((a) => a === 0), true)
+    balances.reduce((settled, b) => settled && Object.values(b.total).every(a => a === 0), true)
 
   return (
     <div class={styles.balances}>
@@ -103,7 +104,7 @@ export const Balances = (props: BalancesProps) => {
         </div>
       ) : (
         <For each={balances()}>
-          {(balance) => {
+          {balance => {
             const member = users()[balance.user_id]
             const totals = Object.entries(balance.total)
 
@@ -119,7 +120,7 @@ export const Balances = (props: BalancesProps) => {
                 <div class={styles['balance-header']}>
                   <ProfilePicture title={member.email} picture={member.picture} />
                   <label>
-                    {member.name} {description}{' '}
+                    {userName(member)} {description}{' '}
                     <span style={{ color: status === 'lent' ? '#3c963c' : '#ca0808' }}>
                       {cost}
                       {moreCurrencies}
@@ -134,16 +135,16 @@ export const Balances = (props: BalancesProps) => {
 
                       return (
                         <For each={Object.entries(debt).filter(([, amount]) => amount !== 0)}>
-                          {(debt) => {
+                          {debt => {
                             const [status, description, cost] = relativeStatus(debt)
 
                             return (
                               <div class={styles['balance-ower']}>
                                 <ProfilePicture title={ower.email} picture={ower.picture} />
                                 <label>
-                                  {member.name} {description}{' '}
+                                  {userName(member)} {description}{' '}
                                   <span style={{ color: status === 'lent' ? '#3c963c' : '#ca0808' }}>{cost}</span>{' '}
-                                  {status === 'lent' ? 'from' : 'to'} {ower.name}
+                                  {status === 'lent' ? 'from' : 'to'} {userName(ower)}
                                 </label>
 
                                 {wip()[balanceItemId(member.id, ower.id, debt[0])] ? (
@@ -174,6 +175,6 @@ export const Balances = (props: BalancesProps) => {
 }
 
 function usersMap(group: DetailedGroup): Record<UserId, User> {
-  const entries = group.members.map((m) => [m.user.id, m.user] as const)
+  const entries = group.members.map(m => [m.user.id, m.user] as const)
   return Object.fromEntries(entries)
 }
