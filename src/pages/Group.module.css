@@ -111,6 +111,17 @@
 /* *************** Expenses *************** */
 /* ***************************************************************************************************** */
 
+.expense-separator {
+  width: 60%;
+
+  border: 0;
+  border-top: 0.1px solid #555;
+
+  margin: 0;
+  margin-inline-start: auto;
+  margin-inline-end: auto;
+}
+
 .expense {
   background-color: #89963c;
   /* font-size: 24px; */
@@ -131,7 +142,7 @@
 
 .expenses {
   margin: 5px 3px 10px;
-  gap: 10px;
+  gap: 8px;
 
   display: flex;
   flex-direction: column;

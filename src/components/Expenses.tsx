@@ -90,56 +90,59 @@ export const Expenses = (props: ExpensesProps) => {
 
               <div class={styles.expenses}>
                 <For each={expenses}>
-                  {expense => (
-                    <div class={styles['expense-card']}>
-                      <div class={styles['expense-day']}>
-                        <span>{expense.day[1]}</span>
-                        <span>{expense.day[0]}</span>
+                  {(expense, i) => (
+                    <>
+                      <div class={styles['expense-card']}>
+                        <div class={styles['expense-day']}>
+                          <span>{expense.day[1]}</span>
+                          <span>{expense.day[0]}</span>
+                        </div>
+                        {expense.relative ? (
+                          <>
+                            <Fa
+                              class={`${styles['expense-icon']} ${styles['expense-line']}`}
+                              icon={faFileInvoiceDollar}
+                            />
+                            <div class={styles['expense-description']}>
+                              <div style={{ display: 'inline-flex', gap: '7px' }}>
+                                <label>{expense.description}</label>
+                                <button
+                                  title='Delete expense'
+                                  style={{ 'font-size': '9px', color: '#555' }}
+                                  onClick={() => removeExpense(expense)}>
+                                  <Fa class={groupStyles['delete-control']} icon={faTrash} />
+                                </button>
+                              </div>
+                              <label class={styles['expense-payment']}>{expense.payment}</label>
+                            </div>
+                            <div
+                              class={styles['expense-relative']}
+                              style={{ color: expense.relative[0] === 'lent' ? '#3c963c' : '#ca0808' }}>
+                              <label>{expense.relative[1]}</label>
+                              <label>{expense.relative[2]}</label>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <Fa class={`${styles['expense-icon']} ${styles['payment']}`} icon={faMoneyBill1} />
+                            <div class={styles['expense-description']}>
+                              <div style={{ display: 'inline-flex', gap: '7px' }}>
+                                <label class={styles['expense-payment']} style={{ color: 'white' }}>
+                                  {expense.payment}
+                                </label>
+                                <button
+                                  title='Delete expense'
+                                  style={{ 'font-size': '9px', color: '#555' }}
+                                  onClick={() => removeExpense(expense)}>
+                                  <Fa class={groupStyles['delete-control']} icon={faTrash} />
+                                </button>
+                              </div>
+                            </div>
+                          </>
+                        )}
                       </div>
-                      {expense.relative ? (
-                        <>
-                          <Fa
-                            class={`${styles['expense-icon']} ${styles['expense-line']}`}
-                            icon={faFileInvoiceDollar}
-                          />
-                          <div class={styles['expense-description']}>
-                            <div style={{ display: 'inline-flex', gap: '7px' }}>
-                              <label>{expense.description}</label>
-                              <button
-                                title='Delete expense'
-                                style={{ 'font-size': '9px', color: '#555' }}
-                                onClick={() => removeExpense(expense)}>
-                                <Fa class={groupStyles['delete-control']} icon={faTrash} />
-                              </button>
-                            </div>
-                            <label class={styles['expense-payment']}>{expense.payment}</label>
-                          </div>
-                          <div
-                            class={styles['expense-relative']}
-                            style={{ color: expense.relative[0] === 'lent' ? '#3c963c' : '#ca0808' }}>
-                            <label>{expense.relative[1]}</label>
-                            <label>{expense.relative[2]}</label>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <Fa class={`${styles['expense-icon']} ${styles['payment']}`} icon={faMoneyBill1} />
-                          <div class={styles['expense-description']}>
-                            <div style={{ display: 'inline-flex', gap: '7px' }}>
-                              <label class={styles['expense-payment']} style={{ color: 'white' }}>
-                                {expense.payment}
-                              </label>
-                              <button
-                                title='Delete expense'
-                                style={{ 'font-size': '9px', color: '#555' }}
-                                onClick={() => removeExpense(expense)}>
-                                <Fa class={groupStyles['delete-control']} icon={faTrash} />
-                              </button>
-                            </div>
-                          </div>
-                        </>
-                      )}
-                    </div>
+                      {i() + 1 < expenses.length ? <hr class={styles['expense-separator']} /> : null}
+                    </>
                   )}
                 </For>
               </div>
