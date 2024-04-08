@@ -112,10 +112,11 @@
 /* ***************************************************************************************************** */
 
 .expense-separator {
-  width: 60%;
+  width: 90%;
 
   border: 0;
-  border-top: 0.1px solid #555;
+  height: 0.4px;
+  background: linear-gradient(to right, rgba(85, 85, 85, 0.2), #555, rgba(85, 85, 85, 0.2));
 
   margin: 0;
   margin-inline-start: auto;
