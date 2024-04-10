@@ -1,4 +1,4 @@
-import { Match, Show, Switch, createEffect, createResource, createSignal } from 'solid-js'
+import { Match, Show, Switch, createEffect, createResource, createSignal, onMount } from 'solid-js'
 import { useParams } from '@solidjs/router'
 
 import { faRotateRight, faSliders, faUsers } from '@fortawesome/free-solid-svg-icons'
@@ -46,10 +46,17 @@ export default () => {
     }
   }
 
+  onMount(() => {
+    fetchGroupData(params.id, { refetching: false })
+  })
+
   const [showGroupModal, setShowGroupModal] = createSignal(false)
   const [showUsersModal, setShowUsersModal] = createSignal(false)
 
-  const [group, { mutate, refetch: refetchGroup }] = createResource(params.id, fetchGroupData)
+  const [group, setGroupSignal] = createSignal<DetailedGroup | undefined>()
+  createEffect(() => {
+    setGroupSignal(state().groups[params.id])
+  })
 
   const [expenses, setExpenses] = createSignal({})
   const [balances, setBalances] = createSignal<Balance[]>([])
@@ -95,7 +102,7 @@ export default () => {
   })
 
   const refreshAll = async () => {
-    refetchGroup()
+    fetchGroupData(params.id, { refetching: true })
     refreshContent()
   }
 
@@ -117,7 +124,7 @@ export default () => {
 
     promise
       .then(() => {
-        mutate({ ...group()!, ...updated })
+        setGroup({ ...group()!, ...updated })
       })
       .catch(e => {
         setError('Error while updating group\n\n' + JSON.stringify(e))
@@ -132,11 +139,9 @@ export default () => {
         <EditGroup group={group()!} onDiscard={() => setShowGroupModal(false)} onConfirm={updateGroup} />
       </Show>
       <Show when={showUsersModal()}>
-        <UsersModal group={group()!} onClose={() => setShowUsersModal(false)} />
+        <UsersModal group={group} onClose={() => setShowUsersModal(false)} />
       </Show>
-      {group.loading && <div>Loading!</div>}
-      {group.error && <div>Error!</div>}
-      {group() && (
+      {group() ? (
         <>
           <div style={{ display: 'inline-flex', 'margin-bottom': '10px', gap: '8px' }}>
             <label style={{ 'font-weight': '700', 'font-size': 'x-large' }} class={styles.name}>
@@ -175,6 +180,8 @@ export default () => {
             </Match>
           </Switch>
         </>
+      ) : (
+        'Loading'
       )}
     </div>
   )

@@ -42,7 +42,7 @@ export default () => {
   const navigate = useNavigate()
 
   // FIXME - dupped method from group - moliva - 2024/04/10
-  const fetchGroupData = async (id: string, opts: { refetching: boolean }): Promise<DetailedGroup> => {
+  const fetchGroupData = async (id: string, opts: { refetching: boolean; field: string }): Promise<DetailedGroup> => {
     try {
       const group = state().groups[id]
 
@@ -57,15 +57,24 @@ export default () => {
         throw 'not authentified!'
       }
 
-      const newGroupFetch = fetchGroup(identity!, Number(id))
-      const expensesFetch = fetchExpenses(identity!, Number(id))
-      const balancesFetch = fetchBalances(identity!, Number(id))
-      const [newGroup, expenses, balances] = await Promise.all([newGroupFetch, expensesFetch, balancesFetch])
-      const result = {
-        ...newGroup,
-        expenses,
-        balances
+      let result
+      if (opts.field === 'expenses') {
+        const expensesFetch = fetchExpenses(identity!, Number(id))
+        const balancesFetch = fetchBalances(identity!, Number(id))
+        const [expenses, balances] = await Promise.all([expensesFetch, balancesFetch])
+        result = {
+          ...group,
+          expenses,
+          balances
+        }
+      } else {
+        const newGroup = await fetchGroup(identity!, Number(id))
+        result = {
+          ...group,
+          ...newGroup
+        }
       }
+
       setGroup(result)
 
       return result
@@ -158,7 +167,7 @@ export default () => {
       for (const event of events) {
         switch (event.kind) {
           case 'group': {
-            await fetchGroupData(`${event.id}`, { refetching: true })
+            await fetchGroupData(`${event.id}`, { refetching: true, field: event.field })
             break
           }
           case 'notification': {

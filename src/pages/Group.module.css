@@ -29,9 +29,9 @@
 }
 
 .actions {
-  width: 70%;
   position: fixed;
   bottom: 15px;
+  right: 15%;
 
   display: flex;
   justify-content: flex-end;

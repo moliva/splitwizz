@@ -17,7 +17,7 @@ import groupStyles from './GroupComponent.module.css'
 
 export type ExpensesProps = {
   expenses: Accessor<Record<string, FormatExpense[]>>
-  group: Resource<DetailedGroup>
+  group: Accessor<DetailedGroup | undefined>
 
   onExpenseCreated(): void
   onExpenseDeleted(): void

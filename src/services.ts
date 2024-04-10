@@ -16,6 +16,7 @@ export const API_HOST = import.meta.env.VITE_API_URL
 type Event = {
   kind: 'group' | 'notification'
   id: number
+  field: string
 }
 
 export async function fetchSync(identity: Identity): Promise<Event[]> {
