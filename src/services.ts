@@ -13,6 +13,17 @@ import {
 
 export const API_HOST = import.meta.env.VITE_API_URL
 
+type Event = {
+  kind: 'group' | 'notification'
+  id: number
+}
+
+export async function fetchSync(identity: Identity): Promise<Event[]> {
+  const res = await authentifiedFetch(`${API_HOST}/sync`, identity!)
+
+  return (await res.json()) as Event[]
+}
+
 export async function updateNotifications(update: NotificationsUpdate, identity: Identity): Promise<void> {
   await authentifiedFetch(`${API_HOST}/notifications`, identity, {
     method: 'PUT',

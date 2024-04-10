@@ -12,10 +12,14 @@ import {
 } from 'solid-js'
 import { useNavigate, useSearchParams, Routes, Route } from '@solidjs/router'
 
-import { Notification, NotificationAction } from './types'
+import { DetailedGroup, Notification, NotificationAction } from './types'
 import {
   fetchCurrencies as doFetchCurrencies,
   fetchNotifications as doFetchNotifications,
+  fetchBalances,
+  fetchExpenses,
+  fetchGroup,
+  fetchSync,
   updateMembership,
   updateNotification,
   updateNotifications
@@ -27,6 +31,7 @@ import { Login } from './components/Login'
 import { NotificationsPanel } from './components/NotificationsPanel'
 
 import styles from './App.module.css'
+import { sleep } from './utils'
 
 const Home = lazy(() => import('./pages/Home'))
 const GroupPage = lazy(() => import('./pages/Group'))
@@ -35,6 +40,41 @@ export default () => {
   const [state, { setState, setGroup, setError }] = useAppContext()
 
   const navigate = useNavigate()
+
+  // FIXME - dupped method from group - moliva - 2024/04/10
+  const fetchGroupData = async (id: string, opts: { refetching: boolean }): Promise<DetailedGroup> => {
+    try {
+      const group = state().groups[id]
+
+      // check if we currently have the group loaded with detailed fields as well or force fetch
+      if (!opts.refetching && group?.members) {
+        return group
+      }
+
+      const identity = state().identity
+
+      if (!identity) {
+        throw 'not authentified!'
+      }
+
+      const newGroupFetch = fetchGroup(identity!, Number(id))
+      const expensesFetch = fetchExpenses(identity!, Number(id))
+      const balancesFetch = fetchBalances(identity!, Number(id))
+      const [newGroup, expenses, balances] = await Promise.all([newGroupFetch, expensesFetch, balancesFetch])
+      const result = {
+        ...newGroup,
+        expenses,
+        balances
+      }
+      setGroup(result)
+
+      return result
+    } catch (e) {
+      setError('Error while fetching detailed group\n\n' + JSON.stringify(e))
+      const group = state().groups[id]
+      return group as DetailedGroup
+    }
+  }
 
   // handle auth
   const [searchParams] = useSearchParams()
@@ -108,21 +148,36 @@ export default () => {
     }
   }
 
-  let notificationsTimer: number
+  const syncMaster = async () => {
+    while (!state().identity) {
+      await sleep(1000)
+    }
+
+    while (true) {
+      const events = await fetchSync(state().identity!)
+      for (const event of events) {
+        switch (event.kind) {
+          case 'group': {
+            await fetchGroupData(`${event.id}`, { refetching: true })
+            break
+          }
+          default: {
+            console.warn('unknown event', event)
+          }
+        }
+      }
+    }
+  }
 
   onMount(() => {
-    notificationsTimer = setInterval(() => {
-      refetchNotifications()
-    }, 10000)
-
     window.addEventListener('keydown', handleAppKeydown, true)
+    syncMaster().catch(e => {
+      setError(`error while syncing\n\n${JSON.stringify(e)}`)
+    })
   })
 
   onCleanup(() => {
     window.removeEventListener('keydown', handleAppKeydown)
-    if (notificationsTimer) {
-      clearInterval(notificationsTimer)
-    }
   })
 
   const onNotificationAction = async (action: NotificationAction, notification: Notification): Promise<void> => {
