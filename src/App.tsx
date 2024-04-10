@@ -161,6 +161,10 @@ export default () => {
             await fetchGroupData(`${event.id}`, { refetching: true })
             break
           }
+          case 'notification': {
+            await refetchNotifications()
+            break
+          }
           default: {
             console.warn('unknown event', event)
           }
