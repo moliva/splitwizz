@@ -1,4 +1,4 @@
-import { Accessor, For, Resource, createEffect, createSignal } from 'solid-js'
+import { Accessor, For, createEffect, createSignal } from 'solid-js'
 
 import Fa from 'solid-fa'
 import { faWandMagicSparkles } from '@fortawesome/free-solid-svg-icons'
@@ -15,7 +15,7 @@ import { userName } from '../utils'
 
 export type BalancesProps = {
   balances: Accessor<Balance[]>
-  group: Resource<DetailedGroup>
+  group: Accessor<DetailedGroup | undefined>
 
   onPayment(expense: Expense): void
 }
