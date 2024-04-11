@@ -91,6 +91,12 @@ export const Balances = (props: BalancesProps) => {
     await postExpense(expense, group()!.id!, state().identity!)
 
     onPayment(expense)
+
+    setWip({
+      ...wip(),
+      [balanceItemId(getsBack.id, owes.id, currencyId)]: false,
+      [balanceItemId(owes.id, getsBack.id, currencyId)]: false
+    })
   }
 
   const isSettledUp = (balances: Balance[]) =>
