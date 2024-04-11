@@ -138,7 +138,7 @@ export default () => {
   return (
     <div class={styles.main}>
       <Show when={showGroupModal()}>
-        <EditGroup group={group()!} onDiscard={() => setShowGroupModal(false)} onConfirm={updateGroup} />
+        <EditGroup group={group} onDiscard={() => setShowGroupModal(false)} onConfirm={updateGroup} />
       </Show>
       <Show when={showUsersModal()}>
         <UsersModal group={group} onClose={() => setShowUsersModal(false)} />
