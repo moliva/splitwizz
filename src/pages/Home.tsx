@@ -3,7 +3,7 @@ import { For, createSignal, onMount, Switch, Match, Show, onCleanup, createEffec
 import Fa from 'solid-fa'
 import { faPlusSquare } from '@fortawesome/free-solid-svg-icons'
 
-import { Group } from '../types'
+import { DetailedGroup, Group } from '../types'
 import { deleteGroup, postGroup, putGroup, fetchGroups } from '../services'
 import { useAppContext } from '../context'
 
@@ -25,7 +25,7 @@ export default (props: HomeProps) => {
   const [filteredGroups, setFilteredGroups] = createSignal<Group[]>([])
 
   const [showGroupModal, setShowGroupModal] = createSignal(false)
-  const [currentGroup, setCurrentGroup] = createSignal<Group | undefined>()
+  const [currentGroup, setCurrentGroup] = createSignal<DetailedGroup | undefined>()
 
   const refreshGroups = async () => {
     const currentIdentity = state().identity!
@@ -83,7 +83,7 @@ export default (props: HomeProps) => {
   }
 
   const showModal = (note: Group | undefined) => {
-    setCurrentGroup(note)
+    setCurrentGroup(note as DetailedGroup)
     setShowGroupModal(true)
   }
 
@@ -101,7 +101,7 @@ export default (props: HomeProps) => {
   return (
     <>
       <Show when={showGroupModal()}>
-        <EditGroup group={currentGroup()} onDiscard={() => setShowGroupModal(false)} onConfirm={createGroup} />
+        <EditGroup group={currentGroup} onDiscard={() => setShowGroupModal(false)} onConfirm={createGroup} />
       </Show>
       <Switch fallback={<p>Loading...</p>}>
         <Match when={typeof state().groups === 'object'}>
