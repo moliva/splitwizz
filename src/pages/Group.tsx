@@ -168,15 +168,23 @@ export default () => {
           <hr class={styles['divider']} />
           <Switch>
             <Match when={tab() === 0}>
-              <Expenses
-                expenses={expenses}
-                group={group}
-                onExpenseCreated={refreshContent}
-                onExpenseDeleted={refreshContent}
-              />
+              <Switch fallback={<p>Loading...</p>}>
+                <Match when={typeof group()?.expenses === 'object'}>
+                  <Expenses
+                    expenses={expenses}
+                    group={group}
+                    onExpenseCreated={refreshContent}
+                    onExpenseDeleted={refreshContent}
+                  />
+                </Match>
+              </Switch>
             </Match>
             <Match when={tab() === 1}>
-              <Balances balances={balances} group={group} onPayment={refreshContent} />
+              <Switch fallback={<p>Loading...</p>}>
+                <Match when={typeof group()?.balances === 'object'}>
+                  <Balances balances={balances} group={group} onPayment={refreshContent} />
+                </Match>
+              </Switch>
             </Match>
           </Switch>
         </>
