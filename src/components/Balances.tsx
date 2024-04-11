@@ -1,4 +1,4 @@
-import { Accessor, For, createEffect, createSignal } from 'solid-js'
+import { Accessor, For, Match, Switch, createEffect, createSignal } from 'solid-js'
 
 import Fa from 'solid-fa'
 import { faWandMagicSparkles } from '@fortawesome/free-solid-svg-icons'
@@ -28,14 +28,19 @@ export const Balances = (props: BalancesProps) => {
   const [state] = useAppContext()!
 
   // create a wip key for each blance user id -> ower id -> currency id
-  const initialWip = Object.fromEntries(
-    balances().flatMap(b =>
-      Object.entries(b.owes).flatMap(([owerId, c]) =>
-        Object.entries(c).map(([currencyId]) => [balanceItemId(b.user_id, owerId, currencyId), false])
+
+  const [wip, setWip] = createSignal({})
+  createEffect(() => {
+    setWip(
+      Object.fromEntries(
+        balances().flatMap(b =>
+          Object.entries(b.owes).flatMap(([owerId, c]) =>
+            Object.entries(c).map(([currencyId]) => [balanceItemId(b.user_id, owerId, currencyId), false])
+          )
+        )
       )
     )
-  )
-  const [wip, setWip] = createSignal(initialWip)
+  })
 
   const [users, setUsers] = createSignal<Record<UserId, User>>(usersMap(group()!))
 
@@ -91,12 +96,6 @@ export const Balances = (props: BalancesProps) => {
     await postExpense(expense, group()!.id!, state().identity!)
 
     onPayment(expense)
-
-    setWip({
-      ...wip(),
-      [balanceItemId(getsBack.id, owes.id, currencyId)]: false,
-      [balanceItemId(owes.id, getsBack.id, currencyId)]: false
-    })
   }
 
   const isSettledUp = (balances: Balance[]) =>
@@ -104,78 +103,81 @@ export const Balances = (props: BalancesProps) => {
 
   return (
     <div class={styles.balances}>
-      {isSettledUp(balances()) ? (
-        <div class={styles['settled-up-container']}>
-          <label class={styles['settled-up']}>All settled! 🪄</label>
-        </div>
-      ) : (
-        <For each={balances()}>
-          {balance => {
-            const member = users()[balance.user_id]
-            const totals = Object.entries(balance.total)
+      <Switch
+        fallback={
+          <div class={styles['settled-up-container']}>
+            <label class={styles['settled-up']}>All settled! 🪄</label>
+          </div>
+        }>
+        <Match when={!isSettledUp(balances())}>
+          <For each={balances()}>
+            {balance => {
+              const member = users()[balance.user_id]
+              const totals = Object.entries(balance.total)
 
-            // TODO - make a better description if there's more than one currency involved - moliva - 2024/03/22
-            const total = totals.find(([, a]) => a !== 0)!
-            const [status, description, cost] = relativeStatus(total)
+              // TODO - make a better description if there's more than one currency involved - moliva - 2024/03/22
+              const total = totals.find(([, a]) => a !== 0)!
+              const [status, description, cost] = relativeStatus(total)
 
-            const moreCurrencies = totals.length > 1 ? '*' : ''
+              const moreCurrencies = totals.length > 1 ? '*' : ''
 
-            // TODO - allow this header to collapse the whole thing - moliva - 2024/03/22
-            return (
-              <>
-                <div class={styles['balance-header']}>
-                  <ProfilePicture title={member.email} picture={member.picture} />
-                  <label>
-                    {userName(member)} {description}{' '}
-                    <span style={{ color: status === 'lent' ? '#3c963c' : '#ca0808' }}>
-                      {cost}
-                      {moreCurrencies}
-                    </span>{' '}
-                    in total
-                  </label>
-                </div>
-                <div class={styles['balance-owers']}>
-                  <For each={Object.entries(balance.owes)}>
-                    {([owerId, debt]) => {
-                      const ower = users()[owerId]
+              // TODO - allow this header to collapse the whole thing - moliva - 2024/03/22
+              return (
+                <>
+                  <div class={styles['balance-header']}>
+                    <ProfilePicture title={member.email} picture={member.picture} />
+                    <label>
+                      {userName(member)} {description}{' '}
+                      <span style={{ color: status === 'lent' ? '#3c963c' : '#ca0808' }}>
+                        {cost}
+                        {moreCurrencies}
+                      </span>{' '}
+                      in total
+                    </label>
+                  </div>
+                  <div class={styles['balance-owers']}>
+                    <For each={Object.entries(balance.owes)}>
+                      {([owerId, debt]) => {
+                        const ower = users()[owerId]
 
-                      return (
-                        <For each={Object.entries(debt).filter(([, amount]) => amount !== 0)}>
-                          {debt => {
-                            const [status, description, cost] = relativeStatus(debt)
+                        return (
+                          <For each={Object.entries(debt).filter(([, amount]) => amount !== 0)}>
+                            {debt => {
+                              const [status, description, cost] = relativeStatus(debt)
 
-                            return (
-                              <div class={styles['balance-ower']}>
-                                <ProfilePicture title={ower.email} picture={ower.picture} />
-                                <label>
-                                  {userName(member)} {description}{' '}
-                                  <span style={{ color: status === 'lent' ? '#3c963c' : '#ca0808' }}>{cost}</span>{' '}
-                                  {status === 'lent' ? 'from' : 'to'} {userName(ower)}
-                                </label>
+                              return (
+                                <div class={styles['balance-ower']}>
+                                  <ProfilePicture title={ower.email} picture={ower.picture} />
+                                  <label>
+                                    {userName(member)} {description}{' '}
+                                    <span style={{ color: status === 'lent' ? '#3c963c' : '#ca0808' }}>{cost}</span>{' '}
+                                    {status === 'lent' ? 'from' : 'to'} {userName(ower)}
+                                  </label>
 
-                                {wip()[balanceItemId(member.id, ower.id, debt[0])] ? (
-                                  <span style={{ 'font-style': 'oblique' }}>loading...</span>
-                                ) : (
-                                  <button
-                                    title='Settle up'
-                                    class={`${appStyles.button} ${styles['settle-up']} `}
-                                    onClick={() => settleUp(member, ower, Number(debt[0]), debt[1])}>
-                                    <Fa class={styles['nav-icon']} icon={faWandMagicSparkles} />
-                                  </button>
-                                )}
-                              </div>
-                            )
-                          }}
-                        </For>
-                      )
-                    }}
-                  </For>
-                </div>
-              </>
-            )
-          }}
-        </For>
-      )}
+                                  {wip()[balanceItemId(member.id, ower.id, debt[0])] ? (
+                                    <span style={{ 'font-style': 'oblique' }}>loading...</span>
+                                  ) : (
+                                    <button
+                                      title='Settle up'
+                                      class={`${appStyles.button} ${styles['settle-up']} `}
+                                      onClick={() => settleUp(member, ower, Number(debt[0]), debt[1])}>
+                                      <Fa class={styles['nav-icon']} icon={faWandMagicSparkles} />
+                                    </button>
+                                  )}
+                                </div>
+                              )
+                            }}
+                          </For>
+                        )
+                      }}
+                    </For>
+                  </div>
+                </>
+              )
+            }}
+          </For>
+        </Match>
+      </Switch>
     </div>
   )
 }
