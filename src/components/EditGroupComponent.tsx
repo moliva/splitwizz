@@ -1,6 +1,6 @@
-import { For } from 'solid-js'
+import { Accessor, For } from 'solid-js'
 
-import { Group } from '../types'
+import { DetailedGroup, Group } from '../types'
 import { useAppContext } from '../context'
 
 import appStyles from '../App.module.css'
@@ -8,7 +8,7 @@ import styles from './EditGroupComponent.module.css'
 import expenseStyles from './ExpenseModal.module.css'
 
 export type EditGroupProps = {
-  group: Group | undefined
+  group: Accessor<DetailedGroup | undefined>
 
   onConfirm(note: Group): void
   onDiscard(): void
@@ -25,7 +25,7 @@ export const EditGroup = (props: EditGroupProps) => {
 
   const newGroup = () =>
     ({
-      id: group?.id,
+      id: group()?.id,
       name: newGroupName!.value,
       default_currency_id: Number(defaultCurrencyId!.value),
       balance_config: {
@@ -36,13 +36,13 @@ export const EditGroup = (props: EditGroupProps) => {
   return (
     <div class={styles.modal}>
       <div class={styles['modal-content']}>
-        <input ref={newGroupName} class={styles['modal-name']} placeholder='Group name' value={group?.name ?? ''} />
+        <input ref={newGroupName} class={styles['modal-name']} placeholder='Group name' value={group()?.name ?? ''} />
         <div style={{ display: 'inline-flex', gap: '10px' }}>
           <label>Default currency</label>
           <select
             class={expenseStyles['currency-select']}
             ref={defaultCurrencyId}
-            value={group?.default_currency_id ?? state().currencies[1].id}>
+            value={group()?.default_currency_id ?? state().currencies[1].id}>
             <For each={Object.values(state().currencies)}>
               {currency => (
                 <option value={currency.id} title={currency.description}>
@@ -58,13 +58,13 @@ export const EditGroup = (props: EditGroupProps) => {
             type='checkbox'
             ref={simplifiedBalance}
             class={styles['modal-name']}
-            checked={group?.balance_config?.simplified ?? false}
+            checked={group()?.balance_config?.simplified ?? false}
           />
         </div>
         <hr class={styles.divider} />
         <div class={styles['modal-controls']}>
           <button class={`${appStyles.button} ${appStyles.primary}`} onClick={() => props.onConfirm(newGroup())}>
-            {group ? 'Edit' : 'Create'}
+            {group() ? 'Edit' : 'Create'}
           </button>
           <button class={`${appStyles.button} ${appStyles.secondary}`} onClick={props.onDiscard}>
             Discard
