@@ -31,7 +31,7 @@ import { Login } from './components/Login'
 import { NotificationsPanel } from './components/NotificationsPanel'
 
 import styles from './App.module.css'
-import { sleep } from './utils'
+import { formatError, sleep } from './utils'
 
 const Home = lazy(() => import('./pages/Home'))
 const GroupPage = lazy(() => import('./pages/Group'))
@@ -79,7 +79,7 @@ export default () => {
 
       return result
     } catch (e) {
-      setError('Error while fetching detailed group\n\n' + JSON.stringify(e))
+      setError(formatError('Error while fetching detailed group', e))
       const group = state().groups[id]
       return group as DetailedGroup
     }
@@ -185,7 +185,7 @@ export default () => {
   onMount(() => {
     window.addEventListener('keydown', handleAppKeydown, true)
     syncMaster().catch(e => {
-      setError(`error while syncing\n\n${JSON.stringify(e)}`)
+      setError(formatError('Error while syncing', e))
     })
   })
 

@@ -31,6 +31,8 @@ const setGroup = (group: Partial<DetailedGroup>) => {
 }
 
 const setError = (error?: any) => {
+  console.error(error)
+
   setState({
     ...state(),
     error

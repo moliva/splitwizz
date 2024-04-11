@@ -1,4 +1,4 @@
-import { Match, Show, Switch, createEffect, createResource, createSignal, onMount } from 'solid-js'
+import { Match, Show, Switch, createEffect, createSignal, onMount } from 'solid-js'
 import { useParams } from '@solidjs/router'
 
 import { faRotateRight, faSliders, faUsers } from '@fortawesome/free-solid-svg-icons'
@@ -7,7 +7,7 @@ import Fa from 'solid-fa'
 import { fetchBalances, fetchExpenses, fetchGroup, postGroup, putGroup } from '../services'
 import { Balance, DetailedGroup, Group } from '../types'
 import { useAppContext } from '../context'
-import { formatExpenses } from '../utils'
+import { formatError, formatExpenses } from '../utils'
 
 import { Balances } from '../components/Balances'
 import { Expenses } from '../components/Expenses'
@@ -40,29 +40,30 @@ export default () => {
 
       return result
     } catch (e) {
-      setError('Error while fetching detailed group\n\n' + JSON.stringify(e))
+      setError(formatError('Error while fetching detailed group', e))
       const group = state().groups[id]
       return group as DetailedGroup
     }
   }
 
-  onMount(() => {
-    fetchGroupData(params.id, { refetching: false })
-  })
-
   const [showGroupModal, setShowGroupModal] = createSignal(false)
   const [showUsersModal, setShowUsersModal] = createSignal(false)
 
   const [group, setGroupSignal] = createSignal<DetailedGroup | undefined>()
-  createEffect(() => {
-    setGroupSignal(state().groups[params.id])
-  })
 
   const [expenses, setExpenses] = createSignal({})
   const [balances, setBalances] = createSignal<Balance[]>([])
 
   const [tab, setTab] = createSignal(0)
   const updateTab = (index: number) => () => setTab(index)
+
+  onMount(() => {
+    fetchGroupData(params.id, { refetching: false })
+  })
+
+  createEffect(() => {
+    setGroupSignal(state().groups[params.id])
+  })
 
   const refreshContent = async () => {
     try {
@@ -81,7 +82,7 @@ export default () => {
         balances
       })
     } catch (e) {
-      setError('Error while refreshing content\n\n' + JSON.stringify(e))
+      setError(formatError('Error while refreshing content', e))
       throw e
     }
   }
@@ -89,7 +90,7 @@ export default () => {
   let alreadyFetch = false
   createEffect(async () => {
     if (!alreadyFetch) {
-      if (group()) {
+      if (group()?.members) {
         alreadyFetch = true
         try {
           await refreshContent()
@@ -115,7 +116,7 @@ export default () => {
         setBalances(state().groups[group()!.id!].balances)
       }
     } catch (e: any) {
-      setError('Error while formating and setting new data\n\n' + e.toString() + '\n\n' + e.stack)
+      setError(formatError('Error while formating and setting new data', e))
     }
   })
 
@@ -127,7 +128,7 @@ export default () => {
         setGroup({ ...group()!, ...updated })
       })
       .catch(e => {
-        setError('Error while updating group\n\n' + JSON.stringify(e))
+        setError(formatError('Error while updating group', e))
       })
 
     setShowGroupModal(false)
@@ -141,7 +142,7 @@ export default () => {
       <Show when={showUsersModal()}>
         <UsersModal group={group} onClose={() => setShowUsersModal(false)} />
       </Show>
-      {group() ? (
+      {group()?.id ? (
         <>
           <div style={{ display: 'inline-flex', 'margin-bottom': '10px', gap: '8px' }}>
             <label style={{ 'font-weight': '700', 'font-size': 'x-large' }} class={styles.name}>

@@ -74,7 +74,10 @@ export function formatExpenses(state: AppState, group: DetailedGroup): Record<st
 
     // TODO - cache formatters per currency - moliva - 2024/03/22
     const currency = state.currencies[expense.currency_id].acronym
-    const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency })
+    const formatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency
+    })
 
     // Boris paid Constanza $ 10000
     let relative, payment
@@ -89,7 +92,9 @@ export function formatExpenses(state: AppState, group: DetailedGroup): Record<st
         break
       }
       case 'payment': {
-        payment = `${userIdToDisplay(expense.split_strategy.payer)} paid ${userIdToDisplay(expense.split_strategy.recipient)} ${formatter.format(expense.amount)}`
+        payment = `${userIdToDisplay(expense.split_strategy.payer)} paid ${userIdToDisplay(
+          expense.split_strategy.recipient
+        )} ${formatter.format(expense.amount)}`
       }
     }
 
@@ -129,8 +134,12 @@ function groupBy<T>(array: T[], keySelector: (each: T) => PropertyKey): Partial<
   }
 }
 
-export function userName(user: User) : string {
-  const indexBlank = user.name.indexOf(" ")
+export function userName(user: User): string {
+  const indexBlank = user.name.indexOf(' ')
 
-  return user.name.slice(0,indexBlank == -1 ? 0 : indexBlank)
+  return user.name.slice(0, indexBlank == -1 ? 0 : indexBlank)
+}
+
+export function formatError(contextMessage: string, e: any): string {
+  return `${contextMessage}\n\n${JSON.stringify(e?.stack ?? e?.message ?? e)}`
 }
