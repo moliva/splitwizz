@@ -15,11 +15,12 @@ import styles from './Home.module.css'
 import navStyles from '../components/NavComponent.module.css'
 import appStyles from '../App.module.css'
 import groupStyles from '../pages/Group.module.css'
+import { formatError } from '../utils'
 
 export type HomeProps = {}
 
 export default (props: HomeProps) => {
-  const [state, { setGroup }] = useAppContext()!
+  const [state, { setGroup, setError }] = useAppContext()!
 
   const [filter, setFilter] = createSignal<string>('')
   const [filteredGroups, setFilteredGroups] = createSignal<Group[]>([])
@@ -57,8 +58,8 @@ export default (props: HomeProps) => {
   const createGroup = (group: Group) => {
     const promise = group.id ? putGroup(group, state()!.identity!) : postGroup(group, state()!.identity!)
 
-    promise.then(refreshContent).catch(() => {
-      // TODO - show error - moliva - 2023/10/11
+    promise.then(refreshContent).catch(e => {
+      setError(formatError('Error while creating expense', e))
     })
 
     setShowGroupModal(false)
@@ -77,8 +78,8 @@ export default (props: HomeProps) => {
   const onDeleteGroup = (group: Group): void => {
     deleteGroup(group, state().identity!)
       .then(refreshContent)
-      .catch(() => {
-        // TODO - show error - moliva - 2023/10/11
+      .catch(e => {
+        setError(formatError('Error while creating expense', e))
       })
   }
 

@@ -162,6 +162,7 @@ export default () => {
       await sleep(1000)
     }
 
+    // long polling on fetch sync and processing events
     while (true) {
       const events = await fetchSync(state().identity!)
       for (const event of events) {
@@ -207,8 +208,8 @@ export default () => {
       const index = ns.indexOf(notification)
       ns.splice(index, 1)
       setNotifications(ns)
-    } catch {
-      // TODO - show error - moliva - 2023/10/11
+    } catch (e) {
+      setError(formatError('Error while creating expense', e))
     }
   }
 
@@ -220,8 +221,8 @@ export default () => {
 
       const ns = notifications()!.filter(n => !notifications_.includes(n))
       setNotifications(ns)
-    } catch {
-      // TODO - show error - moliva - 2023/10/11
+    } catch (e) {
+      setError(formatError('Error while creating expense', e))
     }
   }
 

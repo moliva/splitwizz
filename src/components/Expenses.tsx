@@ -6,7 +6,7 @@ import { faUserPlus, faFileInvoiceDollar, faPlus, faMoneyBill1, faTrash } from '
 import { putExpense, postExpense, inviteUsers as doInviteUsers, deleteExpense } from '../services'
 import { DetailedGroup, Expense, FormatExpense } from '../types'
 import { useAppContext } from '../context'
-import { monthNumberToName } from '../utils'
+import { formatError, monthNumberToName } from '../utils'
 
 import { InviteModal } from './InviteModal'
 import { ExpenseModal } from './ExpenseModal'
@@ -25,7 +25,7 @@ export type ExpensesProps = {
 
 export const Expenses = (props: ExpensesProps) => {
   const { expenses, group, onExpenseCreated } = props
-  const [state] = useAppContext()!
+  const [state, { setError }] = useAppContext()!
 
   const [showInviteModal, setShowInviteModal] = createSignal(false)
   const [showExpenseModal, setShowExpenseModal] = createSignal(false)
@@ -49,8 +49,8 @@ export const Expenses = (props: ExpensesProps) => {
       ? putExpense(expense, groupId, state()!.identity!)
       : postExpense(expense, groupId, state()!.identity!)
 
-    promise.then(onExpenseCreated).catch(() => {
-      // TODO - show error - moliva - 2023/10/11
+    promise.then(onExpenseCreated).catch(e => {
+      setError(formatError('Error while creating expense', e))
     })
 
     closeExpenseModal()
@@ -63,7 +63,7 @@ export const Expenses = (props: ExpensesProps) => {
 
       props.onExpenseDeleted()
     } catch (e) {
-      // TODO - show error - moliva - 2023/10/11
+      setError(formatError('Error while removing expense', e))
     }
   }
 
