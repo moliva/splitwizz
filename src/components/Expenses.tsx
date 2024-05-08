@@ -50,7 +50,7 @@ export const Expenses = (props: ExpensesProps) => {
       : postExpense(expense, groupId, state()!.identity!)
 
     promise.then(onExpenseCreated).catch(e => {
-      setError(formatError('Error while creating expense', e))
+      setError(formatError(`Error while creating expense ${JSON.stringify(expense)}`, e))
     })
 
     closeExpenseModal()

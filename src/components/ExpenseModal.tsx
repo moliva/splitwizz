@@ -47,7 +47,7 @@ export const ExpenseModal = (props: ExpenseModalProps) => {
       description: descriptionRef!.value,
       currency_id: Number(currencyRef!.value),
       amount: Number(amountRef!.value) || 0,
-      date: dateRef!.value + '.000Z',
+      date: fixDate(dateRef.value),
       split_strategy: {
         kind: 'equally' as const,
         payer: payerRef()!.values()[0].id,
@@ -132,4 +132,18 @@ export const ExpenseModal = (props: ExpenseModalProps) => {
       </div>
     </div>
   )
+}
+
+const SECONDS_MISSING_DATE_TIME_FORMAT_LENGTH = '2024-05-10T16:20'.length
+
+function fixDate(date: string): string {
+  let newValue = date
+
+  // chrome mobile is missing seconds, add them back as 0
+  if (newValue.length === SECONDS_MISSING_DATE_TIME_FORMAT_LENGTH) {
+    newValue += ':00'
+  }
+
+  // add the millis and timezone
+  return newValue + '.000Z'
 }
