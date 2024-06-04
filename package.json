@@ -27,5 +27,6 @@
     "solid-fa": "^0.2.0",
     "solid-js": "^1.8.16",
     "@moliva/solid-multiselect": "git+https://git@github.com/moliva/solid-multiselect.git#1585366f2084be23b7bef785a3075885ab05b32a"
-  }
+  },
+  "packageManager": "pnpm@9.1.0+sha256.22e36fba7f4880ecf749a5ca128b8435da085ecd49575e7fb9e64d6bf4fad394"
 }
