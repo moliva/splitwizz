@@ -1,3 +1,4 @@
+import { removeCookie } from './cookies'
 import {
   Identity,
   NotificationsUpdate,
@@ -166,14 +167,31 @@ export async function deleteGroup(group: Group, identity: Identity) {
   }
 }
 
+export async function logout(identity: Identity): Promise<Response> {
+  removeCookie('idToken')
+  return await authentifiedFetch(API_HOST + '/logout', identity)
+}
+
 async function authentifiedFetch(url: string, identity: Identity, init: RequestInit | undefined = {}) {
-  return await fetch(url, {
+  const options = {
     ...init,
-    mode: 'cors', // no-cors, *cors, same-origin
-    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-    headers: {
-      Authorization: identity!.identity.access_token,
-      ...init.headers
+    mode: 'cors' as const, // no-cors, *cors, same-origin
+    cache: 'no-cache' as const, // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'include' as const // Ensures cookies are sent with the request
+  }
+
+  const response = await fetch(url, options)
+
+  if (response.status === 401) {
+    const refresh = await fetch(`${API_HOST}/refresh`, { ...options, method: 'POST' })
+    if (!refresh.ok) {
+      removeCookie('idToken')
+      return response
+    } else {
+      // retry the original request
+      return await fetch(url, options)
     }
-  })
+  } else {
+    return response
+  }
 }

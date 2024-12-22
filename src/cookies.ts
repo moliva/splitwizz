@@ -27,5 +27,5 @@ export function setCookie(name: string, value: string, expirationDays?: number):
     expirationString = `;expires=${date.toUTCString()}`
   }
 
-  document.cookie = `${name}=${value};HttpOnly;SameSite=Strict;Secure;path=/${expirationString}`
+  document.cookie = `${name}=${value};SameSite=Strict;Secure;path=/${expirationString}`
 }

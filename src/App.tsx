@@ -12,7 +12,7 @@ import {
 } from 'solid-js'
 import { useNavigate, useSearchParams, Routes, Route } from '@solidjs/router'
 
-import { DetailedGroup, IdToken, Notification, NotificationAction } from './types'
+import { DetailedGroup, IdToken, Identity, Notification, NotificationAction } from './types'
 import {
   fetchCurrencies as doFetchCurrencies,
   fetchNotifications as doFetchNotifications,
@@ -32,6 +32,7 @@ import { NotificationsPanel } from './components/NotificationsPanel'
 
 import styles from './App.module.css'
 import { formatError, sleep } from './utils'
+import { getCookie, setCookie } from './cookies'
 
 const Home = lazy(() => import('./pages/Home'))
 const GroupPage = lazy(() => import('./pages/Group'))
@@ -86,19 +87,37 @@ export default () => {
   }
 
   // handle auth
-  const [searchParams] = useSearchParams()
-  const token = searchParams.login_success
+  if (!state().identity) {
+    let identity: IdToken | undefined = undefined
 
-  if (!state().identity && typeof token === 'string') {
-    const idToken = token.split('.')[1]
+    const [searchParams] = useSearchParams()
+    let token = searchParams.login_success
 
-    const decoded = atob(idToken)
-    const identity = JSON.parse(decoded) as IdToken
+    // first check in cookies
+    let idToken = getCookie('idToken')
 
-    const newIdentityState = { identity, token }
+    if (idToken) {
+      const decoded = atob(idToken)
+      identity = JSON.parse(decoded) as IdToken
 
-    setState({ ...state(), identity: newIdentityState })
-    navigate(import.meta.env.BASE_URL)
+      // else check the query params
+    } else if (typeof token === 'string') {
+      const idToken = token.split('.')[1]
+      //console.log('idToken params', idToken)
+
+      const decoded = atob(idToken)
+      identity = JSON.parse(decoded) as IdToken
+
+      // set cookie once we validate the token
+      setCookie('idToken', idToken, 7)
+    }
+
+    if (identity) {
+      const newIdentityState = { identity }
+
+      setState({ ...state(), identity: newIdentityState })
+      navigate(import.meta.env.BASE_URL)
+    }
   }
 
   createEffect(async alreadyFetched => {

@@ -148,13 +148,12 @@ export type IdToken = {
   picture: string
   email: string
   // tokens
-  access_token: string
-  refresh_token: string
+  // access_token: string
+  // refresh_token: string
 }
 
 export type Identity = {
   identity: IdToken
-  token: string
 }
 
 export type IdentityState = Identity | undefined

@@ -10,6 +10,7 @@ import { ProfilePicture } from './ProfilePicture'
 
 import appStyles from '../App.module.css'
 import styles from './NavComponent.module.css'
+import { logout } from '../services'
 
 export type NavProps = {
   identity: Identity
@@ -50,7 +51,7 @@ export const Nav = (props: NavProps) => {
               title='Notifications'
               class={`${appStyles.button} ${appStyles.link} ${styles.notifications} ${styles['nav-button']}`}
               onClick={props.onNotificationsClicked}>
-              {props.notifications()?.filter(n => n.status === 'new').length ?? 0 > 0 ? (
+              {(props.notifications()?.filter(n => n.status === 'new').length ?? 0 > 0) ? (
                 <span style={{ display: 'inline-block', position: 'relative' }}>
                   <Fa class={styles['nav-icon']} icon={faBell} />
                   <Fa class={`${styles['nav-icon']} ${styles['nav-overlap']}`} icon={faCircle} />
@@ -63,7 +64,13 @@ export const Nav = (props: NavProps) => {
             <a
               title='Log out'
               class={`${styles['nav-button']} ${appStyles.button} ${appStyles.link} ${styles.logout}`}
-              href={import.meta.env.BASE_URL}>
+              onClick={async () => {
+                try {
+                  await logout(identity)
+                } catch {}
+                // navigate('/')
+                document.location = '/'
+              }}>
               <Fa class={styles['nav-icon']} icon={faUnlockKeyhole} />
             </a>
           </div>
