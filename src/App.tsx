@@ -12,7 +12,7 @@ import {
 } from 'solid-js'
 import { useNavigate, useSearchParams, Routes, Route } from '@solidjs/router'
 
-import { DetailedGroup, Notification, NotificationAction } from './types'
+import { DetailedGroup, IdToken, Notification, NotificationAction } from './types'
 import {
   fetchCurrencies as doFetchCurrencies,
   fetchNotifications as doFetchNotifications,
@@ -91,8 +91,9 @@ export default () => {
 
   if (!state().identity && typeof token === 'string') {
     const idToken = token.split('.')[1]
+
     const decoded = atob(idToken)
-    const identity = JSON.parse(decoded)
+    const identity = JSON.parse(decoded) as IdToken
 
     const newIdentityState = { identity, token }
 

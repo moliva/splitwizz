@@ -141,8 +141,19 @@ export type Balance = {
   }
 }
 
+export type IdToken = {
+  sub: number // user id
+  // fields
+  name: string
+  picture: string
+  email: string
+  // tokens
+  access_token: string
+  refresh_token: string
+}
+
 export type Identity = {
-  identity: { name: string; picture: string; email: string }
+  identity: IdToken
   token: string
 }
 

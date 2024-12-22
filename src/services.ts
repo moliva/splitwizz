@@ -172,7 +172,7 @@ async function authentifiedFetch(url: string, identity: Identity, init: RequestI
     mode: 'cors', // no-cors, *cors, same-origin
     cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
     headers: {
-      Authorization: identity!.token,
+      Authorization: identity!.identity.access_token,
       ...init.headers
     }
   })
