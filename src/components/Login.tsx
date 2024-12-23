@@ -11,7 +11,7 @@ export type LoginProps = {}
 
 export function Login() {
   const location = useLocation()
-  const encoded = encodeURIComponent(location.pathname)
+  const encoded = encodeURIComponent(location.pathname.replace('/splitwizz', ''))
 
   return (
     <div style={{ 'min-height': '100vh', 'align-items': 'center', display: 'flex', 'justify-content': 'center' }}>
