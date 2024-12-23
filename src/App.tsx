@@ -10,7 +10,7 @@ import {
   createEffect,
   lazy
 } from 'solid-js'
-import { useNavigate, useSearchParams, Routes, Route } from '@solidjs/router'
+import { useNavigate, useSearchParams, Routes, Route, useLocation } from '@solidjs/router'
 
 import { DetailedGroup, IdToken, Identity, Notification, NotificationAction } from './types'
 import {
@@ -113,9 +113,10 @@ export default () => {
 
     if (identity) {
       const newIdentityState = { identity }
+      const location = useLocation()
 
       setState({ ...state(), identity: newIdentityState })
-      navigate(import.meta.env.BASE_URL)
+      navigate(location.pathname)
     }
   }
 
