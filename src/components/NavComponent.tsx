@@ -39,7 +39,7 @@ export const Nav = (props: NavProps) => {
     try {
       await logoutApi(identity)
     } catch {}
-    document.location = '/'
+    document.location = import.meta.env.BASE_URL
   }
 
   return (
