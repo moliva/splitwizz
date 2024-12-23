@@ -103,7 +103,6 @@ export default () => {
       // else check the query params
     } else if (typeof token === 'string') {
       const idToken = token.split('.')[1]
-      //console.log('idToken params', idToken)
 
       const decoded = atob(idToken)
       identity = JSON.parse(decoded) as IdToken

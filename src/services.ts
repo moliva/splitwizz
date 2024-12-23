@@ -168,9 +168,14 @@ export async function deleteGroup(group: Group, identity: Identity) {
 }
 
 export async function logout(identity: Identity): Promise<Response> {
-  removeCookie('idToken')
   return await authentifiedFetch(API_HOST + '/logout', identity)
 }
+
+// *****************************************************************************************************
+// *************** utils ***************
+// *****************************************************************************************************
+
+let refreshing = false
 
 async function authentifiedFetch(url: string, identity: Identity, init: RequestInit | undefined = {}) {
   const options = {
@@ -183,15 +188,34 @@ async function authentifiedFetch(url: string, identity: Identity, init: RequestI
   const response = await fetch(url, options)
 
   if (response.status === 401) {
-    const refresh = await fetch(`${API_HOST}/refresh`, { ...options, method: 'POST' })
-    if (!refresh.ok) {
-      removeCookie('idToken')
-      return response
+    if (!refreshing) {
+      refreshing = true
+
+      let refreshResponse
+      try {
+        refreshResponse = await refresh(options)
+      } catch {}
+      refreshing = false
+
+      if (!refreshResponse?.ok) {
+        // TODO - should trigger logout action and redirect - moliva - 2024/12/23
+        removeCookie('idToken')
+        return response
+      }
     } else {
-      // retry the original request
-      return await fetch(url, options)
+      // wait for the token to be refreshed
+      while (refreshing) {
+        await new Promise(resolve => setTimeout(resolve, 100))
+      }
     }
+
+    // retry the original request
+    return await fetch(url, options)
   } else {
     return response
   }
+}
+
+async function refresh(init: RequestInit) {
+  return await fetch(`${API_HOST}/refresh`, { ...init, method: 'POST' })
 }

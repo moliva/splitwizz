@@ -1,16 +1,17 @@
 import { Resource } from 'solid-js'
 import { useLocation, useNavigate } from '@solidjs/router'
 
-import { faBell, faCircle, faUnlockKeyhole, faAngleLeft } from '@fortawesome/free-solid-svg-icons'
 import Fa from 'solid-fa'
+import { faBell, faCircle, faUnlockKeyhole, faAngleLeft } from '@fortawesome/free-solid-svg-icons'
 
 import { Identity, Notification } from '../types'
+import { logout as logoutApi } from '../services'
 
 import { ProfilePicture } from './ProfilePicture'
 
 import appStyles from '../App.module.css'
 import styles from './NavComponent.module.css'
-import { logout } from '../services'
+import { removeCookie } from '../cookies'
 
 export type NavProps = {
   identity: Identity
@@ -31,6 +32,14 @@ export const Nav = (props: NavProps) => {
     } else {
       navigate(import.meta.env.BASE_URL)
     }
+  }
+
+  async function logout() {
+    removeCookie('idToken')
+    try {
+      await logoutApi(identity)
+    } catch {}
+    document.location = '/'
   }
 
   return (
@@ -64,13 +73,7 @@ export const Nav = (props: NavProps) => {
             <a
               title='Log out'
               class={`${styles['nav-button']} ${appStyles.button} ${appStyles.link} ${styles.logout}`}
-              onClick={async () => {
-                try {
-                  await logout(identity)
-                } catch {}
-                // navigate('/')
-                document.location = '/'
-              }}>
+              onClick={logout}>
               <Fa class={styles['nav-icon']} icon={faUnlockKeyhole} />
             </a>
           </div>
