@@ -11,6 +11,7 @@ import {
   Balance,
   NotificationUpdate
 } from './types'
+import { logout as logoutAction } from './utils'
 
 export const API_HOST = import.meta.env.VITE_API_URL
 
@@ -198,8 +199,8 @@ async function authentifiedFetch(url: string, identity: Identity, init: RequestI
       refreshing = false
 
       if (!refreshResponse?.ok) {
-        // TODO - should trigger logout action and redirect - moliva - 2024/12/23
-        removeCookie('idToken')
+        await logoutAction(identity)
+
         return response
       }
     } else {

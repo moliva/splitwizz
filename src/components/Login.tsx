@@ -9,7 +9,7 @@ import { useLocation } from '@solidjs/router'
 
 export type LoginProps = {}
 
-export function Login() {
+export function Login(_props: LoginProps) {
   const location = useLocation()
   const encoded = encodeURIComponent(location.pathname.replace('/splitwizz', ''))
 

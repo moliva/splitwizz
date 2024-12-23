@@ -1,5 +1,15 @@
 import { AppState } from './context'
-import { DetailedGroup, FormatExpense, User } from './types'
+import { removeCookie } from './cookies'
+import { logout as logoutApi } from './services'
+import { DetailedGroup, FormatExpense, Identity, User } from './types'
+
+export async function logout(identity: Identity) {
+  removeCookie('idToken')
+  try {
+    await logoutApi(identity)
+  } catch {}
+  document.location = import.meta.env.BASE_URL
+}
 
 export function copyToClipboard(value: string): void {
   navigator.clipboard.writeText(value)

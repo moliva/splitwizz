@@ -5,13 +5,12 @@ import Fa from 'solid-fa'
 import { faBell, faCircle, faUnlockKeyhole, faAngleLeft } from '@fortawesome/free-solid-svg-icons'
 
 import { Identity, Notification } from '../types'
-import { logout as logoutApi } from '../services'
 
 import { ProfilePicture } from './ProfilePicture'
 
 import appStyles from '../App.module.css'
 import styles from './NavComponent.module.css'
-import { removeCookie } from '../cookies'
+import { logout } from '../utils'
 
 export type NavProps = {
   identity: Identity
@@ -32,14 +31,6 @@ export const Nav = (props: NavProps) => {
     } else {
       navigate(import.meta.env.BASE_URL)
     }
-  }
-
-  async function logout() {
-    removeCookie('idToken')
-    try {
-      await logoutApi(identity)
-    } catch {}
-    document.location = import.meta.env.BASE_URL
   }
 
   return (
@@ -73,7 +64,7 @@ export const Nav = (props: NavProps) => {
             <a
               title='Log out'
               class={`${styles['nav-button']} ${appStyles.button} ${appStyles.link} ${styles.logout}`}
-              onClick={logout}>
+              onClick={() => logout(identity)}>
               <Fa class={styles['nav-icon']} icon={faUnlockKeyhole} />
             </a>
           </div>
