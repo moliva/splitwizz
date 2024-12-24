@@ -108,7 +108,7 @@ export default () => {
       identity = JSON.parse(decoded) as IdToken
 
       // set cookie once we validate the token
-      setCookie('idToken', idToken, 7)
+      setCookie('idToken', idToken, 365)
     }
 
     if (identity) {

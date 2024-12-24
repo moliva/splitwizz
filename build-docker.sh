@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
 dockerfile='Dockerfile'
-image_name='splitwizz:v35'
+
+last_hash=$(git rev-parse HEAD)
+image_name="splitwizz:$last_hash"
 
 echo "Building $image_name"
-docker build  -f "$dockerfile" -t "$image_name" .
+docker build -f "$dockerfile" -t "$image_name" .
 
 if [[ $1 =~ ^(-p|--push) ]]
 then
