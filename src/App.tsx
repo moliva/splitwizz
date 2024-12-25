@@ -10,9 +10,9 @@ import {
   createEffect,
   lazy
 } from 'solid-js'
-import { useNavigate, useSearchParams, Routes, Route, useLocation } from '@solidjs/router'
+import { useNavigate, Routes, Route } from '@solidjs/router'
 
-import { DetailedGroup, IdToken, Identity, Notification, NotificationAction } from './types'
+import { DetailedGroup, Notification, NotificationAction } from './types'
 import {
   fetchCurrencies as doFetchCurrencies,
   fetchNotifications as doFetchNotifications,
@@ -25,14 +25,13 @@ import {
   updateNotifications
 } from './services'
 import { useAppContext } from './context'
+import { formatError, handleAuth, sleep } from './utils'
 
 import { Nav } from './components/NavComponent'
 import { Login } from './components/Login'
 import { NotificationsPanel } from './components/NotificationsPanel'
 
 import styles from './App.module.css'
-import { formatError, sleep } from './utils'
-import { getCookie, setCookie } from './cookies'
 
 const Home = lazy(() => import('./pages/Home'))
 const GroupPage = lazy(() => import('./pages/Group'))
@@ -87,38 +86,7 @@ export default () => {
   }
 
   // handle auth
-  if (!state().identity) {
-    let identity: IdToken | undefined = undefined
-
-    const [searchParams] = useSearchParams()
-    let token = searchParams.login_success
-
-    // first check in cookies
-    let idToken = getCookie('idToken')
-
-    if (idToken) {
-      const decoded = atob(idToken)
-      identity = JSON.parse(decoded) as IdToken
-
-      // else check the query params
-    } else if (typeof token === 'string') {
-      const idToken = token.split('.')[1]
-
-      const decoded = atob(idToken)
-      identity = JSON.parse(decoded) as IdToken
-
-      // set cookie once we validate the token
-      setCookie('idToken', idToken, 365)
-    }
-
-    if (identity) {
-      const newIdentityState = { identity }
-      const location = useLocation()
-
-      setState({ ...state(), identity: newIdentityState })
-      navigate(location.pathname)
-    }
-  }
+  handleAuth(state, setState)
 
   createEffect(async alreadyFetched => {
     if (alreadyFetched) return
