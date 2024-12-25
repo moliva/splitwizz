@@ -1,35 +1,10 @@
-import { Accessor, Setter } from 'solid-js'
 import { AppState } from './context'
-import { getCookie, removeCookie } from './cookies'
+import { removeCookie } from './cookies'
 import { logout as logoutApi } from './services'
-import { DetailedGroup, FormatExpense, IdToken, Identity, User } from './types'
-
-export const ID_TOKEN_COOKIE = 'id_token'
-
-export function handleAuth(state: Accessor<AppState>, setState: Setter<AppState>): void {
-  if (!state().identity) {
-    let identity: IdToken | undefined = undefined
-
-    // check in cookies
-    let token = getCookie(ID_TOKEN_COOKIE)
-
-    if (token !== null) {
-      const idToken = token.split('.')[1]
-
-      const decoded = atob(idToken)
-      identity = JSON.parse(decoded) as IdToken
-    }
-
-    if (identity) {
-      debugger
-      const newIdentityState = { identity }
-      setState({ ...state(), identity: newIdentityState })
-    }
-  }
-}
+import { DetailedGroup, FormatExpense, Identity, User } from './types'
 
 export async function logout(identity: Identity) {
-  removeCookie(ID_TOKEN_COOKIE)
+  removeCookie('idToken')
   try {
     await logoutApi(identity)
   } catch {}
