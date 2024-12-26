@@ -1,4 +1,3 @@
-import { removeCookie } from './cookies'
 import {
   Identity,
   NotificationsUpdate,

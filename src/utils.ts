@@ -21,7 +21,6 @@ export function handleAuth(state: Accessor<AppState>, setState: Setter<AppState>
     }
 
     if (identity) {
-      debugger
       const newIdentityState = { identity }
       setState({ ...state(), identity: newIdentityState })
     }
@@ -29,7 +28,6 @@ export function handleAuth(state: Accessor<AppState>, setState: Setter<AppState>
 }
 
 export async function logout(identity: Identity) {
-  removeCookie(ID_TOKEN_COOKIE)
   try {
     await logoutApi(identity)
   } catch {}
