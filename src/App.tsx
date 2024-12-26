@@ -10,7 +10,7 @@ import {
   createEffect,
   lazy
 } from 'solid-js'
-import { useNavigate, Routes, Route } from '@solidjs/router'
+import { Routes, Route } from '@solidjs/router'
 
 import { DetailedGroup, Notification, NotificationAction } from './types'
 import {
@@ -57,8 +57,8 @@ export default () => {
 
       let result
       if (opts.field === 'expenses') {
-        const expensesFetch = fetchExpenses(identity!, Number(id))
-        const balancesFetch = fetchBalances(identity!, Number(id))
+        const expensesFetch = fetchExpenses(Number(id))
+        const balancesFetch = fetchBalances(Number(id))
         const [expenses, balances] = await Promise.all([expensesFetch, balancesFetch])
         result = {
           ...group,
@@ -66,7 +66,7 @@ export default () => {
           balances
         }
       } else {
-        const newGroup = await fetchGroup(identity!, Number(id))
+        const newGroup = await fetchGroup(Number(id))
         result = {
           ...group,
           ...newGroup
@@ -92,7 +92,7 @@ export default () => {
     const identity = state().identity
 
     if (identity) {
-      const currencies = await doFetchCurrencies(identity!)
+      const currencies = await doFetchCurrencies()
       setState({ ...state(), currencies: Object.fromEntries(currencies.map(c => [c.id, c])) })
 
       return true
@@ -110,7 +110,7 @@ export default () => {
         return []
       }
 
-      const result = await doFetchNotifications(identity!)
+      const result = await doFetchNotifications()
 
       return result
     } catch (e) {
@@ -125,7 +125,7 @@ export default () => {
   const [showNotifications, setShowNotifications] = createSignal(false)
   const toggleNotifications = async () => {
     if (!showNotifications()) {
-      await updateNotifications({ ids: (notifications() ?? []).map(n => n.id), status: 'read' }, state().identity!)
+      await updateNotifications({ ids: (notifications() ?? []).map(n => n.id), status: 'read' })
       const newNotifications = (notifications() ?? []).map(n => ({ ...n, status: 'read' as const }))
       setNotifications(newNotifications)
     }
@@ -150,7 +150,7 @@ export default () => {
 
     // long polling on fetch sync and processing events
     while (true) {
-      const events = await fetchSync(state().identity!)
+      const events = await fetchSync()
       for (const event of events) {
         switch (event.kind) {
           case 'group': {
@@ -182,8 +182,8 @@ export default () => {
 
   const onNotificationAction = async (action: NotificationAction, notification: Notification): Promise<void> => {
     try {
-      await updateMembership(action, notification.data.group, state().identity!)
-      await updateNotification(notification, { status: 'archived' }, state().identity!)
+      await updateMembership(action, notification.data.group)
+      await updateNotification(notification, { status: 'archived' })
 
       if (action === 'joined') {
         const group = notification.data.group
@@ -203,7 +203,7 @@ export default () => {
     try {
       const ids = notifications_.map(n => n.id)
 
-      await updateNotifications({ ids, status: 'archived' }, state().identity!)
+      await updateNotifications({ ids, status: 'archived' })
 
       const ns = notifications()!.filter(n => !notifications_.includes(n))
       setNotifications(ns)

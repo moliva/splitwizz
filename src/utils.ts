@@ -2,7 +2,7 @@ import { Accessor, Setter } from 'solid-js'
 import { AppState } from './context'
 import { getCookie } from './cookies'
 import { logout as logoutApi } from './services'
-import { DetailedGroup, FormatExpense, IdToken, Identity, User } from './types'
+import { DetailedGroup, FormatExpense, IdToken, User } from './types'
 
 export const ID_TOKEN_COOKIE = 'id_token'
 
@@ -27,9 +27,9 @@ export function handleAuth(state: Accessor<AppState>, setState: Setter<AppState>
   }
 }
 
-export async function logout(identity: Identity) {
+export async function logout() {
   try {
-    await logoutApi(identity)
+    await logoutApi()
   } catch {}
   document.location = import.meta.env.BASE_URL
 }
