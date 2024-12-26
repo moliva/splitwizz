@@ -17,6 +17,7 @@ export function Login(_props: LoginProps) {
     <div style={{ 'min-height': '100vh', 'align-items': 'center', display: 'flex', 'justify-content': 'center' }}>
       <a
         href={`${API_HOST}/login?redirect=${encoded}`}
+        target='_self'
         class={`${styles.link} ${navStyles.login}`}
         style={{ 'font-size': '30px', 'font-weight': 'bold' }}>
         <Fa class={styles['nav-icon']} icon={faKey} /> Login
