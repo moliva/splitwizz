@@ -25,7 +25,8 @@ import {
   updateNotifications
 } from './services'
 import { useAppContext } from './context'
-import { formatError, handleAuth, sleep } from './utils'
+import { formatError, sleep } from './utils'
+import { handleAuth } from './auth'
 
 import { Nav } from './components/NavComponent'
 import { Login } from './components/Login'

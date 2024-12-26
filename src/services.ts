@@ -1,5 +1,4 @@
 import {
-  Identity,
   NotificationsUpdate,
   Group,
   Currency,

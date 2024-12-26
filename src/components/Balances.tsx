@@ -93,7 +93,7 @@ export const Balances = (props: BalancesProps) => {
       }
     }
 
-    await postExpense(expense, group()!.id!, state().identity!)
+    await postExpense(expense, group()!.id!)
 
     onPayment(expense)
   }

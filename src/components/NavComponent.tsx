@@ -64,7 +64,7 @@ export const Nav = (props: NavProps) => {
             <a
               title='Log out'
               class={`${styles['nav-button']} ${appStyles.button} ${appStyles.link} ${styles.logout}`}
-              onClick={() => logout(identity)}>
+              onClick={() => logout()}>
               <Fa class={styles['nav-icon']} icon={faUnlockKeyhole} />
             </a>
           </div>

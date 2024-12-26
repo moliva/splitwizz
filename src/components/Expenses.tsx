@@ -1,4 +1,4 @@
-import { Accessor, For, Resource, Show, createSignal } from 'solid-js'
+import { Accessor, For, Show, createSignal } from 'solid-js'
 
 import Fa from 'solid-fa'
 import { faUserPlus, faFileInvoiceDollar, faPlus, faMoneyBill1, faTrash } from '@fortawesome/free-solid-svg-icons'
@@ -40,14 +40,12 @@ export const Expenses = (props: ExpensesProps) => {
       throw 'not authentified!'
     }
 
-    doInviteUsers(identity!, group()!.id!, [email])
+    doInviteUsers(group()!.id!, [email])
   }
 
   const onExpenseConfirm = (expense: Expense) => {
     const groupId = group()!.id!
-    const promise = expense.id
-      ? putExpense(expense, groupId, state()!.identity!)
-      : postExpense(expense, groupId, state()!.identity!)
+    const promise = expense.id ? putExpense(expense, groupId) : postExpense(expense, groupId)
 
     promise.then(onExpenseCreated).catch(e => {
       setError(formatError(`Error while creating expense ${JSON.stringify(expense)}`, e))
@@ -59,7 +57,7 @@ export const Expenses = (props: ExpensesProps) => {
   const removeExpense = async (expense: Expense) => {
     try {
       const groupId = group()!.id!
-      await deleteExpense(expense.id!, groupId, state()!.identity!)
+      await deleteExpense(expense.id!, groupId)
 
       props.onExpenseDeleted()
     } catch (e) {

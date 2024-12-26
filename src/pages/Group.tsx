@@ -35,7 +35,7 @@ export default () => {
         throw 'not authentified!'
       }
 
-      const result = await fetchGroup(identity!, Number(id))
+      const result = await fetchGroup(Number(id))
       setGroup(result)
 
       return result
@@ -71,8 +71,8 @@ export default () => {
 
       const groupId = group()!.id!
 
-      const expensesPromise = currentIdentity ? fetchExpenses(currentIdentity, groupId) : undefined
-      const balancesPromise = currentIdentity ? fetchBalances(currentIdentity, groupId) : undefined
+      const expensesPromise = currentIdentity ? fetchExpenses(groupId) : undefined
+      const balancesPromise = currentIdentity ? fetchBalances(groupId) : undefined
 
       const [expenses, balances] = await Promise.all([expensesPromise, balancesPromise])
 
@@ -122,7 +122,7 @@ export default () => {
   })
 
   const updateGroup = (updated: Group) => {
-    const promise = updated.id ? putGroup(updated, state()!.identity!) : postGroup(updated, state()!.identity!)
+    const promise = updated.id ? putGroup(updated) : postGroup(updated)
 
     promise
       .then(() => {

@@ -31,7 +31,7 @@ export default (_props: HomeProps) => {
   const refreshGroups = async () => {
     const currentIdentity = state().identity!
 
-    const groups = currentIdentity ? await fetchGroups(currentIdentity) : undefined
+    const groups = currentIdentity ? await fetchGroups() : undefined
 
     for (const g of groups ?? []) {
       setGroup(g)
@@ -56,7 +56,7 @@ export default (_props: HomeProps) => {
   }
 
   const createGroup = (group: Group) => {
-    const promise = group.id ? putGroup(group, state()!.identity!) : postGroup(group, state()!.identity!)
+    const promise = group.id ? putGroup(group) : postGroup(group)
 
     promise.then(refreshContent).catch(e => {
       setError(formatError('Error while creating expense', e))
@@ -76,7 +76,7 @@ export default (_props: HomeProps) => {
   })
 
   const onDeleteGroup = (group: Group): void => {
-    deleteGroup(group, state().identity!)
+    deleteGroup(group)
       .then(refreshContent)
       .catch(e => {
         setError(formatError('Error while creating expense', e))
