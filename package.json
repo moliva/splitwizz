@@ -21,7 +21,6 @@
     "@fortawesome/free-brands-svg-icons": "^6.7.2",
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
-    "@fortawesome/react-fontawesome": "^0.2.0",
     "@solidjs/router": "^0.15.2",
     "deep-copy-ts": "^0.5.4",
     "solid-fa": "^0.2.0",
