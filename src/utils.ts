@@ -1,6 +1,6 @@
 import { Accessor, Setter } from 'solid-js'
 import { AppState } from './context'
-import { getCookie, removeCookie } from './cookies'
+import { getCookie } from './cookies'
 import { logout as logoutApi } from './services'
 import { DetailedGroup, FormatExpense, IdToken, Identity, User } from './types'
 

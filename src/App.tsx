@@ -39,8 +39,6 @@ const GroupPage = lazy(() => import('./pages/Group'))
 export default () => {
   const [state, { setState, setGroup, setError }] = useAppContext()
 
-  const navigate = useNavigate()
-
   // FIXME - dupped method from group - moliva - 2024/04/10
   const fetchGroupData = async (id: string, opts: { refetching: boolean; field: string }): Promise<DetailedGroup> => {
     try {
