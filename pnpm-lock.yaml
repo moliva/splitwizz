@@ -21,17 +21,17 @@ importers:
         specifier: ^6.7.2
         version: 6.7.2
       '@fortawesome/free-solid-svg-icons':
-        specifier: ^6.7.2
+        specifier: ^6.4.2
         version: 6.7.2
       '@fortawesome/react-fontawesome':
-        specifier: ^0.2.2
+        specifier: ^0.2.0
         version: 0.2.2(@fortawesome/fontawesome-svg-core@6.7.2)(react@18.3.1)
       '@moliva/solid-multiselect':
-        specifier: github:moliva/solid-multiselect#1585366f2084be23b7bef785a3075885ab05b32a
+        specifier: git+https://git@github.com/moliva/solid-multiselect.git#1585366f2084be23b7bef785a3075885ab05b32a
         version: https://codeload.github.com/moliva/solid-multiselect/tar.gz/1585366f2084be23b7bef785a3075885ab05b32a(solid-js@1.9.3)
       '@solidjs/router':
-        specifier: ^0.8.4
-        version: 0.8.4(solid-js@1.9.3)
+        specifier: ^0.15.2
+        version: 0.15.2(solid-js@1.9.3)
       deep-copy-ts:
         specifier: ^0.5.4
         version: 0.5.4
@@ -527,10 +527,10 @@ packages:
     peerDependencies:
       solid-js: ^1.6.12
 
-  '@solidjs/router@0.8.4':
-    resolution: {integrity: sha512-Gi/WVoVseGMKS1DBdT3pNAMgOzEOp6Q3dpgNd2mW9GUEnVocPmtyBjDvXwN6m7tjSGsqqfqJFXk7bm1hxabSRw==}
+  '@solidjs/router@0.15.2':
+    resolution: {integrity: sha512-UWtliRvOnjfYMONQcTGwtf6BEud5QlF0oHC5L+kcSGYn0jARH5KzC3+3LLZ0al7oQo/5Rc50ssMswPuAuxFvAA==}
     peerDependencies:
-      solid-js: ^1.5.3
+      solid-js: ^1.8.6
 
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
@@ -1209,7 +1209,7 @@ snapshots:
     dependencies:
       solid-js: 1.9.3
 
-  '@solidjs/router@0.8.4(solid-js@1.9.3)':
+  '@solidjs/router@0.15.2(solid-js@1.9.3)':
     dependencies:
       solid-js: 1.9.3
 

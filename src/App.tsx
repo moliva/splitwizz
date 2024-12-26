@@ -10,7 +10,7 @@ import {
   createEffect,
   lazy
 } from 'solid-js'
-import { Routes, Route } from '@solidjs/router'
+import { Route, Router } from '@solidjs/router'
 
 import { DetailedGroup, Notification, NotificationAction } from './types'
 import {
@@ -213,47 +213,51 @@ export default () => {
     }
   }
 
-  return (
-    <div class={styles.App}>
-      <Show when={state().error !== undefined}>
-        <div class={styles['error-float']}>
-          <div class={styles['error-toast']}>
-            <For each={state().error!.split('\n')}>{errorLine => <label>{errorLine}</label>}</For>
-            <button class={styles['error-clear']} onClick={() => setError()}>
-              Clear
-            </button>
+  const Layout = (props: any) => {
+    return (
+      <div class={styles.App}>
+        <Show when={state().error !== undefined}>
+          <div class={styles['error-float']}>
+            <div class={styles['error-toast']}>
+              <For each={state().error!.split('\n')}>{errorLine => <label>{errorLine}</label>}</For>
+              <button class={styles['error-clear']} onClick={() => setError()}>
+                Clear
+              </button>
+            </div>
           </div>
-        </div>
-      </Show>
-      <Switch fallback={<Login />}>
-        <Match when={typeof state().identity !== 'undefined'}>
-          <header class={styles.header}>
-            <Nav
-              identity={state().identity!}
-              onNotificationsClicked={toggleNotifications}
-              notifications={notifications}
-            />
-          </header>
-          <main class={styles.main}>
-            <Show when={showNotifications()}>
-              <NotificationsPanel
+        </Show>
+        <Switch fallback={<Login />}>
+          <Match when={typeof state().identity !== 'undefined'}>
+            <header class={styles.header}>
+              <Nav
+                identity={state().identity!}
+                onNotificationsClicked={toggleNotifications}
                 notifications={notifications}
-                onClose={toggleNotifications}
-                onAction={onNotificationAction}
-                onArchive={onArchiveNotifications}
               />
-            </Show>
-            <section class={styles.content}>
-              <Routes>
-                <Route path={import.meta.env.BASE_URL}>
-                  <Route path='/' component={Home} />
-                  <Route path='/groups/:id' component={GroupPage} />
-                </Route>
-              </Routes>
-            </section>
-          </main>
-        </Match>
-      </Switch>
-    </div>
+            </header>
+            <main class={styles.main}>
+              <Show when={showNotifications()}>
+                <NotificationsPanel
+                  notifications={notifications}
+                  onClose={toggleNotifications}
+                  onAction={onNotificationAction}
+                  onArchive={onArchiveNotifications}
+                />
+              </Show>
+              <section class={styles.content}>{props.children}</section>
+            </main>
+          </Match>
+        </Switch>
+      </div>
+    )
+  }
+
+  return (
+    <Router root={Layout}>
+      <Route path={import.meta.env.BASE_URL}>
+        <Route path='/' component={Home} />
+        <Route path='/groups/:id' component={GroupPage} />
+      </Route>
+    </Router>
   )
 }
