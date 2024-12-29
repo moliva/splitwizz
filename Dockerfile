@@ -1,7 +1,6 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package.json ./
-# COPY package-lock.json ./
 COPY pnpm-lock.yaml ./
 RUN  corepack enable pnpm
 RUN pnpm install

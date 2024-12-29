@@ -20,12 +20,13 @@
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-brands-svg-icons": "^6.7.2",
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
-    "@fortawesome/free-solid-svg-icons": "^6.4.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@moliva/auth.ts": "github:moliva/auth.ts",
+    "@moliva/solid-multiselect": "github:moliva/solid-multiselect#1585366f2084be23b7bef785a3075885ab05b32a",
     "@solidjs/router": "^0.15.2",
     "deep-copy-ts": "^0.5.4",
     "solid-fa": "^0.2.0",
-    "solid-js": "^1.9.3",
-    "@moliva/solid-multiselect": "git+https://git@github.com/moliva/solid-multiselect.git#1585366f2084be23b7bef785a3075885ab05b32a"
+    "solid-js": "^1.9.3"
   },
   "packageManager": "pnpm@9.1.0+sha256.22e36fba7f4880ecf749a5ca128b8435da085ecd49575e7fb9e64d6bf4fad394"
 }

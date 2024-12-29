@@ -12,6 +12,8 @@ import {
 } from 'solid-js'
 import { Route, Router } from '@solidjs/router'
 
+import { handleAuth } from '@moliva/auth.ts'
+
 import { DetailedGroup, Notification, NotificationAction } from './types'
 import {
   fetchCurrencies as doFetchCurrencies,
@@ -26,7 +28,6 @@ import {
 } from './services'
 import { useAppContext } from './context'
 import { formatError, sleep } from './utils'
-import { handleAuth } from './auth'
 
 import { Nav } from './components/NavComponent'
 import { Login } from './components/Login'

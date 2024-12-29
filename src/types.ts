@@ -1,3 +1,5 @@
+import { Identity } from "@moliva/auth.ts"
+
 export type Currency = {
   id: CurrencyId
   acronym: string
@@ -139,21 +141,6 @@ export type Balance = {
       [currency_id: CurrencyId]: number
     }
   }
-}
-
-export type IdToken = {
-  sub: number // user id
-  // fields
-  name: string
-  picture: string
-  email: string
-  // tokens
-  // access_token: string
-  // refresh_token: string
-}
-
-export type Identity = {
-  identity: IdToken
 }
 
 export type IdentityState = Identity | undefined

@@ -1,3 +1,5 @@
+import { authentifiedFetch, setApiHost } from '@moliva/auth.ts'
+
 import {
   NotificationsUpdate,
   Group,
@@ -9,9 +11,9 @@ import {
   Balance,
   NotificationUpdate
 } from './types'
-import { logout as logoutAction } from './utils'
 
 export const API_HOST = import.meta.env.VITE_API_URL
+setApiHost(API_HOST)
 
 type Event = {
   kind: 'group' | 'notification'
@@ -164,53 +166,4 @@ export async function deleteGroup(group: Group) {
 
 export async function logout(): Promise<Response> {
   return await authentifiedFetch(API_HOST + '/logout')
-}
-
-// *****************************************************************************************************
-// *************** utils ***************
-// *****************************************************************************************************
-
-let refreshing = false
-
-async function authentifiedFetch(url: string, init: RequestInit | undefined = {}) {
-  const options = {
-    ...init,
-    mode: 'cors' as const, // no-cors, *cors, same-origin
-    cache: 'no-cache' as const, // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: 'include' as const // Ensures cookies are sent with the request
-  }
-
-  const response = await fetch(url, options)
-
-  if (response.status === 401) {
-    if (!refreshing) {
-      refreshing = true
-
-      let refreshResponse
-      try {
-        refreshResponse = await refresh(options)
-      } catch {}
-      refreshing = false
-
-      if (!refreshResponse?.ok) {
-        await logoutAction()
-
-        return response
-      }
-    } else {
-      // wait for the token to be refreshed
-      while (refreshing) {
-        await new Promise(resolve => setTimeout(resolve, 100))
-      }
-    }
-
-    // retry the original request
-    return await fetch(url, options)
-  } else {
-    return response
-  }
-}
-
-async function refresh(init: RequestInit) {
-  return await fetch(`${API_HOST}/refresh`, { ...init, method: 'POST' })
 }
