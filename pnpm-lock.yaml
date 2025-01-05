@@ -25,7 +25,7 @@ importers:
         version: 6.7.2
       '@moliva/auth.ts':
         specifier: github:moliva/auth.ts
-        version: https://codeload.github.com/moliva/auth.ts/tar.gz/f322a899afafccc28e47f1306553846de3afebe4
+        version: https://codeload.github.com/moliva/auth.ts/tar.gz/59e54499b4f6ce168c4c60db9fd07edcb501f83f
       '@moliva/solid-multiselect':
         specifier: github:moliva/solid-multiselect#1585366f2084be23b7bef785a3075885ab05b32a
         version: https://codeload.github.com/moliva/solid-multiselect/tar.gz/1585366f2084be23b7bef785a3075885ab05b32a(solid-js@1.9.3)
@@ -336,8 +336,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
-  '@moliva/auth.ts@https://codeload.github.com/moliva/auth.ts/tar.gz/f322a899afafccc28e47f1306553846de3afebe4':
-    resolution: {tarball: https://codeload.github.com/moliva/auth.ts/tar.gz/f322a899afafccc28e47f1306553846de3afebe4}
+  '@moliva/auth.ts@https://codeload.github.com/moliva/auth.ts/tar.gz/59e54499b4f6ce168c4c60db9fd07edcb501f83f':
+    resolution: {tarball: https://codeload.github.com/moliva/auth.ts/tar.gz/59e54499b4f6ce168c4c60db9fd07edcb501f83f}
     version: 1.0.0
 
   '@moliva/solid-multiselect@https://codeload.github.com/moliva/solid-multiselect/tar.gz/1585366f2084be23b7bef785a3075885ab05b32a':
@@ -1011,7 +1011,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  '@moliva/auth.ts@https://codeload.github.com/moliva/auth.ts/tar.gz/f322a899afafccc28e47f1306553846de3afebe4':
+  '@moliva/auth.ts@https://codeload.github.com/moliva/auth.ts/tar.gz/59e54499b4f6ce168c4c60db9fd07edcb501f83f':
     dependencies:
       solid-js: 1.9.3
 
